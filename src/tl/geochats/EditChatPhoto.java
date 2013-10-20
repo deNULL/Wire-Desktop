@@ -18,11 +18,15 @@ public class EditChatPhoto extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x35d81a95);
     }
-    peer.writeTo(buffer, false);
-    photo.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
+    photo.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at EditChatPhoto: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class EditChatPhoto extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(EditChatPhoto peer:" + peer + " photo:" + photo + ")";
+    return "(geochats.editChatPhoto peer:" + peer + " photo:" + photo + ")";
   }
 }

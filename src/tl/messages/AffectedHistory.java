@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class AffectedHistory extends tl.messages.TAffectedHistory {
+
   
   public AffectedHistory(ByteBuffer buffer) {
     pts = buffer.getInt();
@@ -18,12 +19,16 @@ public class AffectedHistory extends tl.messages.TAffectedHistory {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb7de36f2);
     }
     buffer.putInt(pts);
     buffer.putInt(seq);
     buffer.putInt(offset);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at AffectedHistory: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -32,6 +37,6 @@ public class AffectedHistory extends tl.messages.TAffectedHistory {
   }
   
   public String toString() {
-    return "(AffectedHistory pts:" + pts + " seq:" + seq + " offset:" + offset + ")";
+    return "(messages.affectedHistory pts:" + pts + " seq:" + seq + " offset:" + offset + ")";
   }
 }

@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class DialogsSlice extends tl.messages.TDialogs {
+
   
   public DialogsSlice(ByteBuffer buffer) {
     count = buffer.getInt();
@@ -22,14 +23,18 @@ public class DialogsSlice extends tl.messages.TDialogs {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x71e094f3);
     }
     buffer.putInt(count);
-    TL.writeVector(buffer, dialogs, true, false);
-    TL.writeVector(buffer, messages, true, false);
-    TL.writeVector(buffer, chats, true, false);
-    TL.writeVector(buffer, users, true, false);
+    TL.writeVector(buffer, dialogs, true, true);
+    TL.writeVector(buffer, messages, true, true);
+    TL.writeVector(buffer, chats, true, true);
+    TL.writeVector(buffer, users, true, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DialogsSlice: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -38,6 +43,6 @@ public class DialogsSlice extends tl.messages.TDialogs {
   }
   
   public String toString() {
-    return "(DialogsSlice count:" + count + " dialogs:" + TL.toString(dialogs) + " messages:" + TL.toString(messages) + " chats:" + TL.toString(chats) + " users:" + TL.toString(users) + ")";
+    return "(messages.dialogsSlice count:" + count + " dialogs:" + TL.toString(dialogs) + " messages:" + TL.toString(messages) + " chats:" + TL.toString(chats) + " users:" + TL.toString(users) + ")";
   }
 }

@@ -4,9 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class BlockedSlice extends tl.contacts.TBlocked {
-  public int count;
-  public tl.TContactBlocked[] blocked;
-  public tl.TUser[] users;
+
   
   public BlockedSlice(ByteBuffer buffer) {
     count = buffer.getInt();
@@ -21,12 +19,16 @@ public class BlockedSlice extends tl.contacts.TBlocked {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x900802a1);
     }
     buffer.putInt(count);
-    TL.writeVector(buffer, blocked, true, false);
-    TL.writeVector(buffer, users, true, false);
+    TL.writeVector(buffer, blocked, true, true);
+    TL.writeVector(buffer, users, true, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at BlockedSlice: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +37,6 @@ public class BlockedSlice extends tl.contacts.TBlocked {
   }
   
   public String toString() {
-    return "(BlockedSlice count:" + count + " blocked:" + TL.toString(blocked) + " users:" + TL.toString(users) + ")";
+    return "(contacts.blockedSlice count:" + count + " blocked:" + TL.toString(blocked) + " users:" + TL.toString(users) + ")";
   }
 }

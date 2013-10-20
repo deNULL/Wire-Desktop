@@ -15,10 +15,14 @@ public class Checkin extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x55b3e8fb);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Checkin: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class Checkin extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(Checkin peer:" + peer + ")";
+    return "(geochats.checkin peer:" + peer + ")";
   }
 }

@@ -24,13 +24,17 @@ public class GetHistory extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x92a1df2f);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
     buffer.putInt(offset);
     buffer.putInt(max_id);
     buffer.putInt(limit);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetHistory: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -39,6 +43,6 @@ public class GetHistory extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetHistory peer:" + peer + " offset:" + offset + " max_id:" + max_id + " limit:" + limit + ")";
+    return "(messages.getHistory peer:" + peer + " offset:" + offset + " max_id:" + max_id + " limit:" + limit + ")";
   }
 }

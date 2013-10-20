@@ -18,11 +18,15 @@ public class DeleteHistory extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf4f8fb61);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
     buffer.putInt(offset);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DeleteHistory: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class DeleteHistory extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(DeleteHistory peer:" + peer + " offset:" + offset + ")";
+    return "(messages.deleteHistory peer:" + peer + " offset:" + offset + ")";
   }
 }

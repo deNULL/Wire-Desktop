@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class ContactSuggested extends tl.TContactSuggested {
+
   
   public ContactSuggested(ByteBuffer buffer) {
     user_id = buffer.getInt();
@@ -15,11 +16,15 @@ public class ContactSuggested extends tl.TContactSuggested {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3de191a1);
     }
     buffer.putInt(user_id);
     buffer.putInt(mutual_contacts);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ContactSuggested: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -28,6 +33,6 @@ public class ContactSuggested extends tl.TContactSuggested {
   }
   
   public String toString() {
-    return "(ContactSuggested user_id:" + user_id + " mutual_contacts:" + mutual_contacts + ")";
+    return "(contactSuggested user_id:" + user_id + " mutual_contacts:" + mutual_contacts + ")";
   }
 }

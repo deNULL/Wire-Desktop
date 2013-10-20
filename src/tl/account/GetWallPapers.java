@@ -15,10 +15,14 @@ public class GetWallPapers extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc04cfac2);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetWallPapers: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class GetWallPapers extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetWallPapers)";
+    return "(account.getWallPapers)";
   }
 }

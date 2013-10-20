@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class MessageMediaContact extends tl.TMessageMedia {
+
   
   public MessageMediaContact(ByteBuffer buffer) {
     phone_number = new String(TL.readString(buffer));
@@ -19,6 +20,7 @@ public class MessageMediaContact extends tl.TMessageMedia {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5e7d2f39);
     }
@@ -26,6 +28,9 @@ public class MessageMediaContact extends tl.TMessageMedia {
     TL.writeString(buffer, first_name.getBytes(), false);
     TL.writeString(buffer, last_name.getBytes(), false);
     buffer.putInt(user_id);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at MessageMediaContact: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class MessageMediaContact extends tl.TMessageMedia {
   }
   
   public String toString() {
-    return "(MessageMediaContact phone_number:" + "phone_number" + " first_name:" + "first_name" + " last_name:" + "last_name" + " user_id:" + user_id + ")";
+    return "(messageMediaContact phone_number:" + "phone_number" + " first_name:" + "first_name" + " last_name:" + "last_name" + " user_id:" + user_id + ")";
   }
 }

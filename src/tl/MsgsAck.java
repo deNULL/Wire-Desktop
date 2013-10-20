@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class MsgsAck extends tl.TMsgsAck {
+
   
   public MsgsAck(ByteBuffer buffer) {
     msg_ids = TL.readVectorLong(buffer, true);
@@ -13,10 +14,14 @@ public class MsgsAck extends tl.TMsgsAck {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x62d6b459);
     }
     TL.writeVector(buffer, msg_ids, true, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at MsgsAck: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -25,6 +30,6 @@ public class MsgsAck extends tl.TMsgsAck {
   }
   
   public String toString() {
-    return "(MsgsAck msg_ids:" + TL.toString(msg_ids) + ")";
+    return "(msgs_ack msg_ids:" + TL.toString(msg_ids) + ")";
   }
 }

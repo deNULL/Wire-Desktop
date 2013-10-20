@@ -17,11 +17,15 @@ public class DecryptedMessageLayer extends tl.TLObject {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x99a438cf);
     }
     buffer.putInt(layer);
     message.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DecryptedMessageLayer: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -30,6 +34,6 @@ public class DecryptedMessageLayer extends tl.TLObject {
   }
   
   public String toString() {
-    return "(DecryptedMessageLayer layer:" + layer + " message:" + message + ")";
+    return "(decryptedMessageLayer layer:" + layer + " message:" + message + ")";
   }
 }

@@ -18,11 +18,15 @@ public class ImportContacts extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xda30b32d);
     }
-    TL.writeVector(buffer, contacts, true, false);
+    TL.writeVector(buffer, contacts, true, true);
     buffer.putInt(replace ? 0x997275b5 : 0xbc799737);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ImportContacts: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class ImportContacts extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(ImportContacts contacts:" + TL.toString(contacts) + " replace:" + (replace ? "true" : "false") + ")";
+    return "(contacts.importContacts contacts:" + TL.toString(contacts) + " replace:" + (replace ? "true" : "false") + ")";
   }
 }

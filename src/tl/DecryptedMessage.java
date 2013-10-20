@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class DecryptedMessage extends tl.TDecryptedMessage {
+
   
   public DecryptedMessage(ByteBuffer buffer) {
     random_id = buffer.getLong();
@@ -19,13 +20,17 @@ public class DecryptedMessage extends tl.TDecryptedMessage {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x1f814f1f);
     }
     buffer.putLong(random_id);
     TL.writeString(buffer, random_bytes, false);
     TL.writeString(buffer, message.getBytes(), false);
-    media.writeTo(buffer, false);
+    media.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DecryptedMessage: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class DecryptedMessage extends tl.TDecryptedMessage {
   }
   
   public String toString() {
-    return "(DecryptedMessage random_id:" + String.format("0x%016x", random_id) + " random_bytes:" + TL.toString(random_bytes) + " message:" + "message" + " media:" + media + ")";
+    return "(decryptedMessage random_id:" + String.format("0x%016x", random_id) + " random_bytes:" + TL.toString(random_bytes) + " message:" + "message" + " media:" + media + ")";
   }
 }

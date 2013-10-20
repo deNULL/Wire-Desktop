@@ -14,10 +14,14 @@ public class InputMediaPhoto extends tl.TInputMedia {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x8f2ab2ec);
     }
-    id.writeTo(buffer, false);
+    id.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InputMediaPhoto: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +30,6 @@ public class InputMediaPhoto extends tl.TInputMedia {
   }
   
   public String toString() {
-    return "(InputMediaPhoto id:" + id + ")";
+    return "(inputMediaPhoto id:" + id + ")";
   }
 }

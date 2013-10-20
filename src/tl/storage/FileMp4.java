@@ -15,10 +15,14 @@ public class FileMp4 extends tl.storage.TFileType {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb3cea0e4);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at FileMp4: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class FileMp4 extends tl.storage.TFileType {
   }
   
   public String toString() {
-    return "(FileMp4)";
+    return "(storage.fileMp4)";
   }
 }

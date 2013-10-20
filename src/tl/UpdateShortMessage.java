@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class UpdateShortMessage extends tl.TUpdates {
+
   
   public UpdateShortMessage(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -23,6 +24,7 @@ public class UpdateShortMessage extends tl.TUpdates {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd3f45784);
     }
@@ -32,6 +34,9 @@ public class UpdateShortMessage extends tl.TUpdates {
     buffer.putInt(pts);
     buffer.putInt(date);
     buffer.putInt(seq);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UpdateShortMessage: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -40,6 +45,6 @@ public class UpdateShortMessage extends tl.TUpdates {
   }
   
   public String toString() {
-    return "(UpdateShortMessage id:" + id + " from_id:" + from_id + " message:" + "message" + " pts:" + pts + " date:" + date + " seq:" + seq + ")";
+    return "(updateShortMessage id:" + id + " from_id:" + from_id + " message:" + "message" + " pts:" + pts + " date:" + date + " seq:" + seq + ")";
   }
 }

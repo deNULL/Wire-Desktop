@@ -17,11 +17,15 @@ public class InvokeAfterMsgs extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3dc4b4f0);
     }
     TL.writeVector(buffer, msg_ids, true, false);
     query.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InvokeAfterMsgs: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -30,6 +34,6 @@ public class InvokeAfterMsgs extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(InvokeAfterMsgs msg_ids:" + TL.toString(msg_ids) + " query:" + query + ")";
+    return "(invokeAfterMsgs msg_ids:" + TL.toString(msg_ids) + " query:" + query + ")";
   }
 }

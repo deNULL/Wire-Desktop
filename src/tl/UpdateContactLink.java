@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class UpdateContactLink extends tl.TUpdate {
+
   
   public UpdateContactLink(ByteBuffer buffer) {
     user_id = buffer.getInt();
@@ -17,12 +18,16 @@ public class UpdateContactLink extends tl.TUpdate {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x51a48a9a);
     }
     buffer.putInt(user_id);
-    my_link.writeTo(buffer, false);
-    foreign_link.writeTo(buffer, false);
+    my_link.writeTo(buffer, true);
+    foreign_link.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UpdateContactLink: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +36,6 @@ public class UpdateContactLink extends tl.TUpdate {
   }
   
   public String toString() {
-    return "(UpdateContactLink user_id:" + user_id + " my_link:" + my_link + " foreign_link:" + foreign_link + ")";
+    return "(updateContactLink user_id:" + user_id + " my_link:" + my_link + " foreign_link:" + foreign_link + ")";
   }
 }

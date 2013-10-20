@@ -15,10 +15,14 @@ public class GetChats extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3c6aa187);
     }
     TL.writeVector(buffer, id, true, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetChats: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class GetChats extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetChats id:" + TL.toString(id) + ")";
+    return "(messages.getChats id:" + TL.toString(id) + ")";
   }
 }

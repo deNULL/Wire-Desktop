@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class UserDeleted extends tl.TUser {
+
   
   public UserDeleted(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -17,12 +18,16 @@ public class UserDeleted extends tl.TUser {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb29ad7cc);
     }
     buffer.putInt(id);
     TL.writeString(buffer, first_name.getBytes(), false);
     TL.writeString(buffer, last_name.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UserDeleted: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +36,6 @@ public class UserDeleted extends tl.TUser {
   }
   
   public String toString() {
-    return "(UserDeleted id:" + id + " first_name:" + "first_name" + " last_name:" + "last_name" + ")";
+    return "(userDeleted id:" + id + " first_name:" + "first_name" + " last_name:" + "last_name" + ")";
   }
 }

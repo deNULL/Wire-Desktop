@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class State extends tl.updates.TState {
+
   
   public State(ByteBuffer buffer) {
     pts = buffer.getInt();
@@ -22,6 +23,7 @@ public class State extends tl.updates.TState {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa56c2a3e);
     }
@@ -30,6 +32,9 @@ public class State extends tl.updates.TState {
     buffer.putInt(date);
     buffer.putInt(seq);
     buffer.putInt(unread_count);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at State: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -38,6 +43,6 @@ public class State extends tl.updates.TState {
   }
   
   public String toString() {
-    return "(State pts:" + pts + " qts:" + qts + " date:" + date + " seq:" + seq + " unread_count:" + unread_count + ")";
+    return "(updates.state pts:" + pts + " qts:" + qts + " date:" + date + " seq:" + seq + " unread_count:" + unread_count + ")";
   }
 }

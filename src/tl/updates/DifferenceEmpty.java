@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class DifferenceEmpty extends tl.updates.TDifference {
+
   
   public DifferenceEmpty(ByteBuffer buffer) {
     date = buffer.getInt();
@@ -16,11 +17,15 @@ public class DifferenceEmpty extends tl.updates.TDifference {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5d75a138);
     }
     buffer.putInt(date);
     buffer.putInt(seq);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DifferenceEmpty: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -29,6 +34,6 @@ public class DifferenceEmpty extends tl.updates.TDifference {
   }
   
   public String toString() {
-    return "(DifferenceEmpty date:" + date + " seq:" + seq + ")";
+    return "(updates.differenceEmpty date:" + date + " seq:" + seq + ")";
   }
 }

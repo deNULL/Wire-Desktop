@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class UserContact extends tl.TUser {
+
   
   public UserContact(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -25,6 +26,7 @@ public class UserContact extends tl.TUser {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf2fb8319);
     }
@@ -33,8 +35,11 @@ public class UserContact extends tl.TUser {
     TL.writeString(buffer, last_name.getBytes(), false);
     buffer.putLong(access_hash);
     TL.writeString(buffer, phone.getBytes(), false);
-    photo.writeTo(buffer, false);
-    status.writeTo(buffer, false);
+    photo.writeTo(buffer, true);
+    status.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UserContact: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -43,6 +48,6 @@ public class UserContact extends tl.TUser {
   }
   
   public String toString() {
-    return "(UserContact id:" + id + " first_name:" + "first_name" + " last_name:" + "last_name" + " access_hash:" + String.format("0x%016x", access_hash) + " phone:" + "phone" + " photo:" + photo + " status:" + status + ")";
+    return "(userContact id:" + id + " first_name:" + "first_name" + " last_name:" + "last_name" + " access_hash:" + String.format("0x%016x", access_hash) + " phone:" + "phone" + " photo:" + photo + " status:" + status + ")";
   }
 }

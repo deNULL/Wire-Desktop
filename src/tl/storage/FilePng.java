@@ -15,10 +15,14 @@ public class FilePng extends tl.storage.TFileType {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa4f63c0);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at FilePng: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class FilePng extends tl.storage.TFileType {
   }
   
   public String toString() {
-    return "(FilePng)";
+    return "(storage.filePng)";
   }
 }

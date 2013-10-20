@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class GeoChat extends tl.TChat {
+
   
   public GeoChat(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -33,6 +34,7 @@ public class GeoChat extends tl.TChat {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x75eaea5a);
     }
@@ -41,12 +43,15 @@ public class GeoChat extends tl.TChat {
     TL.writeString(buffer, title.getBytes(), false);
     TL.writeString(buffer, address.getBytes(), false);
     TL.writeString(buffer, venue.getBytes(), false);
-    geo.writeTo(buffer, false);
-    photo.writeTo(buffer, false);
+    geo.writeTo(buffer, true);
+    photo.writeTo(buffer, true);
     buffer.putInt(participants_count);
     buffer.putInt(date);
     buffer.putInt(checked_in ? 0x997275b5 : 0xbc799737);
     buffer.putInt(version);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GeoChat: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -55,6 +60,6 @@ public class GeoChat extends tl.TChat {
   }
   
   public String toString() {
-    return "(GeoChat id:" + id + " access_hash:" + String.format("0x%016x", access_hash) + " title:" + "title" + " address:" + "address" + " venue:" + "venue" + " geo:" + geo + " photo:" + photo + " participants_count:" + participants_count + " date:" + date + " checked_in:" + (checked_in ? "true" : "false") + " version:" + version + ")";
+    return "(geoChat id:" + id + " access_hash:" + String.format("0x%016x", access_hash) + " title:" + "title" + " address:" + "address" + " venue:" + "venue" + " geo:" + geo + " photo:" + photo + " participants_count:" + participants_count + " date:" + date + " checked_in:" + (checked_in ? "true" : "false") + " version:" + version + ")";
   }
 }

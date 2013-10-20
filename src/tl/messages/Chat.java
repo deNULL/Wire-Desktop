@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class Chat extends tl.messages.TChat {
+
   
   public Chat(ByteBuffer buffer) {
     chat = (tl.TChat) TL.read(buffer);
@@ -16,11 +17,15 @@ public class Chat extends tl.messages.TChat {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x40e9002a);
     }
-    chat.writeTo(buffer, false);
-    TL.writeVector(buffer, users, true, false);
+    chat.writeTo(buffer, true);
+    TL.writeVector(buffer, users, true, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Chat: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -29,6 +34,6 @@ public class Chat extends tl.messages.TChat {
   }
   
   public String toString() {
-    return "(Chat chat:" + chat + " users:" + TL.toString(users) + ")";
+    return "(messages.chat chat:" + chat + " users:" + TL.toString(users) + ")";
   }
 }

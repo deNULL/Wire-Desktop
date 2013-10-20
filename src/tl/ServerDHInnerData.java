@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class ServerDHInnerData extends tl.TServerDHInnerData {
+
   
   public ServerDHInnerData(ByteBuffer buffer) {
     nonce = TL.readInt128(buffer);
@@ -23,6 +24,7 @@ public class ServerDHInnerData extends tl.TServerDHInnerData {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb5890dba);
     }
@@ -32,6 +34,9 @@ public class ServerDHInnerData extends tl.TServerDHInnerData {
     TL.writeString(buffer, dh_prime.toByteArray(), false);
     TL.writeString(buffer, g_a.toByteArray(), false);
     buffer.putInt(server_time);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ServerDHInnerData: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -40,6 +45,6 @@ public class ServerDHInnerData extends tl.TServerDHInnerData {
   }
   
   public String toString() {
-    return "(ServerDHInnerData nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " g:" + g + " dh_prime:" + "dh_prime" + " g_a:" + "g_a" + " server_time:" + server_time + ")";
+    return "(server_DH_inner_data nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " g:" + g + " dh_prime:" + "dh_prime" + " g_a:" + "g_a" + " server_time:" + server_time + ")";
   }
 }

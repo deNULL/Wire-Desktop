@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class Authorization extends tl.auth.TAuthorization {
+
   
   public Authorization(ByteBuffer buffer) {
     expires = buffer.getInt();
@@ -16,11 +17,15 @@ public class Authorization extends tl.auth.TAuthorization {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf6b673a4);
     }
     buffer.putInt(expires);
-    user.writeTo(buffer, false);
+    user.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Authorization: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -29,6 +34,6 @@ public class Authorization extends tl.auth.TAuthorization {
   }
   
   public String toString() {
-    return "(Authorization expires:" + expires + " user:" + user + ")";
+    return "(auth.authorization expires:" + expires + " user:" + user + ")";
   }
 }

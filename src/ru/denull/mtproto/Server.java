@@ -11,6 +11,7 @@ import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +21,7 @@ import ru.denull.mtproto.Auth.AuthState;
 import ru.denull.mtproto.DataService.ConnectTaskCallback;
 import ru.denull.mtproto.DataService.ReadTaskCallback;
 import ru.denull.mtproto.DataService.WriteTaskCallback;
+import ru.denull.mtproto.Server.RPCCallback;
 import tl.*;
 import tl.help.GetConfig;
 import static ru.denull.mtproto.CryptoUtils.*;
@@ -64,6 +66,12 @@ public class Server implements ReadTaskCallback {
 		pref = Preferences.userRoot().node("server/" + address + ":" + port);
 		old_session_id = pref.getLong("session_id", 0);
 		pref.putLong("session_id", session_id);
+		try {
+      pref.sync();
+    } catch (BackingStoreException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 		auth = new Auth(this, pref);
 		
 		// Start reading
@@ -380,14 +388,18 @@ public class Server implements ReadTaskCallback {
 	  sendQueued();
 	}
 
-	public void call(TLFunction request, RPCCallback callback) {
+	public void call(TLFunction request, RPCCallback callback, boolean latestLayer) {
 		try {
-			send(new InvokeWithLayer8(request), true, true, callback);
+			send(latestLayer ? new InvokeWithLayer8(request) : request, true, true, callback);
 		} catch (Exception e) {
 			e.printStackTrace();
 			callback.error(0, e.getMessage());
 		}
 	}
+	
+	public void call(TLFunction request, RPCCallback callback) {
+    call(request, callback, true);
+  }
 	
 	private void processMessage(TLObject message) throws Exception {
 	  //Log.i(TAG, "<= " + message);

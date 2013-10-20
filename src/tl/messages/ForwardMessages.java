@@ -18,11 +18,15 @@ public class ForwardMessages extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x514cd10f);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
     TL.writeVector(buffer, id, true, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ForwardMessages: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class ForwardMessages extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(ForwardMessages peer:" + peer + " id:" + TL.toString(id) + ")";
+    return "(messages.forwardMessages peer:" + peer + " id:" + TL.toString(id) + ")";
   }
 }

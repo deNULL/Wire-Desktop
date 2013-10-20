@@ -26,6 +26,7 @@ public class InitConnection extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3fc12e08);
     }
@@ -34,6 +35,9 @@ public class InitConnection extends tl.TLFunction {
     TL.writeString(buffer, system_version.getBytes(), false);
     TL.writeString(buffer, app_version.getBytes(), false);
     query.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InitConnection: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -42,6 +46,6 @@ public class InitConnection extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(InitConnection api_id:" + api_id + " device_model:" + "device_model" + " system_version:" + "system_version" + " app_version:" + "app_version" + " query:" + query + ")";
+    return "(initConnection api_id:" + api_id + " device_model:" + "device_model" + " system_version:" + "system_version" + " app_version:" + "app_version" + " query:" + query + ")";
   }
 }

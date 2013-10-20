@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class ImportedContact extends tl.TImportedContact {
+
   
   public ImportedContact(ByteBuffer buffer) {
     user_id = buffer.getInt();
@@ -15,11 +16,15 @@ public class ImportedContact extends tl.TImportedContact {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd0028438);
     }
     buffer.putInt(user_id);
     buffer.putLong(client_id);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ImportedContact: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -28,6 +33,6 @@ public class ImportedContact extends tl.TImportedContact {
   }
   
   public String toString() {
-    return "(ImportedContact user_id:" + user_id + " client_id:" + String.format("0x%016x", client_id) + ")";
+    return "(importedContact user_id:" + user_id + " client_id:" + String.format("0x%016x", client_id) + ")";
   }
 }

@@ -27,6 +27,7 @@ public class SignUp extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x1b067634);
     }
@@ -35,6 +36,9 @@ public class SignUp extends tl.TLFunction {
     TL.writeString(buffer, phone_code.getBytes(), false);
     TL.writeString(buffer, first_name.getBytes(), false);
     TL.writeString(buffer, last_name.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at SignUp: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -43,6 +47,6 @@ public class SignUp extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(SignUp phone_number:" + "phone_number" + " phone_code_hash:" + "phone_code_hash" + " phone_code:" + "phone_code" + " first_name:" + "first_name" + " last_name:" + "last_name" + ")";
+    return "(auth.signUp phone_number:" + "phone_number" + " phone_code_hash:" + "phone_code_hash" + " phone_code:" + "phone_code" + " first_name:" + "first_name" + " last_name:" + "last_name" + ")";
   }
 }

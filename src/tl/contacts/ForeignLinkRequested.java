@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class ForeignLinkRequested extends tl.contacts.TForeignLink {
+
   
   public ForeignLinkRequested(ByteBuffer buffer) {
     has_phone = (buffer.getInt() == 0x997275b5);
@@ -14,10 +15,14 @@ public class ForeignLinkRequested extends tl.contacts.TForeignLink {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa7801f47);
     }
     buffer.putInt(has_phone ? 0x997275b5 : 0xbc799737);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ForeignLinkRequested: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +31,6 @@ public class ForeignLinkRequested extends tl.contacts.TForeignLink {
   }
   
   public String toString() {
-    return "(ForeignLinkRequested has_phone:" + (has_phone ? "true" : "false") + ")";
+    return "(contacts.foreignLinkRequested has_phone:" + (has_phone ? "true" : "false") + ")";
   }
 }

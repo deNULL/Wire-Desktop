@@ -14,10 +14,14 @@ public class InputNotifyUsers extends tl.TInputNotifyPeer {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x193b4417);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InputNotifyUsers: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +30,6 @@ public class InputNotifyUsers extends tl.TInputNotifyPeer {
   }
   
   public String toString() {
-    return "(InputNotifyUsers)";
+    return "(inputNotifyUsers)";
   }
 }

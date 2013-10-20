@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class ClientDHInnerData extends tl.TClientDHInnerData {
+
   
   public ClientDHInnerData(ByteBuffer buffer) {
     nonce = TL.readInt128(buffer);
@@ -19,6 +20,7 @@ public class ClientDHInnerData extends tl.TClientDHInnerData {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6643b654);
     }
@@ -26,6 +28,9 @@ public class ClientDHInnerData extends tl.TClientDHInnerData {
     buffer.put(server_nonce);
     buffer.putLong(retry_id);
     TL.writeString(buffer, g_b.toByteArray(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ClientDHInnerData: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class ClientDHInnerData extends tl.TClientDHInnerData {
   }
   
   public String toString() {
-    return "(ClientDHInnerData nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " retry_id:" + String.format("0x%016x", retry_id) + " g_b:" + "g_b" + ")";
+    return "(client_DH_inner_data nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " retry_id:" + String.format("0x%016x", retry_id) + " g_b:" + "g_b" + ")";
   }
 }

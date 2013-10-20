@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class InputUserForeign extends tl.TInputUser {
+
   
   public InputUserForeign(ByteBuffer buffer) {
     user_id = buffer.getInt();
@@ -15,11 +16,15 @@ public class InputUserForeign extends tl.TInputUser {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x655e74ff);
     }
     buffer.putInt(user_id);
     buffer.putLong(access_hash);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InputUserForeign: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -28,6 +33,6 @@ public class InputUserForeign extends tl.TInputUser {
   }
   
   public String toString() {
-    return "(InputUserForeign user_id:" + user_id + " access_hash:" + String.format("0x%016x", access_hash) + ")";
+    return "(inputUserForeign user_id:" + user_id + " access_hash:" + String.format("0x%016x", access_hash) + ")";
   }
 }

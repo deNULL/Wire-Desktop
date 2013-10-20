@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class DifferenceSlice extends tl.updates.TDifference {
+
   
   public DifferenceSlice(ByteBuffer buffer) {
     new_messages = TL.readVector(buffer, true, new tl.TMessage[0]);
@@ -24,15 +25,19 @@ public class DifferenceSlice extends tl.updates.TDifference {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa8fb1981);
     }
-    TL.writeVector(buffer, new_messages, true, false);
-    TL.writeVector(buffer, new_encrypted_messages, true, false);
-    TL.writeVector(buffer, other_updates, true, false);
-    TL.writeVector(buffer, chats, true, false);
-    TL.writeVector(buffer, users, true, false);
-    intermediate_state.writeTo(buffer, false);
+    TL.writeVector(buffer, new_messages, true, true);
+    TL.writeVector(buffer, new_encrypted_messages, true, true);
+    TL.writeVector(buffer, other_updates, true, true);
+    TL.writeVector(buffer, chats, true, true);
+    TL.writeVector(buffer, users, true, true);
+    intermediate_state.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DifferenceSlice: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -41,6 +46,6 @@ public class DifferenceSlice extends tl.updates.TDifference {
   }
   
   public String toString() {
-    return "(DifferenceSlice new_messages:" + TL.toString(new_messages) + " new_encrypted_messages:" + TL.toString(new_encrypted_messages) + " other_updates:" + TL.toString(other_updates) + " chats:" + TL.toString(chats) + " users:" + TL.toString(users) + " intermediate_state:" + intermediate_state + ")";
+    return "(updates.differenceSlice new_messages:" + TL.toString(new_messages) + " new_encrypted_messages:" + TL.toString(new_encrypted_messages) + " other_updates:" + TL.toString(other_updates) + " chats:" + TL.toString(chats) + " users:" + TL.toString(users) + " intermediate_state:" + intermediate_state + ")";
   }
 }

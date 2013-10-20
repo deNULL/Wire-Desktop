@@ -19,8 +19,6 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -28,6 +26,7 @@ import ru.denull.mtproto.Auth.AuthCallback;
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.Log;
 import ru.denull.mtproto.Server;
+import ru.denull.wire.ImagePanel;
 import tl.Dialog;
 import tl.FileLocation;
 import tl.InputFile;
@@ -102,7 +101,7 @@ public class FileManager {
     public FileOutputStream stream;
     public int state = WAITING;
     public ArrayList<FileLoadingCallback> callbacks = new ArrayList<FileLoadingCallback>();
-    public ArrayList<WeakReference<JLabel>> views = new ArrayList<WeakReference<JLabel>>();
+    public ArrayList<WeakReference<ImagePanel>> views = new ArrayList<WeakReference<ImagePanel>>();
     
     
     public FileLoadingJob(FileManager manager, long id, int dc_id, TInputFileLocation location) {
@@ -185,22 +184,17 @@ public class FileManager {
         }
         
         // store in memory
-        manager.loaded.put(new Element(id, bitmap));
+        manager.loaded.put(new Element(id, result));
         
         // send notifications
         for (FileLoadingCallback callback : callbacks) {
           callback.complete(type, bitmap);
         }
-        for (WeakReference<JLabel> view : views) {
-          final JLabel v = view.get();
-          v.setIcon(new ImageIcon(bitmap));
-          /*if (v != null && v.getTag() != null && ((Long) v.getTag() == id)) {
-            service.activity.ui(new Runnable() {
-              public void run() {
-                v.setImageBitmap(bitmap);
-              }
-            }, true);
-          }*/
+        for (WeakReference<ImagePanel> view : views) {
+          ImagePanel panel = view.get();
+          if (panel != null) {
+            panel.setImage(bitmap, id);
+          }
         }
       
         // write to disk
@@ -340,7 +334,7 @@ public class FileManager {
   
   // remove some files from cacheDir if they are taking too much space
   public void checkCache() {
-    if (lastTimeCacheChecked == 0) {
+    /*if (lastTimeCacheChecked == 0) {
       lastTimeCacheChecked = System.currentTimeMillis();
     }
     
@@ -363,7 +357,7 @@ public class FileManager {
     for (File file : files) {
       if (bytes < MAX_DISK_CACHE || file.lastModified() > System.currentTimeMillis() - MIN_DISK_CACHE_STORE_TIME) return;
       file.delete();
-    }
+    }*/
   }
   
   // is he still dead?
@@ -486,18 +480,17 @@ public class FileManager {
   public boolean query(Object location, FileLoadingCallback callback) {
     return query(location, callback, null, 0);
   }
-  public boolean query(Object location, FileLoadingCallback callback, JLabel view, int size) {
+  public boolean query(Object location, FileLoadingCallback callback, ImagePanel view, int size) {
     long id = 0;
     int dc_id = 0;
     TInputFileLocation ilocation = null;
     
-    /*if (view != null && view.getTag() != null) { // cancel previous job
-      long old_id = (Long) view.getTag();
+    if (view != null && view.getId() != 0) { // cancel previous job
       
-      FileLoadingJob oldJob = progress.get(old_id);
+      FileLoadingJob oldJob = progress.get(view.getId());
       if (oldJob != null) {
         int index = 0;
-        for (WeakReference<JLabel> oldView : oldJob.views) {
+        for (WeakReference<ImagePanel> oldView : oldJob.views) {
           if (oldView.get() == view) {
             oldJob.views.remove(index);
             break;
@@ -507,11 +500,11 @@ public class FileManager {
         
         if (oldJob.state == FileLoadingJob.WAITING && oldJob.views.size() == 0) { // it's not even started
           queue.remove(oldJob);
-          progress.remove(old_id);
+          progress.remove(view.getId());
         }
       }
-      view.setTag(null);
-    }*/
+      view.setId(0);
+    }
     
     if (location instanceof FileLocation) {
       FileLocation flocation = (FileLocation) location;
@@ -525,7 +518,12 @@ public class FileManager {
         }
         
         if (view != null) {
-          view.setIcon(new ImageIcon((BufferedImage) cached.getObjectValue()));
+          try {
+            view.setImage(ImageIO.read(new ByteArrayInputStream((byte[]) cached.getObjectValue())));
+          } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
         }
         return true;
       }
@@ -563,18 +561,18 @@ public class FileManager {
     }
     
     if (view != null) {
-      job.views.add(new WeakReference<JLabel>(view));
-      //view.setTag(id);
+      job.views.add(new WeakReference<ImagePanel>(view));
+      view.setId(id);
     }
     
     checkJobs();
     return false;
   }
   
-  public boolean queryImage(TFileLocation location, JLabel view) {
+  public boolean queryImage(TFileLocation location, ImagePanel view) {
     return queryImage(location, view, 0);
   }
-  public boolean queryImage(TFileLocation location, JLabel view, int size) {
+  public boolean queryImage(TFileLocation location, ImagePanel view, int size) {
     return query(location, null, view, size);
   }
   

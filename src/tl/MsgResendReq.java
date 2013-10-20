@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class MsgResendReq extends tl.TMsgResendReq {
+
   
   public MsgResendReq(ByteBuffer buffer) {
     msg_ids = TL.readVectorLong(buffer, true);
@@ -13,10 +14,14 @@ public class MsgResendReq extends tl.TMsgResendReq {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x7d861a08);
     }
     TL.writeVector(buffer, msg_ids, true, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at MsgResendReq: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -25,6 +30,6 @@ public class MsgResendReq extends tl.TMsgResendReq {
   }
   
   public String toString() {
-    return "(MsgResendReq msg_ids:" + TL.toString(msg_ids) + ")";
+    return "(msg_resend_req msg_ids:" + TL.toString(msg_ids) + ")";
   }
 }

@@ -27,6 +27,7 @@ public class SendCode extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x768d5f4d);
     }
@@ -35,6 +36,9 @@ public class SendCode extends tl.TLFunction {
     buffer.putInt(api_id);
     TL.writeString(buffer, api_hash.getBytes(), false);
     TL.writeString(buffer, lang_code.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at SendCode: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -43,6 +47,6 @@ public class SendCode extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(SendCode phone_number:" + "phone_number" + " sms_type:" + sms_type + " api_id:" + api_id + " api_hash:" + "api_hash" + " lang_code:" + "lang_code" + ")";
+    return "(auth.sendCode phone_number:" + "phone_number" + " sms_type:" + sms_type + " api_id:" + api_id + " api_hash:" + "api_hash" + " lang_code:" + "lang_code" + ")";
   }
 }

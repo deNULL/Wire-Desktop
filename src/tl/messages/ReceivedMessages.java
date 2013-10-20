@@ -15,10 +15,14 @@ public class ReceivedMessages extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x28abcb68);
     }
     buffer.putInt(max_id);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ReceivedMessages: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class ReceivedMessages extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(ReceivedMessages max_id:" + max_id + ")";
+    return "(messages.receivedMessages max_id:" + max_id + ")";
   }
 }

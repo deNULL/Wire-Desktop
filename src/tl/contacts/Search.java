@@ -18,11 +18,15 @@ public class Search extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x11f812d8);
     }
     TL.writeString(buffer, q.getBytes(), false);
     buffer.putInt(limit);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Search: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class Search extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(Search q:" + "q" + " limit:" + limit + ")";
+    return "(contacts.search q:" + "q" + " limit:" + limit + ")";
   }
 }

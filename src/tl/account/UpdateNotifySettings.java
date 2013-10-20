@@ -18,11 +18,15 @@ public class UpdateNotifySettings extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x84be5b93);
     }
-    peer.writeTo(buffer, false);
-    settings.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
+    settings.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UpdateNotifySettings: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class UpdateNotifySettings extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(UpdateNotifySettings peer:" + peer + " settings:" + settings + ")";
+    return "(account.updateNotifySettings peer:" + peer + " settings:" + settings + ")";
   }
 }

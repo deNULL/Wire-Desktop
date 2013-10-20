@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class UpdateUserName extends tl.TUpdate {
+
   
   public UpdateUserName(ByteBuffer buffer) {
     user_id = buffer.getInt();
@@ -17,12 +18,16 @@ public class UpdateUserName extends tl.TUpdate {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xda22d9ad);
     }
     buffer.putInt(user_id);
     TL.writeString(buffer, first_name.getBytes(), false);
     TL.writeString(buffer, last_name.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UpdateUserName: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +36,6 @@ public class UpdateUserName extends tl.TUpdate {
   }
   
   public String toString() {
-    return "(UpdateUserName user_id:" + user_id + " first_name:" + "first_name" + " last_name:" + "last_name" + ")";
+    return "(updateUserName user_id:" + user_id + " first_name:" + "first_name" + " last_name:" + "last_name" + ")";
   }
 }

@@ -27,18 +27,25 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.AbstractListModel;
 
 import ru.denull.mtproto.DataService;
+import ru.denull.mtproto.DataService.OnUpdateListener;
 import ru.denull.mtproto.Server;
 import ru.denull.mtproto.Auth.AuthCallback;
 import ru.denull.mtproto.Server.RPCCallback;
 import ru.denull.wire.model.Notifier;
+import tl.TChatParticipants;
+import tl.TMessage;
 import tl.TUser;
+import tl.TUserProfilePhoto;
+import tl.TUserStatus;
 import tl.UserSelf;
+import tl.contacts.TForeignLink;
+import tl.contacts.TMyLink;
 import tl.messages.Dialogs;
 import tl.messages.DialogsSlice;
 import tl.messages.GetDialogs;
 import tl.messages.TDialogs;
 
-public class Main {
+public class Main implements OnUpdateListener {
 
   private JFrame frame;
   private JList dialogList, messageList;
@@ -75,6 +82,7 @@ public class Main {
             try {
               window = new Main();
               window.frame.setVisible(true);
+              service.updateListener = window;
               
               if (service.me != null) {
                 window.reloadDialogs();
@@ -159,6 +167,7 @@ public class Main {
         return values[index];
       }
     });
+    //dialogList.setBorder(UIManager.getBorder("List.sourceListBackgroundPainter"));
     dialogList.setCellRenderer(new DialogCellRenderer(service));
     panel.add(dialogList, BorderLayout.CENTER);
     
@@ -231,6 +240,99 @@ public class Main {
   public void authorized(TUser user) {
     service.logged((UserSelf) user);
     reloadDialogs();
+  }
+
+  @Override
+  public void onNewMessage(TMessage message, boolean fresh) {
+    // TODO Auto-generated method stub
+    dialogList.repaint();
+  }
+
+  @Override
+  public void onMessageID(int id, long random_id, boolean fresh) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void onReadMessages(int[] messages, boolean fresh) {
+    // TODO Auto-generated method stub
+    dialogList.repaint();
+  }
+
+  @Override
+  public void onDeleteMessages(int[] messages, boolean fresh) {
+    // TODO Auto-generated method stub
+    dialogList.repaint();
+  }
+
+  @Override
+  public void onRestoreMessages(int[] messages, boolean fresh) {
+    // TODO Auto-generated method stub
+    dialogList.repaint();
+  }
+
+  @Override
+  public void onUserTyping(int user_id, boolean fresh) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void onChatUserTyping(int chat_id, int user_id, boolean fresh) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void onChatParticipants(TChatParticipants participants, boolean fresh) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void onUserStatus(int user_id, TUserStatus status, boolean fresh) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void onUserName(int user_id, String first_name, String last_name,
+      boolean fresh) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void onUserPhoto(int user_id, TUserProfilePhoto photo, boolean fresh) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void onContactRegistered(int user_id, int date, boolean fresh) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void onContactLink(int user_id, TMyLink my_link,
+      TForeignLink foreign_link, boolean fresh) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void onActivation(int user_id, boolean fresh) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void onNewAuthorization(long auth_key_id, int date, String device,
+      String location, boolean fresh) {
+    // TODO Auto-generated method stub
+    
   }
   
 }

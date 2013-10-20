@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class MessageMediaGeo extends tl.TMessageMedia {
+
   
   public MessageMediaGeo(ByteBuffer buffer) {
     geo = (tl.TGeoPoint) TL.read(buffer);
@@ -13,10 +14,14 @@ public class MessageMediaGeo extends tl.TMessageMedia {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x56e0d474);
     }
-    geo.writeTo(buffer, false);
+    geo.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at MessageMediaGeo: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -25,6 +30,6 @@ public class MessageMediaGeo extends tl.TMessageMedia {
   }
   
   public String toString() {
-    return "(MessageMediaGeo geo:" + geo + ")";
+    return "(messageMediaGeo geo:" + geo + ")";
   }
 }

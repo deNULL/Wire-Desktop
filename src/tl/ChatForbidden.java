@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class ChatForbidden extends tl.TChat {
+
   
   public ChatForbidden(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -17,12 +18,16 @@ public class ChatForbidden extends tl.TChat {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xfb0ccc41);
     }
     buffer.putInt(id);
     TL.writeString(buffer, title.getBytes(), false);
     buffer.putInt(date);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ChatForbidden: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +36,6 @@ public class ChatForbidden extends tl.TChat {
   }
   
   public String toString() {
-    return "(ChatForbidden id:" + id + " title:" + "title" + " date:" + date + ")";
+    return "(chatForbidden id:" + id + " title:" + "title" + " date:" + date + ")";
   }
 }

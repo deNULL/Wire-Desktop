@@ -15,10 +15,14 @@ public class CheckPhone extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6fe51dfb);
     }
     TL.writeString(buffer, phone_number.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at CheckPhone: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class CheckPhone extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(CheckPhone phone_number:" + "phone_number" + ")";
+    return "(auth.checkPhone phone_number:" + "phone_number" + ")";
   }
 }

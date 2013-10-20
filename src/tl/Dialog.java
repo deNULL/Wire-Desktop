@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class Dialog extends tl.TDialog {
+
   
   public Dialog(ByteBuffer buffer) {
     peer = (tl.TPeer) TL.read(buffer);
@@ -17,12 +18,16 @@ public class Dialog extends tl.TDialog {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x214a8cdf);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
     buffer.putInt(top_message);
     buffer.putInt(unread_count);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Dialog: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +36,6 @@ public class Dialog extends tl.TDialog {
   }
   
   public String toString() {
-    return "(Dialog peer:" + peer + " top_message:" + top_message + " unread_count:" + unread_count + ")";
+    return "(dialog peer:" + peer + " top_message:" + top_message + " unread_count:" + unread_count + ")";
   }
 }

@@ -15,10 +15,14 @@ public class FileUnknown extends tl.storage.TFileType {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xaa963b05);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at FileUnknown: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class FileUnknown extends tl.storage.TFileType {
   }
   
   public String toString() {
-    return "(FileUnknown)";
+    return "(storage.fileUnknown)";
   }
 }

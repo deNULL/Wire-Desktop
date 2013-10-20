@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class ReqDHParams extends tl.TServerDHParams {
+
   
   public ReqDHParams(ByteBuffer buffer) {
     nonce = TL.readInt128(buffer);
@@ -23,6 +24,7 @@ public class ReqDHParams extends tl.TServerDHParams {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd712e4be);
     }
@@ -32,6 +34,9 @@ public class ReqDHParams extends tl.TServerDHParams {
     TL.writeString(buffer, q.toByteArray(), false);
     buffer.putLong(public_key_fingerprint);
     TL.writeString(buffer, encrypted_data, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ReqDHParams: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -40,6 +45,6 @@ public class ReqDHParams extends tl.TServerDHParams {
   }
   
   public String toString() {
-    return "(ReqDHParams nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " p:" + "p" + " q:" + "q" + " public_key_fingerprint:" + String.format("0x%016x", public_key_fingerprint) + " encrypted_data:" + TL.toString(encrypted_data) + ")";
+    return "(req_DH_params nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " p:" + "p" + " q:" + "q" + " public_key_fingerprint:" + String.format("0x%016x", public_key_fingerprint) + " encrypted_data:" + TL.toString(encrypted_data) + ")";
   }
 }

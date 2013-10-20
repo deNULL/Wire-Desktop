@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class HttpWait extends tl.THttpWait {
+
   
   public HttpWait(ByteBuffer buffer) {
     max_delay = buffer.getInt();
@@ -17,12 +18,16 @@ public class HttpWait extends tl.THttpWait {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9299359f);
     }
     buffer.putInt(max_delay);
     buffer.putInt(wait_after);
     buffer.putInt(max_wait);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at HttpWait: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +36,6 @@ public class HttpWait extends tl.THttpWait {
   }
   
   public String toString() {
-    return "(HttpWait max_delay:" + max_delay + " wait_after:" + wait_after + " max_wait:" + max_wait + ")";
+    return "(http_wait max_delay:" + max_delay + " wait_after:" + wait_after + " max_wait:" + max_wait + ")";
   }
 }

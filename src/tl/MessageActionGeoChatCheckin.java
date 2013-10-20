@@ -14,10 +14,14 @@ public class MessageActionGeoChatCheckin extends tl.TMessageAction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc7d53de);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at MessageActionGeoChatCheckin: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +30,6 @@ public class MessageActionGeoChatCheckin extends tl.TMessageAction {
   }
   
   public String toString() {
-    return "(MessageActionGeoChatCheckin)";
+    return "(messageActionGeoChatCheckin)";
   }
 }

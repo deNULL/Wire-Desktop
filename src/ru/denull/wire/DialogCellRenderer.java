@@ -7,6 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import ru.denull.mtproto.DataService;
 import tl.Dialog;
@@ -38,7 +39,7 @@ public class DialogCellRenderer implements ListCellRenderer {
     constraints.gridwidth = 1;  constraints.gridheight = 2;
     panel.add(unreadLabel, constraints);
     
-    JLabel iconLabel = new JLabel();
+    ImagePanel iconLabel = new ImagePanel();
     //iconLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
     iconLabel.setPreferredSize(new Dimension(50, 50));
     constraints = new GridBagConstraints();
@@ -87,6 +88,12 @@ public class DialogCellRenderer implements ListCellRenderer {
     panel.add(deleteLabel, constraints);
     
     //panel.setBackground(Color.WHITE);
+    if (selected) {
+      //panel.setBackground(UIManager.getColor("List.selectionBackground"));
+      panel.setBorder(UIManager.getBorder("List.sourceList" + (focused ? "Focused" : "") + "SelectionBackgroundPainter"));
+    } else {
+      //panel.setBorder(UIManager.getBorder("List.sourceListBackgroundPainter"));
+    }
     return panel;
   }
 }

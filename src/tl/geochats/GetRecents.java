@@ -18,11 +18,15 @@ public class GetRecents extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe1427e6f);
     }
     buffer.putInt(offset);
     buffer.putInt(limit);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetRecents: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class GetRecents extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetRecents offset:" + offset + " limit:" + limit + ")";
+    return "(geochats.getRecents offset:" + offset + " limit:" + limit + ")";
   }
 }

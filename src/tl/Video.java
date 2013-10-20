@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class Video extends tl.TVideo {
+
   
   public Video(ByteBuffer buffer) {
     id = buffer.getLong();
@@ -33,6 +34,7 @@ public class Video extends tl.TVideo {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5a04a49f);
     }
@@ -43,10 +45,13 @@ public class Video extends tl.TVideo {
     TL.writeString(buffer, caption.getBytes(), false);
     buffer.putInt(duration);
     buffer.putInt(size);
-    thumb.writeTo(buffer, false);
+    thumb.writeTo(buffer, true);
     buffer.putInt(dc_id);
     buffer.putInt(w);
     buffer.putInt(h);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Video: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -55,6 +60,6 @@ public class Video extends tl.TVideo {
   }
   
   public String toString() {
-    return "(Video id:" + String.format("0x%016x", id) + " access_hash:" + String.format("0x%016x", access_hash) + " user_id:" + user_id + " date:" + date + " caption:" + "caption" + " duration:" + duration + " size:" + size + " thumb:" + thumb + " dc_id:" + dc_id + " w:" + w + " h:" + h + ")";
+    return "(video id:" + String.format("0x%016x", id) + " access_hash:" + String.format("0x%016x", access_hash) + " user_id:" + user_id + " date:" + date + " caption:" + "caption" + " duration:" + duration + " size:" + size + " thumb:" + thumb + " dc_id:" + dc_id + " w:" + w + " h:" + h + ")";
   }
 }

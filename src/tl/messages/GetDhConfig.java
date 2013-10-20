@@ -18,11 +18,15 @@ public class GetDhConfig extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x26cf8950);
     }
     buffer.putInt(version);
     buffer.putInt(random_length);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetDhConfig: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class GetDhConfig extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetDhConfig version:" + version + " random_length:" + random_length + ")";
+    return "(messages.getDhConfig version:" + version + " random_length:" + random_length + ")";
   }
 }

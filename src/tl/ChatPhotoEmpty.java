@@ -14,10 +14,14 @@ public class ChatPhotoEmpty extends tl.TChatPhoto {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x37c1011c);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ChatPhotoEmpty: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +30,6 @@ public class ChatPhotoEmpty extends tl.TChatPhoto {
   }
   
   public String toString() {
-    return "(ChatPhotoEmpty)";
+    return "(chatPhotoEmpty)";
   }
 }

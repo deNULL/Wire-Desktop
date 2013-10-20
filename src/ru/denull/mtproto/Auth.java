@@ -6,6 +6,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchProviderException;
 import java.util.*;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import tl.*;
@@ -130,7 +131,7 @@ public class Auth {
           Log.i(TAG, "Unable to destroy old session");
         }
   		  
-  		});
+  		}, false);
   		server.old_session_id = 0;
 		}
 		try {

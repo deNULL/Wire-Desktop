@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class UpdatesCombined extends tl.TUpdates {
+
   
   public UpdatesCombined(ByteBuffer buffer) {
     updates = TL.readVector(buffer, true, new tl.TUpdate[0]);
@@ -23,15 +24,19 @@ public class UpdatesCombined extends tl.TUpdates {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x725b04c3);
     }
-    TL.writeVector(buffer, updates, true, false);
-    TL.writeVector(buffer, users, true, false);
-    TL.writeVector(buffer, chats, true, false);
+    TL.writeVector(buffer, updates, true, true);
+    TL.writeVector(buffer, users, true, true);
+    TL.writeVector(buffer, chats, true, true);
     buffer.putInt(date);
     buffer.putInt(seq_start);
     buffer.putInt(seq);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UpdatesCombined: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -40,6 +45,6 @@ public class UpdatesCombined extends tl.TUpdates {
   }
   
   public String toString() {
-    return "(UpdatesCombined updates:" + TL.toString(updates) + " users:" + TL.toString(users) + " chats:" + TL.toString(chats) + " date:" + date + " seq_start:" + seq_start + " seq:" + seq + ")";
+    return "(updatesCombined updates:" + TL.toString(updates) + " users:" + TL.toString(users) + " chats:" + TL.toString(chats) + " date:" + date + " seq_start:" + seq_start + " seq:" + seq + ")";
   }
 }

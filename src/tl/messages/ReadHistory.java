@@ -21,12 +21,16 @@ public class ReadHistory extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb04f2510);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
     buffer.putInt(max_id);
     buffer.putInt(offset);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ReadHistory: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class ReadHistory extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(ReadHistory peer:" + peer + " max_id:" + max_id + " offset:" + offset + ")";
+    return "(messages.readHistory peer:" + peer + " max_id:" + max_id + " offset:" + offset + ")";
   }
 }

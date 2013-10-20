@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class SentMessage extends tl.messages.TSentMessage {
+
   
   public SentMessage(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -20,6 +21,7 @@ public class SentMessage extends tl.messages.TSentMessage {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd1f4d35c);
     }
@@ -27,6 +29,9 @@ public class SentMessage extends tl.messages.TSentMessage {
     buffer.putInt(date);
     buffer.putInt(pts);
     buffer.putInt(seq);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at SentMessage: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +40,6 @@ public class SentMessage extends tl.messages.TSentMessage {
   }
   
   public String toString() {
-    return "(SentMessage id:" + id + " date:" + date + " pts:" + pts + " seq:" + seq + ")";
+    return "(messages.sentMessage id:" + id + " date:" + date + " pts:" + pts + " seq:" + seq + ")";
   }
 }

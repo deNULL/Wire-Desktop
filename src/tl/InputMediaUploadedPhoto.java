@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class InputMediaUploadedPhoto extends tl.TInputMedia {
+
   
   public InputMediaUploadedPhoto(ByteBuffer buffer) {
     file = (tl.TInputFile) TL.read(buffer);
@@ -13,10 +14,14 @@ public class InputMediaUploadedPhoto extends tl.TInputMedia {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x2dc53a7d);
     }
-    file.writeTo(buffer, false);
+    file.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InputMediaUploadedPhoto: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -25,6 +30,6 @@ public class InputMediaUploadedPhoto extends tl.TInputMedia {
   }
   
   public String toString() {
-    return "(InputMediaUploadedPhoto file:" + file + ")";
+    return "(inputMediaUploadedPhoto file:" + file + ")";
   }
 }

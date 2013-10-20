@@ -2,7 +2,7 @@ package tl;
 
 import java.nio.ByteBuffer;
 
-public class DestroySession extends TLFunction {
+public class DestroySession extends tl.TLFunction {
   public long session_id;
   
   public DestroySession(ByteBuffer buffer) {
@@ -14,10 +14,14 @@ public class DestroySession extends TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe7512126);
     }
     buffer.putLong(session_id);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DestroySession: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +30,6 @@ public class DestroySession extends TLFunction {
   }
   
   public String toString() {
-    return "(DestroySession session_id:" + String.format("0x%016x", session_id) + ")";
+    return "(destroy_session session_id:" + String.format("0x%016x", session_id) + ")";
   }
 }

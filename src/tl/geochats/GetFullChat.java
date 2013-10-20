@@ -15,10 +15,14 @@ public class GetFullChat extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6722dd6f);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetFullChat: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class GetFullChat extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetFullChat peer:" + peer + ")";
+    return "(geochats.getFullChat peer:" + peer + ")";
   }
 }

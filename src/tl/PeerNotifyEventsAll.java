@@ -14,10 +14,14 @@ public class PeerNotifyEventsAll extends tl.TPeerNotifyEvents {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6d1ded88);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at PeerNotifyEventsAll: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +30,6 @@ public class PeerNotifyEventsAll extends tl.TPeerNotifyEvents {
   }
   
   public String toString() {
-    return "(PeerNotifyEventsAll)";
+    return "(peerNotifyEventsAll)";
   }
 }

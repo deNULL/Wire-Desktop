@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class MessageService extends tl.TMessage {
+
   
   public MessageService(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -25,16 +26,20 @@ public class MessageService extends tl.TMessage {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9f8d60bb);
     }
     buffer.putInt(id);
     buffer.putInt(from_id);
-    to_id.writeTo(buffer, false);
+    to_id.writeTo(buffer, true);
     buffer.putInt(out ? 0x997275b5 : 0xbc799737);
     buffer.putInt(unread ? 0x997275b5 : 0xbc799737);
     buffer.putInt(date);
-    action.writeTo(buffer, false);
+    action.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at MessageService: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -43,6 +48,6 @@ public class MessageService extends tl.TMessage {
   }
   
   public String toString() {
-    return "(MessageService id:" + id + " from_id:" + from_id + " to_id:" + to_id + " out:" + (out ? "true" : "false") + " unread:" + (unread ? "true" : "false") + " date:" + date + " action:" + action + ")";
+    return "(messageService id:" + id + " from_id:" + from_id + " to_id:" + to_id + " out:" + (out ? "true" : "false") + " unread:" + (unread ? "true" : "false") + " date:" + date + " action:" + action + ")";
   }
 }

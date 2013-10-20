@@ -18,11 +18,15 @@ public class GetBlocked extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf57c350f);
     }
     buffer.putInt(offset);
     buffer.putInt(limit);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetBlocked: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class GetBlocked extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetBlocked offset:" + offset + " limit:" + limit + ")";
+    return "(contacts.getBlocked offset:" + offset + " limit:" + limit + ")";
   }
 }

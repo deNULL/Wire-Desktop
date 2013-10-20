@@ -15,10 +15,14 @@ public class DeleteContacts extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x59ab389e);
     }
-    TL.writeVector(buffer, id, true, false);
+    TL.writeVector(buffer, id, true, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DeleteContacts: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class DeleteContacts extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(DeleteContacts id:" + TL.toString(id) + ")";
+    return "(contacts.deleteContacts id:" + TL.toString(id) + ")";
   }
 }

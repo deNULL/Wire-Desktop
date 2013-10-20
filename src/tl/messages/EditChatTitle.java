@@ -18,11 +18,15 @@ public class EditChatTitle extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb4bc68b5);
     }
     buffer.putInt(chat_id);
     TL.writeString(buffer, title.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at EditChatTitle: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class EditChatTitle extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(EditChatTitle chat_id:" + chat_id + " title:" + "title" + ")";
+    return "(messages.editChatTitle chat_id:" + chat_id + " title:" + "title" + ")";
   }
 }

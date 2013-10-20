@@ -14,10 +14,14 @@ public class PeerNotifySettingsEmpty extends tl.TPeerNotifySettings {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x70a68512);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at PeerNotifySettingsEmpty: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +30,6 @@ public class PeerNotifySettingsEmpty extends tl.TPeerNotifySettings {
   }
   
   public String toString() {
-    return "(PeerNotifySettingsEmpty)";
+    return "(peerNotifySettingsEmpty)";
   }
 }

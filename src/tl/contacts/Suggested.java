@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class Suggested extends tl.contacts.TSuggested {
+
   
   public Suggested(ByteBuffer buffer) {
     results = TL.readVector(buffer, true, new tl.TContactSuggested[0]);
@@ -16,11 +17,15 @@ public class Suggested extends tl.contacts.TSuggested {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5649dcc5);
     }
-    TL.writeVector(buffer, results, true, false);
-    TL.writeVector(buffer, users, true, false);
+    TL.writeVector(buffer, results, true, true);
+    TL.writeVector(buffer, users, true, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Suggested: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -29,6 +34,6 @@ public class Suggested extends tl.contacts.TSuggested {
   }
   
   public String toString() {
-    return "(Suggested results:" + TL.toString(results) + " users:" + TL.toString(users) + ")";
+    return "(contacts.suggested results:" + TL.toString(results) + " users:" + TL.toString(users) + ")";
   }
 }

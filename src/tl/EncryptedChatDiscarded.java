@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class EncryptedChatDiscarded extends tl.TEncryptedChat {
+
   
   public EncryptedChatDiscarded(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -13,10 +14,14 @@ public class EncryptedChatDiscarded extends tl.TEncryptedChat {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x13d6dd27);
     }
     buffer.putInt(id);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at EncryptedChatDiscarded: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -25,6 +30,6 @@ public class EncryptedChatDiscarded extends tl.TEncryptedChat {
   }
   
   public String toString() {
-    return "(EncryptedChatDiscarded id:" + id + ")";
+    return "(encryptedChatDiscarded id:" + id + ")";
   }
 }

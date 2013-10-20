@@ -14,10 +14,14 @@ public class GzipPacked extends tl.TLObject {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3072cfa1);
     }
     TL.writeString(buffer, packed_data, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GzipPacked: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +30,6 @@ public class GzipPacked extends tl.TLObject {
   }
   
   public String toString() {
-    return "(GzipPacked packed_data:" + TL.toString(packed_data) + ")";
+    return "(gzip_packed packed_data:" + TL.toString(packed_data) + ")";
   }
 }

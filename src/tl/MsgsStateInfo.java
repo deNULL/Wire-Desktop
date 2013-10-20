@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class MsgsStateInfo extends tl.TMsgsStateInfo {
+
   
   public MsgsStateInfo(ByteBuffer buffer) {
     req_msg_id = buffer.getLong();
@@ -15,11 +16,15 @@ public class MsgsStateInfo extends tl.TMsgsStateInfo {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x04deb57d);
     }
     buffer.putLong(req_msg_id);
     TL.writeString(buffer, info.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at MsgsStateInfo: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -28,6 +33,6 @@ public class MsgsStateInfo extends tl.TMsgsStateInfo {
   }
   
   public String toString() {
-    return "(MsgsStateInfo req_msg_id:" + String.format("0x%016x", req_msg_id) + " info:" + "info" + ")";
+    return "(msgs_state_info req_msg_id:" + String.format("0x%016x", req_msg_id) + " info:" + "info" + ")";
   }
 }

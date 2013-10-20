@@ -15,10 +15,14 @@ public class MyLinkContact extends tl.contacts.TMyLink {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc240ebd9);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at MyLinkContact: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class MyLinkContact extends tl.contacts.TMyLink {
   }
   
   public String toString() {
-    return "(MyLinkContact)";
+    return "(contacts.myLinkContact)";
   }
 }

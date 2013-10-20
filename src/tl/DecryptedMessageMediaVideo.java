@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class DecryptedMessageMediaVideo extends tl.TDecryptedMessageMedia {
+
   
   public DecryptedMessageMediaVideo(ByteBuffer buffer) {
     thumb = TL.readString(buffer);
@@ -29,6 +30,7 @@ public class DecryptedMessageMediaVideo extends tl.TDecryptedMessageMedia {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x4cee6ef3);
     }
@@ -41,6 +43,9 @@ public class DecryptedMessageMediaVideo extends tl.TDecryptedMessageMedia {
     buffer.putInt(size);
     TL.writeString(buffer, key, false);
     TL.writeString(buffer, iv, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DecryptedMessageMediaVideo: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -49,6 +54,6 @@ public class DecryptedMessageMediaVideo extends tl.TDecryptedMessageMedia {
   }
   
   public String toString() {
-    return "(DecryptedMessageMediaVideo thumb:" + TL.toString(thumb) + " thumb_w:" + thumb_w + " thumb_h:" + thumb_h + " duration:" + duration + " w:" + w + " h:" + h + " size:" + size + " key:" + TL.toString(key) + " iv:" + TL.toString(iv) + ")";
+    return "(decryptedMessageMediaVideo thumb:" + TL.toString(thumb) + " thumb_w:" + thumb_w + " thumb_h:" + thumb_h + " duration:" + duration + " w:" + w + " h:" + h + " size:" + size + " key:" + TL.toString(key) + " iv:" + TL.toString(iv) + ")";
   }
 }

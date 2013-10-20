@@ -21,12 +21,16 @@ public class SendMessage extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x4cde0aab);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
     TL.writeString(buffer, message.getBytes(), false);
     buffer.putLong(random_id);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at SendMessage: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class SendMessage extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(SendMessage peer:" + peer + " message:" + "message" + " random_id:" + String.format("0x%016x", random_id) + ")";
+    return "(messages.sendMessage peer:" + peer + " message:" + "message" + " random_id:" + String.format("0x%016x", random_id) + ")";
   }
 }

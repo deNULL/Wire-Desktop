@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class ContactFound extends tl.TContactFound {
+
   
   public ContactFound(ByteBuffer buffer) {
     user_id = buffer.getInt();
@@ -13,10 +14,14 @@ public class ContactFound extends tl.TContactFound {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xea879f95);
     }
     buffer.putInt(user_id);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ContactFound: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -25,6 +30,6 @@ public class ContactFound extends tl.TContactFound {
   }
   
   public String toString() {
-    return "(ContactFound user_id:" + user_id + ")";
+    return "(contactFound user_id:" + user_id + ")";
   }
 }

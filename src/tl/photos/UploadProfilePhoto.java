@@ -24,13 +24,17 @@ public class UploadProfilePhoto extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd50f9c88);
     }
-    file.writeTo(buffer, false);
+    file.writeTo(buffer, true);
     TL.writeString(buffer, caption.getBytes(), false);
-    geo_point.writeTo(buffer, false);
-    crop.writeTo(buffer, false);
+    geo_point.writeTo(buffer, true);
+    crop.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UploadProfilePhoto: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -39,6 +43,6 @@ public class UploadProfilePhoto extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(UploadProfilePhoto file:" + file + " caption:" + "caption" + " geo_point:" + geo_point + " crop:" + crop + ")";
+    return "(photos.uploadProfilePhoto file:" + file + " caption:" + "caption" + " geo_point:" + geo_point + " crop:" + crop + ")";
   }
 }

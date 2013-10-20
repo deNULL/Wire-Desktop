@@ -33,6 +33,7 @@ public class RegisterDevice extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x446c712c);
     }
@@ -43,6 +44,9 @@ public class RegisterDevice extends tl.TLFunction {
     TL.writeString(buffer, app_version.getBytes(), false);
     buffer.putInt(app_sandbox ? 0x997275b5 : 0xbc799737);
     TL.writeString(buffer, lang_code.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at RegisterDevice: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -51,6 +55,6 @@ public class RegisterDevice extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(RegisterDevice token_type:" + token_type + " token:" + "token" + " device_model:" + "device_model" + " system_version:" + "system_version" + " app_version:" + "app_version" + " app_sandbox:" + (app_sandbox ? "true" : "false") + " lang_code:" + "lang_code" + ")";
+    return "(account.registerDevice token_type:" + token_type + " token:" + "token" + " device_model:" + "device_model" + " system_version:" + "system_version" + " app_version:" + "app_version" + " app_sandbox:" + (app_sandbox ? "true" : "false") + " lang_code:" + "lang_code" + ")";
   }
 }

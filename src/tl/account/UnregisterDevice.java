@@ -18,11 +18,15 @@ public class UnregisterDevice extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x65c55b40);
     }
     buffer.putInt(token_type);
     TL.writeString(buffer, token.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UnregisterDevice: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class UnregisterDevice extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(UnregisterDevice token_type:" + token_type + " token:" + "token" + ")";
+    return "(account.unregisterDevice token_type:" + token_type + " token:" + "token" + ")";
   }
 }

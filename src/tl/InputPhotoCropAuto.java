@@ -14,10 +14,14 @@ public class InputPhotoCropAuto extends tl.TInputPhotoCrop {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xade6b004);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InputPhotoCropAuto: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +30,6 @@ public class InputPhotoCropAuto extends tl.TInputPhotoCrop {
   }
   
   public String toString() {
-    return "(InputPhotoCropAuto)";
+    return "(inputPhotoCropAuto)";
   }
 }

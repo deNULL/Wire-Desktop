@@ -21,12 +21,16 @@ public class AddChatUser extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x2ee9ee9e);
     }
     buffer.putInt(chat_id);
-    user_id.writeTo(buffer, false);
+    user_id.writeTo(buffer, true);
     buffer.putInt(fwd_limit);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at AddChatUser: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class AddChatUser extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(AddChatUser chat_id:" + chat_id + " user_id:" + user_id + " fwd_limit:" + fwd_limit + ")";
+    return "(messages.addChatUser chat_id:" + chat_id + " user_id:" + user_id + " fwd_limit:" + fwd_limit + ")";
   }
 }

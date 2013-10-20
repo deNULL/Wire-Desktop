@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class ResPQ extends tl.TResPQ {
+
   
   public ResPQ(ByteBuffer buffer) {
     nonce = TL.readInt128(buffer);
@@ -19,6 +20,7 @@ public class ResPQ extends tl.TResPQ {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x05162463);
     }
@@ -26,6 +28,9 @@ public class ResPQ extends tl.TResPQ {
     buffer.put(server_nonce);
     TL.writeString(buffer, pq.toByteArray(), false);
     TL.writeVector(buffer, server_public_key_fingerprints, true, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ResPQ: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class ResPQ extends tl.TResPQ {
   }
   
   public String toString() {
-    return "(ResPQ nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " pq:" + "pq" + " server_public_key_fingerprints:" + TL.toString(server_public_key_fingerprints) + ")";
+    return "(resPQ nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " pq:" + "pq" + " server_public_key_fingerprints:" + TL.toString(server_public_key_fingerprints) + ")";
   }
 }

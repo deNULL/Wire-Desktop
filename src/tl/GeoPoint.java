@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class GeoPoint extends tl.TGeoPoint {
+
   
   public GeoPoint(ByteBuffer buffer) {
     lng = buffer.getDouble();
@@ -15,11 +16,15 @@ public class GeoPoint extends tl.TGeoPoint {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x2049d70c);
     }
     buffer.putDouble(lng);
     buffer.putDouble(lat);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GeoPoint: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -28,6 +33,6 @@ public class GeoPoint extends tl.TGeoPoint {
   }
   
   public String toString() {
-    return "(GeoPoint lng:" + lng + " lat:" + lat + ")";
+    return "(geoPoint lng:" + lng + " lat:" + lat + ")";
   }
 }

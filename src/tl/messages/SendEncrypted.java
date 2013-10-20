@@ -21,12 +21,16 @@ public class SendEncrypted extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa9776773);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
     buffer.putLong(random_id);
     TL.writeString(buffer, data, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at SendEncrypted: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class SendEncrypted extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(SendEncrypted peer:" + peer + " random_id:" + String.format("0x%016x", random_id) + " data:" + TL.toString(data) + ")";
+    return "(messages.sendEncrypted peer:" + peer + " random_id:" + String.format("0x%016x", random_id) + " data:" + TL.toString(data) + ")";
   }
 }

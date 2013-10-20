@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class UpdateShort extends tl.TUpdates {
+
   
   public UpdateShort(ByteBuffer buffer) {
     update = (tl.TUpdate) TL.read(buffer);
@@ -15,11 +16,15 @@ public class UpdateShort extends tl.TUpdates {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x78d4dec1);
     }
-    update.writeTo(buffer, false);
+    update.writeTo(buffer, true);
     buffer.putInt(date);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UpdateShort: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -28,6 +33,6 @@ public class UpdateShort extends tl.TUpdates {
   }
   
   public String toString() {
-    return "(UpdateShort update:" + update + " date:" + date + ")";
+    return "(updateShort update:" + update + " date:" + date + ")";
   }
 }

@@ -15,10 +15,14 @@ public class DeleteMessages extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x14f2dd0a);
     }
     TL.writeVector(buffer, id, true, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DeleteMessages: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class DeleteMessages extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(DeleteMessages id:" + TL.toString(id) + ")";
+    return "(messages.deleteMessages id:" + TL.toString(id) + ")";
   }
 }

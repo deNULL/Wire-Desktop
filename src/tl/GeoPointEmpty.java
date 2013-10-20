@@ -14,10 +14,14 @@ public class GeoPointEmpty extends tl.TGeoPoint {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x1117dd5f);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GeoPointEmpty: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +30,6 @@ public class GeoPointEmpty extends tl.TGeoPoint {
   }
   
   public String toString() {
-    return "(GeoPointEmpty)";
+    return "(geoPointEmpty)";
   }
 }

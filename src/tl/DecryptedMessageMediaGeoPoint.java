@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class DecryptedMessageMediaGeoPoint extends tl.TDecryptedMessageMedia {
+
   
   public DecryptedMessageMediaGeoPoint(ByteBuffer buffer) {
     lat = buffer.getDouble();
@@ -15,11 +16,15 @@ public class DecryptedMessageMediaGeoPoint extends tl.TDecryptedMessageMedia {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x35480a59);
     }
     buffer.putDouble(lat);
     buffer.putDouble(lng);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DecryptedMessageMediaGeoPoint: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -28,6 +33,6 @@ public class DecryptedMessageMediaGeoPoint extends tl.TDecryptedMessageMedia {
   }
   
   public String toString() {
-    return "(DecryptedMessageMediaGeoPoint lat:" + lat + " lng:" + lng + ")";
+    return "(decryptedMessageMediaGeoPoint lat:" + lat + " lng:" + lng + ")";
   }
 }

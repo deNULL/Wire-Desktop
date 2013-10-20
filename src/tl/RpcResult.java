@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class RpcResult extends tl.TRpcResult {
+
   
   public RpcResult(ByteBuffer buffer) {
     req_msg_id = buffer.getLong();
@@ -15,11 +16,15 @@ public class RpcResult extends tl.TRpcResult {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf35c6d01);
     }
     buffer.putLong(req_msg_id);
-    result.writeTo(buffer, false);
+    result.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at RpcResult: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -28,6 +33,6 @@ public class RpcResult extends tl.TRpcResult {
   }
   
   public String toString() {
-    return "(RpcResult req_msg_id:" + String.format("0x%016x", req_msg_id) + " result:" + result + ")";
+    return "(rpc_result req_msg_id:" + String.format("0x%016x", req_msg_id) + " result:" + result + ")";
   }
 }

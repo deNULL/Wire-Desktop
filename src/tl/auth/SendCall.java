@@ -18,11 +18,15 @@ public class SendCall extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3c51564);
     }
     TL.writeString(buffer, phone_number.getBytes(), false);
     TL.writeString(buffer, phone_code_hash.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at SendCall: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class SendCall extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(SendCall phone_number:" + "phone_number" + " phone_code_hash:" + "phone_code_hash" + ")";
+    return "(auth.sendCall phone_number:" + "phone_number" + " phone_code_hash:" + "phone_code_hash" + ")";
   }
 }

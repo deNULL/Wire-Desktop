@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class ServerDHParamsOk extends tl.TServerDHParams {
+
   
   public ServerDHParamsOk(ByteBuffer buffer) {
     nonce = TL.readInt128(buffer);
@@ -17,12 +18,16 @@ public class ServerDHParamsOk extends tl.TServerDHParams {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd0e8075c);
     }
     buffer.put(nonce);
     buffer.put(server_nonce);
     TL.writeString(buffer, encrypted_answer, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ServerDHParamsOk: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +36,6 @@ public class ServerDHParamsOk extends tl.TServerDHParams {
   }
   
   public String toString() {
-    return "(ServerDHParamsOk nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " encrypted_answer:" + TL.toString(encrypted_answer) + ")";
+    return "(server_DH_params_ok nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " encrypted_answer:" + TL.toString(encrypted_answer) + ")";
   }
 }

@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class EncryptedMessageService extends tl.TEncryptedMessage {
+
   
   public EncryptedMessageService(ByteBuffer buffer) {
     random_id = buffer.getLong();
@@ -19,6 +20,7 @@ public class EncryptedMessageService extends tl.TEncryptedMessage {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x23734b06);
     }
@@ -26,6 +28,9 @@ public class EncryptedMessageService extends tl.TEncryptedMessage {
     buffer.putInt(chat_id);
     buffer.putInt(date);
     TL.writeString(buffer, bytes, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at EncryptedMessageService: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class EncryptedMessageService extends tl.TEncryptedMessage {
   }
   
   public String toString() {
-    return "(EncryptedMessageService random_id:" + String.format("0x%016x", random_id) + " chat_id:" + chat_id + " date:" + date + " bytes:" + TL.toString(bytes) + ")";
+    return "(encryptedMessageService random_id:" + String.format("0x%016x", random_id) + " chat_id:" + chat_id + " date:" + date + " bytes:" + TL.toString(bytes) + ")";
   }
 }

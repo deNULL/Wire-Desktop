@@ -24,13 +24,17 @@ public class GetUserPhotos extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb7ee553c);
     }
-    user_id.writeTo(buffer, false);
+    user_id.writeTo(buffer, true);
     buffer.putInt(offset);
     buffer.putInt(max_id);
     buffer.putInt(limit);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetUserPhotos: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -39,6 +43,6 @@ public class GetUserPhotos extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetUserPhotos user_id:" + user_id + " offset:" + offset + " max_id:" + max_id + " limit:" + limit + ")";
+    return "(photos.getUserPhotos user_id:" + user_id + " offset:" + offset + " max_id:" + max_id + " limit:" + limit + ")";
   }
 }

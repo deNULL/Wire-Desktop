@@ -21,12 +21,16 @@ public class RequestEncryption extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf64daf43);
     }
-    user_id.writeTo(buffer, false);
+    user_id.writeTo(buffer, true);
     buffer.putInt(random_id);
     TL.writeString(buffer, g_a, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at RequestEncryption: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class RequestEncryption extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(RequestEncryption user_id:" + user_id + " random_id:" + random_id + " g_a:" + TL.toString(g_a) + ")";
+    return "(messages.requestEncryption user_id:" + user_id + " random_id:" + random_id + " g_a:" + TL.toString(g_a) + ")";
   }
 }

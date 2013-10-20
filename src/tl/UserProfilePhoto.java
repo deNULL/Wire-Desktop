@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class UserProfilePhoto extends tl.TUserProfilePhoto {
+
   
   public UserProfilePhoto(ByteBuffer buffer) {
     photo_id = buffer.getLong();
@@ -17,12 +18,16 @@ public class UserProfilePhoto extends tl.TUserProfilePhoto {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd559d8c8);
     }
     buffer.putLong(photo_id);
-    photo_small.writeTo(buffer, false);
-    photo_big.writeTo(buffer, false);
+    photo_small.writeTo(buffer, true);
+    photo_big.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UserProfilePhoto: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +36,6 @@ public class UserProfilePhoto extends tl.TUserProfilePhoto {
   }
   
   public String toString() {
-    return "(UserProfilePhoto photo_id:" + String.format("0x%016x", photo_id) + " photo_small:" + photo_small + " photo_big:" + photo_big + ")";
+    return "(userProfilePhoto photo_id:" + String.format("0x%016x", photo_id) + " photo_small:" + photo_small + " photo_big:" + photo_big + ")";
   }
 }

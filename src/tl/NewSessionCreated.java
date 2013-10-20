@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class NewSessionCreated extends tl.TNewSession {
+
   
   public NewSessionCreated(ByteBuffer buffer) {
     first_msg_id = buffer.getLong();
@@ -17,12 +18,16 @@ public class NewSessionCreated extends tl.TNewSession {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9ec20908);
     }
     buffer.putLong(first_msg_id);
     buffer.putLong(unique_id);
     buffer.putLong(server_salt);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at NewSessionCreated: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +36,6 @@ public class NewSessionCreated extends tl.TNewSession {
   }
   
   public String toString() {
-    return "(NewSessionCreated first_msg_id:" + String.format("0x%016x", first_msg_id) + " unique_id:" + String.format("0x%016x", unique_id) + " server_salt:" + String.format("0x%016x", server_salt) + ")";
+    return "(new_session_created first_msg_id:" + String.format("0x%016x", first_msg_id) + " unique_id:" + String.format("0x%016x", unique_id) + " server_salt:" + String.format("0x%016x", server_salt) + ")";
   }
 }

@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class Error extends tl.TError {
+
   
   public Error(ByteBuffer buffer) {
     code = buffer.getInt();
@@ -15,11 +16,15 @@ public class Error extends tl.TError {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc4b9f9bb);
     }
     buffer.putInt(code);
     TL.writeString(buffer, text.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Error: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -28,6 +33,6 @@ public class Error extends tl.TError {
   }
   
   public String toString() {
-    return "(Error code:" + code + " text:" + "text" + ")";
+    return "(error code:" + code + " text:" + "text" + ")";
   }
 }

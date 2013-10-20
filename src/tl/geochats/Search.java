@@ -36,17 +36,21 @@ public class Search extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xcfcdc44d);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
     TL.writeString(buffer, q.getBytes(), false);
-    filter.writeTo(buffer, false);
+    filter.writeTo(buffer, true);
     buffer.putInt(min_date);
     buffer.putInt(max_date);
     buffer.putInt(offset);
     buffer.putInt(max_id);
     buffer.putInt(limit);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Search: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -55,6 +59,6 @@ public class Search extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(Search peer:" + peer + " q:" + "q" + " filter:" + filter + " min_date:" + min_date + " max_date:" + max_date + " offset:" + offset + " max_id:" + max_id + " limit:" + limit + ")";
+    return "(geochats.search peer:" + peer + " q:" + "q" + " filter:" + filter + " min_date:" + min_date + " max_date:" + max_date + " offset:" + offset + " max_id:" + max_id + " limit:" + limit + ")";
   }
 }

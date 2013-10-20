@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class InputFile extends tl.TInputFile {
+
   
   public InputFile(ByteBuffer buffer) {
     id = buffer.getLong();
@@ -19,6 +20,7 @@ public class InputFile extends tl.TInputFile {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf52ff27f);
     }
@@ -26,6 +28,9 @@ public class InputFile extends tl.TInputFile {
     buffer.putInt(parts);
     TL.writeString(buffer, name.getBytes(), false);
     TL.writeString(buffer, md5_checksum.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InputFile: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class InputFile extends tl.TInputFile {
   }
   
   public String toString() {
-    return "(InputFile id:" + String.format("0x%016x", id) + " parts:" + parts + " name:" + "name" + " md5_checksum:" + "md5_checksum" + ")";
+    return "(inputFile id:" + String.format("0x%016x", id) + " parts:" + parts + " name:" + "name" + " md5_checksum:" + "md5_checksum" + ")";
   }
 }

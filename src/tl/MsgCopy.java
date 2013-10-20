@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class MsgCopy extends tl.TMessageCopy {
+
   
   public MsgCopy(ByteBuffer buffer) {
     orig_message = (tl.TTransportMessage) TL.read(buffer);
@@ -13,10 +14,14 @@ public class MsgCopy extends tl.TMessageCopy {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe06046b2);
     }
-    orig_message.writeTo(buffer, false);
+    orig_message.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at MsgCopy: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -25,6 +30,6 @@ public class MsgCopy extends tl.TMessageCopy {
   }
   
   public String toString() {
-    return "(MsgCopy orig_message:" + orig_message + ")";
+    return "(msg_copy orig_message:" + orig_message + ")";
   }
 }

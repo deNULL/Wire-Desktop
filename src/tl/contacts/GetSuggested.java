@@ -15,10 +15,14 @@ public class GetSuggested extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xcd773428);
     }
     buffer.putInt(limit);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetSuggested: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class GetSuggested extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetSuggested limit:" + limit + ")";
+    return "(contacts.getSuggested limit:" + limit + ")";
   }
 }

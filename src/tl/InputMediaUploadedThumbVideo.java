@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class InputMediaUploadedThumbVideo extends tl.TInputMedia {
+
   
   public InputMediaUploadedThumbVideo(ByteBuffer buffer) {
     file = (tl.TInputFile) TL.read(buffer);
@@ -21,14 +22,18 @@ public class InputMediaUploadedThumbVideo extends tl.TInputMedia {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe628a145);
     }
-    file.writeTo(buffer, false);
-    thumb.writeTo(buffer, false);
+    file.writeTo(buffer, true);
+    thumb.writeTo(buffer, true);
     buffer.putInt(duration);
     buffer.putInt(w);
     buffer.putInt(h);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InputMediaUploadedThumbVideo: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -37,6 +42,6 @@ public class InputMediaUploadedThumbVideo extends tl.TInputMedia {
   }
   
   public String toString() {
-    return "(InputMediaUploadedThumbVideo file:" + file + " thumb:" + thumb + " duration:" + duration + " w:" + w + " h:" + h + ")";
+    return "(inputMediaUploadedThumbVideo file:" + file + " thumb:" + thumb + " duration:" + duration + " w:" + w + " h:" + h + ")";
   }
 }

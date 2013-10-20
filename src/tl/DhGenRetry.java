@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class DhGenRetry extends tl.TSetClientDHParamsAnswer {
+
   
   public DhGenRetry(ByteBuffer buffer) {
     nonce = TL.readInt128(buffer);
@@ -17,12 +18,16 @@ public class DhGenRetry extends tl.TSetClientDHParamsAnswer {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x46dc1fb9);
     }
     buffer.put(nonce);
     buffer.put(server_nonce);
     buffer.put(new_nonce_hash2);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DhGenRetry: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +36,6 @@ public class DhGenRetry extends tl.TSetClientDHParamsAnswer {
   }
   
   public String toString() {
-    return "(DhGenRetry nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " new_nonce_hash2:" + new java.math.BigInteger(new_nonce_hash2) + ")";
+    return "(dh_gen_retry nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " new_nonce_hash2:" + new java.math.BigInteger(new_nonce_hash2) + ")";
   }
 }

@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class InputAppEvent extends tl.TInputAppEvent {
+
   
   public InputAppEvent(ByteBuffer buffer) {
     time = buffer.getDouble();
@@ -19,6 +20,7 @@ public class InputAppEvent extends tl.TInputAppEvent {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x770656a8);
     }
@@ -26,6 +28,9 @@ public class InputAppEvent extends tl.TInputAppEvent {
     TL.writeString(buffer, type.getBytes(), false);
     buffer.putLong(peer);
     TL.writeString(buffer, data.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InputAppEvent: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class InputAppEvent extends tl.TInputAppEvent {
   }
   
   public String toString() {
-    return "(InputAppEvent time:" + time + " type:" + "type" + " peer:" + String.format("0x%016x", peer) + " data:" + "data" + ")";
+    return "(inputAppEvent time:" + time + " type:" + "type" + " peer:" + String.format("0x%016x", peer) + " data:" + "data" + ")";
   }
 }

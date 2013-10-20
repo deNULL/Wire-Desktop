@@ -18,11 +18,15 @@ public class CreateChat extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x419d9aee);
     }
-    TL.writeVector(buffer, users, true, false);
+    TL.writeVector(buffer, users, true, true);
     TL.writeString(buffer, title.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at CreateChat: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class CreateChat extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(CreateChat users:" + TL.toString(users) + " title:" + "title" + ")";
+    return "(messages.createChat users:" + TL.toString(users) + " title:" + "title" + ")";
   }
 }

@@ -21,12 +21,16 @@ public class SendBroadcast extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x41bb0972);
     }
-    TL.writeVector(buffer, contacts, true, false);
+    TL.writeVector(buffer, contacts, true, true);
     TL.writeString(buffer, message.getBytes(), false);
-    media.writeTo(buffer, false);
+    media.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at SendBroadcast: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class SendBroadcast extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(SendBroadcast contacts:" + TL.toString(contacts) + " message:" + "message" + " media:" + media + ")";
+    return "(messages.sendBroadcast contacts:" + TL.toString(contacts) + " message:" + "message" + " media:" + media + ")";
   }
 }

@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class EncryptedChat extends tl.TEncryptedChat {
+
   
   public EncryptedChat(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -27,6 +28,7 @@ public class EncryptedChat extends tl.TEncryptedChat {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6601d14f);
     }
@@ -38,6 +40,9 @@ public class EncryptedChat extends tl.TEncryptedChat {
     TL.writeString(buffer, g_a_or_b, false);
     TL.writeString(buffer, nonce, false);
     buffer.putLong(key_fingerprint);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at EncryptedChat: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -46,6 +51,6 @@ public class EncryptedChat extends tl.TEncryptedChat {
   }
   
   public String toString() {
-    return "(EncryptedChat id:" + id + " access_hash:" + String.format("0x%016x", access_hash) + " date:" + date + " admin_id:" + admin_id + " participant_id:" + participant_id + " g_a_or_b:" + TL.toString(g_a_or_b) + " nonce:" + TL.toString(nonce) + " key_fingerprint:" + String.format("0x%016x", key_fingerprint) + ")";
+    return "(encryptedChat id:" + id + " access_hash:" + String.format("0x%016x", access_hash) + " date:" + date + " admin_id:" + admin_id + " participant_id:" + participant_id + " g_a_or_b:" + TL.toString(g_a_or_b) + " nonce:" + TL.toString(nonce) + " key_fingerprint:" + String.format("0x%016x", key_fingerprint) + ")";
   }
 }

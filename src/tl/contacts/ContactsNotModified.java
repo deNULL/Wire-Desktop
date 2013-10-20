@@ -15,10 +15,14 @@ public class ContactsNotModified extends tl.contacts.TContacts {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb74ba9d2);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ContactsNotModified: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class ContactsNotModified extends tl.contacts.TContacts {
   }
   
   public String toString() {
-    return "(ContactsNotModified)";
+    return "(contacts.contactsNotModified)";
   }
 }

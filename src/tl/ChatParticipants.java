@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class ChatParticipants extends tl.TChatParticipants {
+
   
   public ChatParticipants(ByteBuffer buffer) {
     chat_id = buffer.getInt();
@@ -19,13 +20,17 @@ public class ChatParticipants extends tl.TChatParticipants {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x7841b415);
     }
     buffer.putInt(chat_id);
     buffer.putInt(admin_id);
-    TL.writeVector(buffer, participants, true, false);
+    TL.writeVector(buffer, participants, true, true);
     buffer.putInt(version);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ChatParticipants: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class ChatParticipants extends tl.TChatParticipants {
   }
   
   public String toString() {
-    return "(ChatParticipants chat_id:" + chat_id + " admin_id:" + admin_id + " participants:" + TL.toString(participants) + " version:" + version + ")";
+    return "(chatParticipants chat_id:" + chat_id + " admin_id:" + admin_id + " participants:" + TL.toString(participants) + " version:" + version + ")";
   }
 }

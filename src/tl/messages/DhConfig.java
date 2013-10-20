@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class DhConfig extends tl.messages.TDhConfig {
+
   
   public DhConfig(ByteBuffer buffer) {
     g = buffer.getInt();
@@ -20,6 +21,7 @@ public class DhConfig extends tl.messages.TDhConfig {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x2c221edd);
     }
@@ -27,6 +29,9 @@ public class DhConfig extends tl.messages.TDhConfig {
     TL.writeString(buffer, p, false);
     buffer.putInt(version);
     TL.writeString(buffer, random, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DhConfig: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +40,6 @@ public class DhConfig extends tl.messages.TDhConfig {
   }
   
   public String toString() {
-    return "(DhConfig g:" + g + " p:" + TL.toString(p) + " version:" + version + " random:" + TL.toString(random) + ")";
+    return "(messages.dhConfig g:" + g + " p:" + TL.toString(p) + " version:" + version + " random:" + TL.toString(random) + ")";
   }
 }

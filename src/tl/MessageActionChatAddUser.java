@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class MessageActionChatAddUser extends tl.TMessageAction {
+
   
   public MessageActionChatAddUser(ByteBuffer buffer) {
     user_id = buffer.getInt();
@@ -13,10 +14,14 @@ public class MessageActionChatAddUser extends tl.TMessageAction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5e3cfc4b);
     }
     buffer.putInt(user_id);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at MessageActionChatAddUser: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -25,6 +30,6 @@ public class MessageActionChatAddUser extends tl.TMessageAction {
   }
   
   public String toString() {
-    return "(MessageActionChatAddUser user_id:" + user_id + ")";
+    return "(messageActionChatAddUser user_id:" + user_id + ")";
   }
 }

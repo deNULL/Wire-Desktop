@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class UserForeign extends tl.TUser {
+
   
   public UserForeign(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -23,6 +24,7 @@ public class UserForeign extends tl.TUser {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5214c89d);
     }
@@ -30,8 +32,11 @@ public class UserForeign extends tl.TUser {
     TL.writeString(buffer, first_name.getBytes(), false);
     TL.writeString(buffer, last_name.getBytes(), false);
     buffer.putLong(access_hash);
-    photo.writeTo(buffer, false);
-    status.writeTo(buffer, false);
+    photo.writeTo(buffer, true);
+    status.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UserForeign: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -40,6 +45,6 @@ public class UserForeign extends tl.TUser {
   }
   
   public String toString() {
-    return "(UserForeign id:" + id + " first_name:" + "first_name" + " last_name:" + "last_name" + " access_hash:" + String.format("0x%016x", access_hash) + " photo:" + photo + " status:" + status + ")";
+    return "(userForeign id:" + id + " first_name:" + "first_name" + " last_name:" + "last_name" + " access_hash:" + String.format("0x%016x", access_hash) + " photo:" + photo + " status:" + status + ")";
   }
 }

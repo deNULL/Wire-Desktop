@@ -24,13 +24,17 @@ public class SendEncryptedFile extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9a901b66);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
     buffer.putLong(random_id);
     TL.writeString(buffer, data, false);
-    file.writeTo(buffer, false);
+    file.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at SendEncryptedFile: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -39,6 +43,6 @@ public class SendEncryptedFile extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(SendEncryptedFile peer:" + peer + " random_id:" + String.format("0x%016x", random_id) + " data:" + TL.toString(data) + " file:" + file + ")";
+    return "(messages.sendEncryptedFile peer:" + peer + " random_id:" + String.format("0x%016x", random_id) + " data:" + TL.toString(data) + " file:" + file + ")";
   }
 }

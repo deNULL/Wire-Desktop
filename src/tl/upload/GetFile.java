@@ -21,12 +21,16 @@ public class GetFile extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe3a6cfb5);
     }
-    location.writeTo(buffer, false);
+    location.writeTo(buffer, true);
     buffer.putInt(offset);
     buffer.putInt(limit);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetFile: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class GetFile extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetFile location:" + location + " offset:" + offset + " limit:" + limit + ")";
+    return "(upload.getFile location:" + location + " offset:" + offset + " limit:" + limit + ")";
   }
 }

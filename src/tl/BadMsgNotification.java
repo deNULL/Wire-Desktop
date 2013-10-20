@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class BadMsgNotification extends tl.TBadMsgNotification {
+
   
   public BadMsgNotification(ByteBuffer buffer) {
     bad_msg_id = buffer.getLong();
@@ -17,12 +18,16 @@ public class BadMsgNotification extends tl.TBadMsgNotification {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa7eff811);
     }
     buffer.putLong(bad_msg_id);
     buffer.putInt(bad_msg_seqno);
     buffer.putInt(error_code);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at BadMsgNotification: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +36,6 @@ public class BadMsgNotification extends tl.TBadMsgNotification {
   }
   
   public String toString() {
-    return "(BadMsgNotification bad_msg_id:" + String.format("0x%016x", bad_msg_id) + " bad_msg_seqno:" + bad_msg_seqno + " error_code:" + error_code + ")";
+    return "(bad_msg_notification bad_msg_id:" + String.format("0x%016x", bad_msg_id) + " bad_msg_seqno:" + bad_msg_seqno + " error_code:" + error_code + ")";
   }
 }

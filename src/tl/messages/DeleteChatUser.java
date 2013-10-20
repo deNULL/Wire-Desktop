@@ -18,11 +18,15 @@ public class DeleteChatUser extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc3c5cd23);
     }
     buffer.putInt(chat_id);
-    user_id.writeTo(buffer, false);
+    user_id.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at DeleteChatUser: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class DeleteChatUser extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(DeleteChatUser chat_id:" + chat_id + " user_id:" + user_id + ")";
+    return "(messages.deleteChatUser chat_id:" + chat_id + " user_id:" + user_id + ")";
   }
 }

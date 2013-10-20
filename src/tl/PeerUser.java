@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class PeerUser extends tl.TPeer {
+
   
   public PeerUser(ByteBuffer buffer) {
     user_id = buffer.getInt();
@@ -13,10 +14,14 @@ public class PeerUser extends tl.TPeer {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9db1bc6d);
     }
     buffer.putInt(user_id);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at PeerUser: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -25,6 +30,6 @@ public class PeerUser extends tl.TPeer {
   }
   
   public String toString() {
-    return "(PeerUser user_id:" + user_id + ")";
+    return "(peerUser user_id:" + user_id + ")";
   }
 }

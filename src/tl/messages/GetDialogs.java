@@ -21,12 +21,16 @@ public class GetDialogs extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xeccf1df6);
     }
     buffer.putInt(offset);
     buffer.putInt(max_id);
     buffer.putInt(limit);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetDialogs: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class GetDialogs extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetDialogs offset:" + offset + " max_id:" + max_id + " limit:" + limit + ")";
+    return "(messages.getDialogs offset:" + offset + " max_id:" + max_id + " limit:" + limit + ")";
   }
 }

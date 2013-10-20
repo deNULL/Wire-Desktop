@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class InputChatUploadedPhoto extends tl.TInputChatPhoto {
+
   
   public InputChatUploadedPhoto(ByteBuffer buffer) {
     file = (tl.TInputFile) TL.read(buffer);
@@ -15,11 +16,15 @@ public class InputChatUploadedPhoto extends tl.TInputChatPhoto {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x94254732);
     }
-    file.writeTo(buffer, false);
-    crop.writeTo(buffer, false);
+    file.writeTo(buffer, true);
+    crop.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InputChatUploadedPhoto: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -28,6 +33,6 @@ public class InputChatUploadedPhoto extends tl.TInputChatPhoto {
   }
   
   public String toString() {
-    return "(InputChatUploadedPhoto file:" + file + " crop:" + crop + ")";
+    return "(inputChatUploadedPhoto file:" + file + " crop:" + crop + ")";
   }
 }

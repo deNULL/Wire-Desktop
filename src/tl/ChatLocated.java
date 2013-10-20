@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class ChatLocated extends tl.TChatLocated {
+
   
   public ChatLocated(ByteBuffer buffer) {
     chat_id = buffer.getInt();
@@ -15,11 +16,15 @@ public class ChatLocated extends tl.TChatLocated {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3631cf4c);
     }
     buffer.putInt(chat_id);
     buffer.putInt(distance);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ChatLocated: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -28,6 +33,6 @@ public class ChatLocated extends tl.TChatLocated {
   }
   
   public String toString() {
-    return "(ChatLocated chat_id:" + chat_id + " distance:" + distance + ")";
+    return "(chatLocated chat_id:" + chat_id + " distance:" + distance + ")";
   }
 }

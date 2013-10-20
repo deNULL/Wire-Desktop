@@ -18,11 +18,15 @@ public class EditChatPhoto extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd881821d);
     }
     buffer.putInt(chat_id);
-    photo.writeTo(buffer, false);
+    photo.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at EditChatPhoto: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class EditChatPhoto extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(EditChatPhoto chat_id:" + chat_id + " photo:" + photo + ")";
+    return "(messages.editChatPhoto chat_id:" + chat_id + " photo:" + photo + ")";
   }
 }

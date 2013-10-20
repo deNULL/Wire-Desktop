@@ -21,12 +21,16 @@ public class EditChatTitle extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x4c8e2273);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
     TL.writeString(buffer, title.getBytes(), false);
     TL.writeString(buffer, address.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at EditChatTitle: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class EditChatTitle extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(EditChatTitle peer:" + peer + " title:" + "title" + " address:" + "address" + ")";
+    return "(geochats.editChatTitle peer:" + peer + " title:" + "title" + " address:" + "address" + ")";
   }
 }

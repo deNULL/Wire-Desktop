@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class GeoChatMessageEmpty extends tl.TGeoChatMessage {
+
   
   public GeoChatMessageEmpty(ByteBuffer buffer) {
     chat_id = buffer.getInt();
@@ -15,11 +16,15 @@ public class GeoChatMessageEmpty extends tl.TGeoChatMessage {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x60311a9b);
     }
     buffer.putInt(chat_id);
     buffer.putInt(id);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GeoChatMessageEmpty: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -28,6 +33,6 @@ public class GeoChatMessageEmpty extends tl.TGeoChatMessage {
   }
   
   public String toString() {
-    return "(GeoChatMessageEmpty chat_id:" + chat_id + " id:" + id + ")";
+    return "(geoChatMessageEmpty chat_id:" + chat_id + " id:" + id + ")";
   }
 }

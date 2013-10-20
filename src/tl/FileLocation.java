@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class FileLocation extends tl.TFileLocation {
+
   
   public FileLocation(ByteBuffer buffer) {
     dc_id = buffer.getInt();
@@ -19,6 +20,7 @@ public class FileLocation extends tl.TFileLocation {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x53d69076);
     }
@@ -26,6 +28,9 @@ public class FileLocation extends tl.TFileLocation {
     buffer.putLong(volume_id);
     buffer.putInt(local_id);
     buffer.putLong(secret);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at FileLocation: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class FileLocation extends tl.TFileLocation {
   }
   
   public String toString() {
-    return "(FileLocation dc_id:" + dc_id + " volume_id:" + String.format("0x%016x", volume_id) + " local_id:" + local_id + " secret:" + String.format("0x%016x", secret) + ")";
+    return "(fileLocation dc_id:" + dc_id + " volume_id:" + String.format("0x%016x", volume_id) + " local_id:" + local_id + " secret:" + String.format("0x%016x", secret) + ")";
   }
 }

@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class Photos extends tl.photos.TPhotos {
+
   
   public Photos(ByteBuffer buffer) {
     photos = TL.readVector(buffer, true, new tl.TPhoto[0]);
@@ -16,11 +17,15 @@ public class Photos extends tl.photos.TPhotos {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x8dca6aa5);
     }
-    TL.writeVector(buffer, photos, true, false);
-    TL.writeVector(buffer, users, true, false);
+    TL.writeVector(buffer, photos, true, true);
+    TL.writeVector(buffer, users, true, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Photos: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -29,6 +34,6 @@ public class Photos extends tl.photos.TPhotos {
   }
   
   public String toString() {
-    return "(Photos photos:" + TL.toString(photos) + " users:" + TL.toString(users) + ")";
+    return "(photos.photos photos:" + TL.toString(photos) + " users:" + TL.toString(users) + ")";
   }
 }

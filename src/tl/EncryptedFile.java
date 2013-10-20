@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class EncryptedFile extends tl.TEncryptedFile {
+
   
   public EncryptedFile(ByteBuffer buffer) {
     id = buffer.getLong();
@@ -21,6 +22,7 @@ public class EncryptedFile extends tl.TEncryptedFile {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x4a70994c);
     }
@@ -29,6 +31,9 @@ public class EncryptedFile extends tl.TEncryptedFile {
     buffer.putInt(size);
     buffer.putInt(dc_id);
     buffer.putInt(key_fingerprint);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at EncryptedFile: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -37,6 +42,6 @@ public class EncryptedFile extends tl.TEncryptedFile {
   }
   
   public String toString() {
-    return "(EncryptedFile id:" + String.format("0x%016x", id) + " access_hash:" + String.format("0x%016x", access_hash) + " size:" + size + " dc_id:" + dc_id + " key_fingerprint:" + key_fingerprint + ")";
+    return "(encryptedFile id:" + String.format("0x%016x", id) + " access_hash:" + String.format("0x%016x", access_hash) + " size:" + size + " dc_id:" + dc_id + " key_fingerprint:" + key_fingerprint + ")";
   }
 }

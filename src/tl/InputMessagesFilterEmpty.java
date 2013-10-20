@@ -14,10 +14,14 @@ public class InputMessagesFilterEmpty extends tl.TMessagesFilter {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x57e2f66c);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InputMessagesFilterEmpty: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +30,6 @@ public class InputMessagesFilterEmpty extends tl.TMessagesFilter {
   }
   
   public String toString() {
-    return "(InputMessagesFilterEmpty)";
+    return "(inputMessagesFilterEmpty)";
   }
 }

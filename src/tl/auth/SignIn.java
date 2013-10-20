@@ -21,12 +21,16 @@ public class SignIn extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xbcd51581);
     }
     TL.writeString(buffer, phone_number.getBytes(), false);
     TL.writeString(buffer, phone_code_hash.getBytes(), false);
     TL.writeString(buffer, phone_code.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at SignIn: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class SignIn extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(SignIn phone_number:" + "phone_number" + " phone_code_hash:" + "phone_code_hash" + " phone_code:" + "phone_code" + ")";
+    return "(auth.signIn phone_number:" + "phone_number" + " phone_code_hash:" + "phone_code_hash" + " phone_code:" + "phone_code" + ")";
   }
 }

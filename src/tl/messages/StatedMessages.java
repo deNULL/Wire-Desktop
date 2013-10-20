@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class StatedMessages extends tl.messages.TStatedMessages {
+
   
   public StatedMessages(ByteBuffer buffer) {
     messages = TL.readVector(buffer, true, new tl.TMessage[0]);
@@ -22,14 +23,18 @@ public class StatedMessages extends tl.messages.TStatedMessages {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x969478bb);
     }
-    TL.writeVector(buffer, messages, true, false);
-    TL.writeVector(buffer, chats, true, false);
-    TL.writeVector(buffer, users, true, false);
+    TL.writeVector(buffer, messages, true, true);
+    TL.writeVector(buffer, chats, true, true);
+    TL.writeVector(buffer, users, true, true);
     buffer.putInt(pts);
     buffer.putInt(seq);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at StatedMessages: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -38,6 +43,6 @@ public class StatedMessages extends tl.messages.TStatedMessages {
   }
   
   public String toString() {
-    return "(StatedMessages messages:" + TL.toString(messages) + " chats:" + TL.toString(chats) + " users:" + TL.toString(users) + " pts:" + pts + " seq:" + seq + ")";
+    return "(messages.statedMessages messages:" + TL.toString(messages) + " chats:" + TL.toString(chats) + " users:" + TL.toString(users) + " pts:" + pts + " seq:" + seq + ")";
   }
 }

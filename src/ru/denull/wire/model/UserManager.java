@@ -11,6 +11,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import ru.denull.mtproto.DataService;
+import ru.denull.wire.ImagePanel;
 import ru.denull.wire.Utils;
 import tl.*;
 
@@ -102,20 +103,20 @@ public class UserManager {
 	// double cache!
   //static LruCache<Integer, Bitmap> userpicCache = new LruCache<Integer, Bitmap>(300);
   static Image[] placeholders = new Image[8];
-	public void getUserpic(int id, JLabel view, boolean big) {
+	public void getUserpic(int id, ImagePanel view, boolean big) {
 	  TUser user = get(id);
 	  if (user != null && user.photo != null && user.photo instanceof UserProfilePhoto) {
 	    if (big) {
 	      if (!service.fileManager.queryImage(((UserProfilePhoto) user.photo).photo_big, view)) {
-	        view.setIcon(new ImageIcon(getPlaceholder(id)));
+	        view.setImage(getPlaceholder(id));
 	      }
 	    } else {
 	      if (!service.fileManager.queryImage(((UserProfilePhoto) user.photo).photo_small, view)) {
-	        view.setIcon(new ImageIcon(getPlaceholder(id)));
+	        view.setImage(getPlaceholder(id));
 	      }
 	    }
 	  } else {
-	    view.setIcon(new ImageIcon(getPlaceholder(id)));
+	    view.setImage(getPlaceholder(id));
 	  }
 	}
 	

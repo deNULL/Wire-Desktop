@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class Link extends tl.contacts.TLink {
+
   
   public Link(ByteBuffer buffer) {
     my_link = (tl.contacts.TMyLink) TL.read(buffer);
@@ -18,12 +19,16 @@ public class Link extends tl.contacts.TLink {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xeccea3f5);
     }
-    my_link.writeTo(buffer, false);
-    foreign_link.writeTo(buffer, false);
-    user.writeTo(buffer, false);
+    my_link.writeTo(buffer, true);
+    foreign_link.writeTo(buffer, true);
+    user.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Link: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -32,6 +37,6 @@ public class Link extends tl.contacts.TLink {
   }
   
   public String toString() {
-    return "(Link my_link:" + my_link + " foreign_link:" + foreign_link + " user:" + user + ")";
+    return "(contacts.link my_link:" + my_link + " foreign_link:" + foreign_link + " user:" + user + ")";
   }
 }

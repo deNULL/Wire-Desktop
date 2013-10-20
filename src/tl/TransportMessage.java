@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class TransportMessage extends tl.TTransportMessage {
+
   
   public TransportMessage(ByteBuffer buffer) {
     msg_id = buffer.getLong();
@@ -19,6 +20,7 @@ public class TransportMessage extends tl.TTransportMessage {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x0);
     }
@@ -26,6 +28,9 @@ public class TransportMessage extends tl.TTransportMessage {
     buffer.putInt(seqno);
     buffer.putInt(bytes);
     body.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at TransportMessage: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class TransportMessage extends tl.TTransportMessage {
   }
   
   public String toString() {
-    return "(TransportMessage msg_id:" + String.format("0x%016x", msg_id) + " seqno:" + seqno + " bytes:" + bytes + " body:" + body + ")";
+    return "(transport_message msg_id:" + String.format("0x%016x", msg_id) + " seqno:" + seqno + " bytes:" + bytes + " body:" + body + ")";
   }
 }

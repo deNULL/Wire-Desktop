@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class WallPaperSolid extends tl.TWallPaper {
+
   
   public WallPaperSolid(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -19,6 +20,7 @@ public class WallPaperSolid extends tl.TWallPaper {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x63117f24);
     }
@@ -26,6 +28,9 @@ public class WallPaperSolid extends tl.TWallPaper {
     TL.writeString(buffer, title.getBytes(), false);
     buffer.putInt(bg_color);
     buffer.putInt(color);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at WallPaperSolid: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class WallPaperSolid extends tl.TWallPaper {
   }
   
   public String toString() {
-    return "(WallPaperSolid id:" + id + " title:" + "title" + " bg_color:" + bg_color + " color:" + color + ")";
+    return "(wallPaperSolid id:" + id + " title:" + "title" + " bg_color:" + bg_color + " color:" + color + ")";
   }
 }

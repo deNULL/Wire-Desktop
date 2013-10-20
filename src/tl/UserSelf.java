@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class UserSelf extends tl.TUser {
+
   
   public UserSelf(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -25,6 +26,7 @@ public class UserSelf extends tl.TUser {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x720535ec);
     }
@@ -32,9 +34,12 @@ public class UserSelf extends tl.TUser {
     TL.writeString(buffer, first_name.getBytes(), false);
     TL.writeString(buffer, last_name.getBytes(), false);
     TL.writeString(buffer, phone.getBytes(), false);
-    photo.writeTo(buffer, false);
-    status.writeTo(buffer, false);
+    photo.writeTo(buffer, true);
+    status.writeTo(buffer, true);
     buffer.putInt(inactive ? 0x997275b5 : 0xbc799737);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UserSelf: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -43,6 +48,6 @@ public class UserSelf extends tl.TUser {
   }
   
   public String toString() {
-    return "(UserSelf id:" + id + " first_name:" + "first_name" + " last_name:" + "last_name" + " phone:" + "phone" + " photo:" + photo + " status:" + status + " inactive:" + (inactive ? "true" : "false") + ")";
+    return "(userSelf id:" + id + " first_name:" + "first_name" + " last_name:" + "last_name" + " phone:" + "phone" + " photo:" + photo + " status:" + status + " inactive:" + (inactive ? "true" : "false") + ")";
   }
 }

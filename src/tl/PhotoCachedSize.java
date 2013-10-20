@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class PhotoCachedSize extends tl.TPhotoSize {
+
   
   public PhotoCachedSize(ByteBuffer buffer) {
     type = new String(TL.readString(buffer));
@@ -21,14 +22,18 @@ public class PhotoCachedSize extends tl.TPhotoSize {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe9a734fa);
     }
     TL.writeString(buffer, type.getBytes(), false);
-    location.writeTo(buffer, false);
+    location.writeTo(buffer, true);
     buffer.putInt(w);
     buffer.putInt(h);
     TL.writeString(buffer, bytes, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at PhotoCachedSize: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -37,6 +42,6 @@ public class PhotoCachedSize extends tl.TPhotoSize {
   }
   
   public String toString() {
-    return "(PhotoCachedSize type:" + "type" + " location:" + location + " w:" + w + " h:" + h + " bytes:" + TL.toString(bytes) + ")";
+    return "(photoCachedSize type:" + "type" + " location:" + location + " w:" + w + " h:" + h + " bytes:" + TL.toString(bytes) + ")";
   }
 }

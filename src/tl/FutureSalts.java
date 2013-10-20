@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class FutureSalts extends tl.TFutureSalts {
+
   
   public FutureSalts(ByteBuffer buffer) {
     req_msg_id = buffer.getLong();
@@ -17,12 +18,16 @@ public class FutureSalts extends tl.TFutureSalts {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xae500895);
     }
     buffer.putLong(req_msg_id);
     buffer.putInt(now);
     TL.writeVector(buffer, salts, false, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at FutureSalts: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +36,6 @@ public class FutureSalts extends tl.TFutureSalts {
   }
   
   public String toString() {
-    return "(FutureSalts req_msg_id:" + String.format("0x%016x", req_msg_id) + " now:" + now + " salts:" + TL.toString(salts) + ")";
+    return "(future_salts req_msg_id:" + String.format("0x%016x", req_msg_id) + " now:" + now + " salts:" + TL.toString(salts) + ")";
   }
 }

@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class InputPeerNotifySettings extends tl.TInputPeerNotifySettings {
+
   
   public InputPeerNotifySettings(ByteBuffer buffer) {
     mute_until = buffer.getInt();
@@ -19,6 +20,7 @@ public class InputPeerNotifySettings extends tl.TInputPeerNotifySettings {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x46a2ce98);
     }
@@ -26,6 +28,9 @@ public class InputPeerNotifySettings extends tl.TInputPeerNotifySettings {
     TL.writeString(buffer, sound.getBytes(), false);
     buffer.putInt(show_previews ? 0x997275b5 : 0xbc799737);
     buffer.putInt(events_mask);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InputPeerNotifySettings: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class InputPeerNotifySettings extends tl.TInputPeerNotifySettings {
   }
   
   public String toString() {
-    return "(InputPeerNotifySettings mute_until:" + mute_until + " sound:" + "sound" + " show_previews:" + (show_previews ? "true" : "false") + " events_mask:" + events_mask + ")";
+    return "(inputPeerNotifySettings mute_until:" + mute_until + " sound:" + "sound" + " show_previews:" + (show_previews ? "true" : "false") + " events_mask:" + events_mask + ")";
   }
 }

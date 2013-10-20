@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class Contacts extends tl.contacts.TContacts {
+
   
   public Contacts(ByteBuffer buffer) {
     contacts = TL.readVector(buffer, true, new tl.TContact[0]);
@@ -16,11 +17,15 @@ public class Contacts extends tl.contacts.TContacts {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6f8b8cb2);
     }
-    TL.writeVector(buffer, contacts, true, false);
-    TL.writeVector(buffer, users, true, false);
+    TL.writeVector(buffer, contacts, true, true);
+    TL.writeVector(buffer, users, true, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Contacts: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -29,6 +34,6 @@ public class Contacts extends tl.contacts.TContacts {
   }
   
   public String toString() {
-    return "(Contacts contacts:" + TL.toString(contacts) + " users:" + TL.toString(users) + ")";
+    return "(contacts.contacts contacts:" + TL.toString(contacts) + " users:" + TL.toString(users) + ")";
   }
 }

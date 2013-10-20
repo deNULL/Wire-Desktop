@@ -18,11 +18,15 @@ public class ReadEncryptedHistory extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x7f4b690a);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
     buffer.putInt(max_date);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ReadEncryptedHistory: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class ReadEncryptedHistory extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(ReadEncryptedHistory peer:" + peer + " max_date:" + max_date + ")";
+    return "(messages.readEncryptedHistory peer:" + peer + " max_date:" + max_date + ")";
   }
 }

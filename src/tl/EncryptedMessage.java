@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class EncryptedMessage extends tl.TEncryptedMessage {
+
   
   public EncryptedMessage(ByteBuffer buffer) {
     random_id = buffer.getLong();
@@ -21,6 +22,7 @@ public class EncryptedMessage extends tl.TEncryptedMessage {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xed18c118);
     }
@@ -28,7 +30,10 @@ public class EncryptedMessage extends tl.TEncryptedMessage {
     buffer.putInt(chat_id);
     buffer.putInt(date);
     TL.writeString(buffer, bytes, false);
-    file.writeTo(buffer, false);
+    file.writeTo(buffer, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at EncryptedMessage: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -37,6 +42,6 @@ public class EncryptedMessage extends tl.TEncryptedMessage {
   }
   
   public String toString() {
-    return "(EncryptedMessage random_id:" + String.format("0x%016x", random_id) + " chat_id:" + chat_id + " date:" + date + " bytes:" + TL.toString(bytes) + " file:" + file + ")";
+    return "(encryptedMessage random_id:" + String.format("0x%016x", random_id) + " chat_id:" + chat_id + " date:" + date + " bytes:" + TL.toString(bytes) + " file:" + file + ")";
   }
 }

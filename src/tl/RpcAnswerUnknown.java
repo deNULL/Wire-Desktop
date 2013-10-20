@@ -14,10 +14,14 @@ public class RpcAnswerUnknown extends tl.TRpcDropAnswer {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5e2ad36e);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at RpcAnswerUnknown: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +30,6 @@ public class RpcAnswerUnknown extends tl.TRpcDropAnswer {
   }
   
   public String toString() {
-    return "(RpcAnswerUnknown)";
+    return "(rpc_answer_unknown)";
   }
 }

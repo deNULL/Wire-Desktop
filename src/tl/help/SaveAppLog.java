@@ -15,10 +15,14 @@ public class SaveAppLog extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6f02f748);
     }
-    TL.writeVector(buffer, events, true, false);
+    TL.writeVector(buffer, events, true, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at SaveAppLog: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class SaveAppLog extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(SaveAppLog events:" + TL.toString(events) + ")";
+    return "(help.saveAppLog events:" + TL.toString(events) + ")";
   }
 }

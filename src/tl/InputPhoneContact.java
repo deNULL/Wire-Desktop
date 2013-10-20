@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class InputPhoneContact extends tl.TInputContact {
+
   
   public InputPhoneContact(ByteBuffer buffer) {
     client_id = buffer.getLong();
@@ -19,6 +20,7 @@ public class InputPhoneContact extends tl.TInputContact {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf392b7f4);
     }
@@ -26,6 +28,9 @@ public class InputPhoneContact extends tl.TInputContact {
     TL.writeString(buffer, phone.getBytes(), false);
     TL.writeString(buffer, first_name.getBytes(), false);
     TL.writeString(buffer, last_name.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InputPhoneContact: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class InputPhoneContact extends tl.TInputContact {
   }
   
   public String toString() {
-    return "(InputPhoneContact client_id:" + String.format("0x%016x", client_id) + " phone:" + "phone" + " first_name:" + "first_name" + " last_name:" + "last_name" + ")";
+    return "(inputPhoneContact client_id:" + String.format("0x%016x", client_id) + " phone:" + "phone" + " first_name:" + "first_name" + " last_name:" + "last_name" + ")";
   }
 }

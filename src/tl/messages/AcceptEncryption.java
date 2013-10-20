@@ -21,12 +21,16 @@ public class AcceptEncryption extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3dbc0415);
     }
-    peer.writeTo(buffer, false);
+    peer.writeTo(buffer, true);
     TL.writeString(buffer, g_b, false);
     buffer.putLong(key_fingerprint);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at AcceptEncryption: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class AcceptEncryption extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(AcceptEncryption peer:" + peer + " g_b:" + TL.toString(g_b) + " key_fingerprint:" + String.format("0x%016x", key_fingerprint) + ")";
+    return "(messages.acceptEncryption peer:" + peer + " g_b:" + TL.toString(g_b) + " key_fingerprint:" + String.format("0x%016x", key_fingerprint) + ")";
   }
 }

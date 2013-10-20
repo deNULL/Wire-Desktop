@@ -15,10 +15,14 @@ public class ResetNotifySettings extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xdb7e1747);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ResetNotifySettings: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class ResetNotifySettings extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(ResetNotifySettings)";
+    return "(account.resetNotifySettings)";
   }
 }

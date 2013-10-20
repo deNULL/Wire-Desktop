@@ -21,12 +21,16 @@ public class GetDifference extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa041495);
     }
     buffer.putInt(pts);
     buffer.putInt(date);
     buffer.putInt(qts);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetDifference: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class GetDifference extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetDifference pts:" + pts + " date:" + date + " qts:" + qts + ")";
+    return "(updates.getDifference pts:" + pts + " date:" + date + " qts:" + qts + ")";
   }
 }

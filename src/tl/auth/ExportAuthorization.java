@@ -15,10 +15,14 @@ public class ExportAuthorization extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe5bfffcd);
     }
     buffer.putInt(dc_id);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ExportAuthorization: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class ExportAuthorization extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(ExportAuthorization dc_id:" + dc_id + ")";
+    return "(auth.exportAuthorization dc_id:" + dc_id + ")";
   }
 }

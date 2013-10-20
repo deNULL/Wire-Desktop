@@ -4,6 +4,7 @@ import tl.TL;
 import java.nio.ByteBuffer;
 
 public class ExportedAuthorization extends tl.auth.TExportedAuthorization {
+
   
   public ExportedAuthorization(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -16,11 +17,15 @@ public class ExportedAuthorization extends tl.auth.TExportedAuthorization {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xdf969c2d);
     }
     buffer.putInt(id);
     TL.writeString(buffer, bytes, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at ExportedAuthorization: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -29,6 +34,6 @@ public class ExportedAuthorization extends tl.auth.TExportedAuthorization {
   }
   
   public String toString() {
-    return "(ExportedAuthorization id:" + id + " bytes:" + TL.toString(bytes) + ")";
+    return "(auth.exportedAuthorization id:" + id + " bytes:" + TL.toString(bytes) + ")";
   }
 }

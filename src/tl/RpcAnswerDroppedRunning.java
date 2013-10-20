@@ -14,10 +14,14 @@ public class RpcAnswerDroppedRunning extends tl.TRpcDropAnswer {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xcd78e586);
     }
 
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at RpcAnswerDroppedRunning: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -26,6 +30,6 @@ public class RpcAnswerDroppedRunning extends tl.TRpcDropAnswer {
   }
   
   public String toString() {
-    return "(RpcAnswerDroppedRunning)";
+    return "(rpc_answer_dropped_running)";
   }
 }

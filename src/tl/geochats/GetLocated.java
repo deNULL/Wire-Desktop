@@ -21,12 +21,16 @@ public class GetLocated extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x7f192d8f);
     }
-    geo_point.writeTo(buffer, false);
+    geo_point.writeTo(buffer, true);
     buffer.putInt(radius);
     buffer.putInt(limit);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetLocated: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class GetLocated extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetLocated geo_point:" + geo_point + " radius:" + radius + " limit:" + limit + ")";
+    return "(geochats.getLocated geo_point:" + geo_point + " radius:" + radius + " limit:" + limit + ")";
   }
 }

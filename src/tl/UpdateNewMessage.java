@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 
 public class UpdateNewMessage extends tl.TUpdate {
   public tl.TMessage message;
-  public int pts;
   
   public UpdateNewMessage(ByteBuffer buffer) {
     message = (tl.TMessage) TL.read(buffer);
@@ -17,11 +16,15 @@ public class UpdateNewMessage extends tl.TUpdate {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x13abdb3);
     }
-    message.writeTo(buffer, false);
+    message.writeTo(buffer, true);
     buffer.putInt(pts);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at UpdateNewMessage: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -30,6 +33,6 @@ public class UpdateNewMessage extends tl.TUpdate {
   }
   
   public String toString() {
-    return "(UpdateNewMessage message:" + message + " pts:" + pts + ")";
+    return "(updateNewMessage message:" + message + " pts:" + pts + ")";
   }
 }

@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class InputEncryptedFileUploaded extends tl.TInputEncryptedFile {
+
   
   public InputEncryptedFileUploaded(ByteBuffer buffer) {
     id = buffer.getLong();
@@ -19,6 +20,7 @@ public class InputEncryptedFileUploaded extends tl.TInputEncryptedFile {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x64bd0306);
     }
@@ -26,6 +28,9 @@ public class InputEncryptedFileUploaded extends tl.TInputEncryptedFile {
     buffer.putInt(parts);
     TL.writeString(buffer, md5_checksum.getBytes(), false);
     buffer.putInt(key_fingerprint);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at InputEncryptedFileUploaded: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class InputEncryptedFileUploaded extends tl.TInputEncryptedFile {
   }
   
   public String toString() {
-    return "(InputEncryptedFileUploaded id:" + String.format("0x%016x", id) + " parts:" + parts + " md5_checksum:" + "md5_checksum" + " key_fingerprint:" + key_fingerprint + ")";
+    return "(inputEncryptedFileUploaded id:" + String.format("0x%016x", id) + " parts:" + parts + " md5_checksum:" + "md5_checksum" + " key_fingerprint:" + key_fingerprint + ")";
   }
 }

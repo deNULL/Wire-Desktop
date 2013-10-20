@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class Updates extends tl.TUpdates {
+
   
   public Updates(ByteBuffer buffer) {
     updates = TL.readVector(buffer, true, new tl.TUpdate[0]);
@@ -21,14 +22,18 @@ public class Updates extends tl.TUpdates {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x74ae4240);
     }
-    TL.writeVector(buffer, updates, true, false);
-    TL.writeVector(buffer, users, true, false);
-    TL.writeVector(buffer, chats, true, false);
+    TL.writeVector(buffer, updates, true, true);
+    TL.writeVector(buffer, users, true, true);
+    TL.writeVector(buffer, chats, true, true);
     buffer.putInt(date);
     buffer.putInt(seq);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Updates: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -37,6 +42,6 @@ public class Updates extends tl.TUpdates {
   }
   
   public String toString() {
-    return "(Updates updates:" + TL.toString(updates) + " users:" + TL.toString(users) + " chats:" + TL.toString(chats) + " date:" + date + " seq:" + seq + ")";
+    return "(updates updates:" + TL.toString(updates) + " users:" + TL.toString(users) + " chats:" + TL.toString(chats) + " date:" + date + " seq:" + seq + ")";
   }
 }

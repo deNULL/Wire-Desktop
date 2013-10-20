@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class EncryptedChatWaiting extends tl.TEncryptedChat {
+
   
   public EncryptedChatWaiting(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -21,6 +22,7 @@ public class EncryptedChatWaiting extends tl.TEncryptedChat {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3bf703dc);
     }
@@ -29,6 +31,9 @@ public class EncryptedChatWaiting extends tl.TEncryptedChat {
     buffer.putInt(date);
     buffer.putInt(admin_id);
     buffer.putInt(participant_id);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at EncryptedChatWaiting: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -37,6 +42,6 @@ public class EncryptedChatWaiting extends tl.TEncryptedChat {
   }
   
   public String toString() {
-    return "(EncryptedChatWaiting id:" + id + " access_hash:" + String.format("0x%016x", access_hash) + " date:" + date + " admin_id:" + admin_id + " participant_id:" + participant_id + ")";
+    return "(encryptedChatWaiting id:" + id + " access_hash:" + String.format("0x%016x", access_hash) + " date:" + date + " admin_id:" + admin_id + " participant_id:" + participant_id + ")";
   }
 }

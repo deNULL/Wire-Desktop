@@ -24,13 +24,17 @@ public class CreateGeoChat extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe092e16);
     }
     TL.writeString(buffer, title.getBytes(), false);
-    geo_point.writeTo(buffer, false);
+    geo_point.writeTo(buffer, true);
     TL.writeString(buffer, address.getBytes(), false);
     TL.writeString(buffer, venue.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at CreateGeoChat: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -39,6 +43,6 @@ public class CreateGeoChat extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(CreateGeoChat title:" + "title" + " geo_point:" + geo_point + " address:" + "address" + " venue:" + "venue" + ")";
+    return "(geochats.createGeoChat title:" + "title" + " geo_point:" + geo_point + " address:" + "address" + " venue:" + "venue" + ")";
   }
 }

@@ -15,10 +15,14 @@ public class GetUsers extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd91a548);
     }
-    TL.writeVector(buffer, id, true, false);
+    TL.writeVector(buffer, id, true, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetUsers: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class GetUsers extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetUsers id:" + TL.toString(id) + ")";
+    return "(users.getUsers id:" + TL.toString(id) + ")";
   }
 }

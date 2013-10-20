@@ -18,11 +18,15 @@ public class SendInvites extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x771c1d97);
     }
     TL.writeVector(buffer, phone_numbers, true, false);
     TL.writeString(buffer, message.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at SendInvites: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -31,6 +35,6 @@ public class SendInvites extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(SendInvites phone_numbers:" + TL.toString(phone_numbers) + " message:" + "message" + ")";
+    return "(auth.sendInvites phone_numbers:" + TL.toString(phone_numbers) + " message:" + "message" + ")";
   }
 }

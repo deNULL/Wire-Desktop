@@ -21,12 +21,16 @@ public class SaveFilePart extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb304a621);
     }
     buffer.putLong(file_id);
     buffer.putInt(file_part);
     TL.writeString(buffer, bytes, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at SaveFilePart: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -35,6 +39,6 @@ public class SaveFilePart extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(SaveFilePart file_id:" + String.format("0x%016x", file_id) + " file_part:" + file_part + " bytes:" + TL.toString(bytes) + ")";
+    return "(upload.saveFilePart file_id:" + String.format("0x%016x", file_id) + " file_part:" + file_part + " bytes:" + TL.toString(bytes) + ")";
   }
 }

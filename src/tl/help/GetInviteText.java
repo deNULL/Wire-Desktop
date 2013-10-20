@@ -15,10 +15,14 @@ public class GetInviteText extends tl.TLFunction {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa4a95186);
     }
     TL.writeString(buffer, lang_code.getBytes(), false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at GetInviteText: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -27,6 +31,6 @@ public class GetInviteText extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(GetInviteText lang_code:" + "lang_code" + ")";
+    return "(help.getInviteText lang_code:" + "lang_code" + ")";
   }
 }

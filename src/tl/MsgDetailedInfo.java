@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class MsgDetailedInfo extends tl.TMsgDetailedInfo {
+
   
   public MsgDetailedInfo(ByteBuffer buffer) {
     msg_id = buffer.getLong();
@@ -19,6 +20,7 @@ public class MsgDetailedInfo extends tl.TMsgDetailedInfo {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x276d3ec6);
     }
@@ -26,6 +28,9 @@ public class MsgDetailedInfo extends tl.TMsgDetailedInfo {
     buffer.putLong(answer_msg_id);
     buffer.putInt(bytes);
     buffer.putInt(status);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at MsgDetailedInfo: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -34,6 +39,6 @@ public class MsgDetailedInfo extends tl.TMsgDetailedInfo {
   }
   
   public String toString() {
-    return "(MsgDetailedInfo msg_id:" + String.format("0x%016x", msg_id) + " answer_msg_id:" + String.format("0x%016x", answer_msg_id) + " bytes:" + bytes + " status:" + status + ")";
+    return "(msg_detailed_info msg_id:" + String.format("0x%016x", msg_id) + " answer_msg_id:" + String.format("0x%016x", answer_msg_id) + " bytes:" + bytes + " status:" + status + ")";
   }
 }

@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class EncryptedChatRequested extends tl.TEncryptedChat {
+
   
   public EncryptedChatRequested(ByteBuffer buffer) {
     id = buffer.getInt();
@@ -25,6 +26,7 @@ public class EncryptedChatRequested extends tl.TEncryptedChat {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xfda9a7b7);
     }
@@ -35,6 +37,9 @@ public class EncryptedChatRequested extends tl.TEncryptedChat {
     buffer.putInt(participant_id);
     TL.writeString(buffer, g_a, false);
     TL.writeString(buffer, nonce, false);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at EncryptedChatRequested: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -43,6 +48,6 @@ public class EncryptedChatRequested extends tl.TEncryptedChat {
   }
   
   public String toString() {
-    return "(EncryptedChatRequested id:" + id + " access_hash:" + String.format("0x%016x", access_hash) + " date:" + date + " admin_id:" + admin_id + " participant_id:" + participant_id + " g_a:" + TL.toString(g_a) + " nonce:" + TL.toString(nonce) + ")";
+    return "(encryptedChatRequested id:" + id + " access_hash:" + String.format("0x%016x", access_hash) + " date:" + date + " admin_id:" + admin_id + " participant_id:" + participant_id + " g_a:" + TL.toString(g_a) + " nonce:" + TL.toString(nonce) + ")";
   }
 }

@@ -3,6 +3,7 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class Photo extends tl.TPhoto {
+
   
   public Photo(ByteBuffer buffer) {
     id = buffer.getLong();
@@ -25,6 +26,7 @@ public class Photo extends tl.TPhoto {
   }
   
   public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x22b56751);
     }
@@ -33,8 +35,11 @@ public class Photo extends tl.TPhoto {
     buffer.putInt(user_id);
     buffer.putInt(date);
     TL.writeString(buffer, caption.getBytes(), false);
-    geo.writeTo(buffer, false);
-    TL.writeVector(buffer, sizes, true, false);
+    geo.writeTo(buffer, true);
+    TL.writeVector(buffer, sizes, true, true);
+    if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
+      System.err.println("Invalid length at Photo: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
+    }
   	return buffer;
   }
   
@@ -43,6 +48,6 @@ public class Photo extends tl.TPhoto {
   }
   
   public String toString() {
-    return "(Photo id:" + String.format("0x%016x", id) + " access_hash:" + String.format("0x%016x", access_hash) + " user_id:" + user_id + " date:" + date + " caption:" + "caption" + " geo:" + geo + " sizes:" + TL.toString(sizes) + ")";
+    return "(photo id:" + String.format("0x%016x", id) + " access_hash:" + String.format("0x%016x", access_hash) + " user_id:" + user_id + " date:" + date + " caption:" + "caption" + " geo:" + geo + " sizes:" + TL.toString(sizes) + ")";
   }
 }
