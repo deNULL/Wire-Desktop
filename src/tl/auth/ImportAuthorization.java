@@ -1,0 +1,36 @@
+package tl.auth;
+
+import tl.TL;
+import java.nio.ByteBuffer;
+
+public class ImportAuthorization extends tl.TLFunction {
+  public int id;
+  public byte[] bytes;
+  
+  public ImportAuthorization(ByteBuffer buffer) {
+    id = buffer.getInt();
+    bytes = TL.readString(buffer);
+  }
+  
+  public ImportAuthorization(int id, byte[] bytes) {
+    this.id = id;
+    this.bytes = bytes;
+  }
+  
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+    if (boxed) {
+      buffer.putInt(0xe3ef9613);
+    }
+    buffer.putInt(id);
+    TL.writeString(buffer, bytes, false);
+  	return buffer;
+  }
+  
+  public int length() {
+    return 4 + TL.length(bytes);
+  }
+  
+  public String toString() {
+    return "(ImportAuthorization id:" + id + " bytes:" + TL.toString(bytes) + ")";
+  }
+}
