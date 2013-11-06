@@ -6,7 +6,7 @@ public class MessageActionChatEditTitle extends tl.TMessageAction {
 
   
   public MessageActionChatEditTitle(ByteBuffer buffer) {
-    title = new String(TL.readString(buffer));
+    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public MessageActionChatEditTitle(String title) {
@@ -18,7 +18,7 @@ public class MessageActionChatEditTitle extends tl.TMessageAction {
     if (boxed) {
       buffer.putInt(0xb5a1ce5a);
     }
-    TL.writeString(buffer, title.getBytes(), false);
+    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at MessageActionChatEditTitle: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

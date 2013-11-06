@@ -7,7 +7,7 @@ public class Chat extends tl.TChat {
   
   public Chat(ByteBuffer buffer) {
     id = buffer.getInt();
-    title = new String(TL.readString(buffer));
+    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     photo = (tl.TChatPhoto) TL.read(buffer);
     participants_count = buffer.getInt();
     date = buffer.getInt();
@@ -31,7 +31,7 @@ public class Chat extends tl.TChat {
       buffer.putInt(0x6e9c9bc7);
     }
     buffer.putInt(id);
-    TL.writeString(buffer, title.getBytes(), false);
+    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
     photo.writeTo(buffer, true);
     buffer.putInt(participants_count);
     buffer.putInt(date);

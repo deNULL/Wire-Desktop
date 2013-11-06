@@ -8,7 +8,7 @@ public class InputEncryptedFileUploaded extends tl.TInputEncryptedFile {
   public InputEncryptedFileUploaded(ByteBuffer buffer) {
     id = buffer.getLong();
     parts = buffer.getInt();
-    md5_checksum = new String(TL.readString(buffer));
+    try {  md5_checksum = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     key_fingerprint = buffer.getInt();
   }
   
@@ -26,7 +26,7 @@ public class InputEncryptedFileUploaded extends tl.TInputEncryptedFile {
     }
     buffer.putLong(id);
     buffer.putInt(parts);
-    TL.writeString(buffer, md5_checksum.getBytes(), false);
+    try { TL.writeString(buffer, md5_checksum.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putInt(key_fingerprint);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at InputEncryptedFileUploaded: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));

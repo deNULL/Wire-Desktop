@@ -9,7 +9,7 @@ public class EditChatTitle extends tl.TLFunction {
   
   public EditChatTitle(ByteBuffer buffer) {
     chat_id = buffer.getInt();
-    title = new String(TL.readString(buffer));
+    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public EditChatTitle(int chat_id, String title) {
@@ -23,7 +23,7 @@ public class EditChatTitle extends tl.TLFunction {
       buffer.putInt(0xb4bc68b5);
     }
     buffer.putInt(chat_id);
-    TL.writeString(buffer, title.getBytes(), false);
+    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at EditChatTitle: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

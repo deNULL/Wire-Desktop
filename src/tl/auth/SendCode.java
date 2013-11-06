@@ -11,11 +11,11 @@ public class SendCode extends tl.TLFunction {
   public String lang_code;
   
   public SendCode(ByteBuffer buffer) {
-    phone_number = new String(TL.readString(buffer));
+    try {  phone_number = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     sms_type = buffer.getInt();
     api_id = buffer.getInt();
-    api_hash = new String(TL.readString(buffer));
-    lang_code = new String(TL.readString(buffer));
+    try {  api_hash = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  lang_code = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public SendCode(String phone_number, int sms_type, int api_id, String api_hash, String lang_code) {
@@ -31,11 +31,11 @@ public class SendCode extends tl.TLFunction {
     if (boxed) {
       buffer.putInt(0x768d5f4d);
     }
-    TL.writeString(buffer, phone_number.getBytes(), false);
+    try { TL.writeString(buffer, phone_number.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putInt(sms_type);
     buffer.putInt(api_id);
-    TL.writeString(buffer, api_hash.getBytes(), false);
-    TL.writeString(buffer, lang_code.getBytes(), false);
+    try { TL.writeString(buffer, api_hash.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, lang_code.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at SendCode: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

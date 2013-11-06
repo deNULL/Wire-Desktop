@@ -8,9 +8,9 @@ public class GeoChat extends tl.TChat {
   public GeoChat(ByteBuffer buffer) {
     id = buffer.getInt();
     access_hash = buffer.getLong();
-    title = new String(TL.readString(buffer));
-    address = new String(TL.readString(buffer));
-    venue = new String(TL.readString(buffer));
+    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  address = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  venue = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     geo = (tl.TGeoPoint) TL.read(buffer);
     photo = (tl.TChatPhoto) TL.read(buffer);
     participants_count = buffer.getInt();
@@ -40,9 +40,9 @@ public class GeoChat extends tl.TChat {
     }
     buffer.putInt(id);
     buffer.putLong(access_hash);
-    TL.writeString(buffer, title.getBytes(), false);
-    TL.writeString(buffer, address.getBytes(), false);
-    TL.writeString(buffer, venue.getBytes(), false);
+    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, address.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, venue.getBytes("UTF8"), false); } catch (Exception e) { };
     geo.writeTo(buffer, true);
     photo.writeTo(buffer, true);
     buffer.putInt(participants_count);

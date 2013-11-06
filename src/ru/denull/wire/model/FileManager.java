@@ -329,6 +329,7 @@ public class FileManager {
   public FileManager(DataService service) {
     this.service = service;
     this.cacheDir = service.getCacheDir();
+    this.cacheDir.mkdirs();
     this.loaded = service.cacheManager.getCache("files");
   }
   

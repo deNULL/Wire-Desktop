@@ -16,6 +16,7 @@ import java.util.prefs.Preferences;
 import net.sf.ehcache.CacheManager;
 import ru.denull.mtproto.Auth.AuthCallback;
 import ru.denull.mtproto.Auth.AuthState;
+import ru.denull.wire.Utils;
 import ru.denull.wire.model.*;
 import tl.*;
 import tl.Config;
@@ -86,10 +87,10 @@ public class DataService {
     scheduledPool = new ScheduledThreadPoolExecutor(1);
     
     final DataService self = this;
-    threadPool.submit(new Runnable() { // initialize managers
-			public void run() {
+    /*threadPool.submit(new Runnable() { // initialize managers
+			public void run() {*/
 				db = (new CacheDbHelper()).getWritableDatabase();
-				cacheManager = new CacheManager("ehcache.xml");
+				cacheManager = new CacheManager(getClass().getClassLoader().getResourceAsStream("/ehcache.xml"));
 				dialogManager = new DialogManager(self, db);
 				chatManager = new ChatManager(self, db);
 				userManager = new UserManager(self, db);
@@ -125,11 +126,11 @@ public class DataService {
 				contactManager.loadLocal();
 				
 				Notifier.enter(Notifier.CACHING_DB_STARTED);
-			}
-		});
+			//}
+		//});
     
     //pref = getSharedPreferences(getString(R.string.preferences_auth) + (DEBUG_SERVERS ? "-test" : "-production"), Context.MODE_PRIVATE);
-    pref = Preferences.userRoot().node("config" + (DEBUG_SERVERS ? "-test" : "-production"));
+    pref = Preferences.userRoot().node("wire/config" + (DEBUG_SERVERS ? "-test" : "-production"));
     setup();
   }
   
@@ -837,7 +838,7 @@ public class DataService {
 
   public File getCacheDir() {
     // TODO Auto-generated method stub
-    return null;
+    return new File(System.getProperty("java.io.tmpdir") + "/wire");
   }
 
   // TODO: implement possibility not to store data

@@ -7,7 +7,7 @@ public class CheckPhone extends tl.TLFunction {
   public String phone_number;
   
   public CheckPhone(ByteBuffer buffer) {
-    phone_number = new String(TL.readString(buffer));
+    try {  phone_number = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public CheckPhone(String phone_number) {
@@ -19,7 +19,7 @@ public class CheckPhone extends tl.TLFunction {
     if (boxed) {
       buffer.putInt(0x6fe51dfb);
     }
-    TL.writeString(buffer, phone_number.getBytes(), false);
+    try { TL.writeString(buffer, phone_number.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at CheckPhone: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

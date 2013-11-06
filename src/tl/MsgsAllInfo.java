@@ -7,7 +7,7 @@ public class MsgsAllInfo extends tl.TMsgsAllInfo {
   
   public MsgsAllInfo(ByteBuffer buffer) {
     msg_ids = TL.readVectorLong(buffer, true);
-    info = new String(TL.readString(buffer));
+    try {  info = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public MsgsAllInfo(long[] msg_ids, String info) {
@@ -21,7 +21,7 @@ public class MsgsAllInfo extends tl.TMsgsAllInfo {
       buffer.putInt(0x8cc0d131);
     }
     TL.writeVector(buffer, msg_ids, true, false);
-    TL.writeString(buffer, info.getBytes(), false);
+    try { TL.writeString(buffer, info.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at MsgsAllInfo: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

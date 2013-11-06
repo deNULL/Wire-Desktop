@@ -8,8 +8,8 @@ public class SendCall extends tl.TLFunction {
   public String phone_code_hash;
   
   public SendCall(ByteBuffer buffer) {
-    phone_number = new String(TL.readString(buffer));
-    phone_code_hash = new String(TL.readString(buffer));
+    try {  phone_number = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  phone_code_hash = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public SendCall(String phone_number, String phone_code_hash) {
@@ -22,8 +22,8 @@ public class SendCall extends tl.TLFunction {
     if (boxed) {
       buffer.putInt(0x3c51564);
     }
-    TL.writeString(buffer, phone_number.getBytes(), false);
-    TL.writeString(buffer, phone_code_hash.getBytes(), false);
+    try { TL.writeString(buffer, phone_number.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, phone_code_hash.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at SendCall: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

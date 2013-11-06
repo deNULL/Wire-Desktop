@@ -10,7 +10,7 @@ public class Photo extends tl.TPhoto {
     access_hash = buffer.getLong();
     user_id = buffer.getInt();
     date = buffer.getInt();
-    caption = new String(TL.readString(buffer));
+    try {  caption = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     geo = (tl.TGeoPoint) TL.read(buffer);
     sizes = TL.readVector(buffer, true, new tl.TPhotoSize[0]);
   }
@@ -34,7 +34,7 @@ public class Photo extends tl.TPhoto {
     buffer.putLong(access_hash);
     buffer.putInt(user_id);
     buffer.putInt(date);
-    TL.writeString(buffer, caption.getBytes(), false);
+    try { TL.writeString(buffer, caption.getBytes("UTF8"), false); } catch (Exception e) { };
     geo.writeTo(buffer, true);
     TL.writeVector(buffer, sizes, true, true);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {

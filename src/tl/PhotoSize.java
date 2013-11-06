@@ -6,7 +6,7 @@ public class PhotoSize extends tl.TPhotoSize {
 
   
   public PhotoSize(ByteBuffer buffer) {
-    type = new String(TL.readString(buffer));
+    try {  type = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     location = (tl.TFileLocation) TL.read(buffer);
     w = buffer.getInt();
     h = buffer.getInt();
@@ -26,7 +26,7 @@ public class PhotoSize extends tl.TPhotoSize {
     if (boxed) {
       buffer.putInt(0x77bfb61b);
     }
-    TL.writeString(buffer, type.getBytes(), false);
+    try { TL.writeString(buffer, type.getBytes("UTF8"), false); } catch (Exception e) { };
     location.writeTo(buffer, true);
     buffer.putInt(w);
     buffer.putInt(h);

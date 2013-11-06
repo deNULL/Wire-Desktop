@@ -10,7 +10,7 @@ public class SendBroadcast extends tl.TLFunction {
   
   public SendBroadcast(ByteBuffer buffer) {
     contacts = TL.readVector(buffer, true, new tl.TInputUser[0]);
-    message = new String(TL.readString(buffer));
+    try {  message = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     media = (tl.TInputMedia) TL.read(buffer);
   }
   
@@ -26,7 +26,7 @@ public class SendBroadcast extends tl.TLFunction {
       buffer.putInt(0x41bb0972);
     }
     TL.writeVector(buffer, contacts, true, true);
-    TL.writeString(buffer, message.getBytes(), false);
+    try { TL.writeString(buffer, message.getBytes("UTF8"), false); } catch (Exception e) { };
     media.writeTo(buffer, true);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at SendBroadcast: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));

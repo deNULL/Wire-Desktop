@@ -7,7 +7,7 @@ public class MsgsStateInfo extends tl.TMsgsStateInfo {
   
   public MsgsStateInfo(ByteBuffer buffer) {
     req_msg_id = buffer.getLong();
-    info = new String(TL.readString(buffer));
+    try {  info = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public MsgsStateInfo(long req_msg_id, String info) {
@@ -21,7 +21,7 @@ public class MsgsStateInfo extends tl.TMsgsStateInfo {
       buffer.putInt(0x04deb57d);
     }
     buffer.putLong(req_msg_id);
-    TL.writeString(buffer, info.getBytes(), false);
+    try { TL.writeString(buffer, info.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at MsgsStateInfo: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

@@ -10,7 +10,7 @@ public class Video extends tl.TVideo {
     access_hash = buffer.getLong();
     user_id = buffer.getInt();
     date = buffer.getInt();
-    caption = new String(TL.readString(buffer));
+    try {  caption = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     duration = buffer.getInt();
     size = buffer.getInt();
     thumb = (tl.TPhotoSize) TL.read(buffer);
@@ -42,7 +42,7 @@ public class Video extends tl.TVideo {
     buffer.putLong(access_hash);
     buffer.putInt(user_id);
     buffer.putInt(date);
-    TL.writeString(buffer, caption.getBytes(), false);
+    try { TL.writeString(buffer, caption.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putInt(duration);
     buffer.putInt(size);
     thumb.writeTo(buffer, true);

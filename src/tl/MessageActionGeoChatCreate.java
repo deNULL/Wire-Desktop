@@ -6,8 +6,8 @@ public class MessageActionGeoChatCreate extends tl.TMessageAction {
 
   
   public MessageActionGeoChatCreate(ByteBuffer buffer) {
-    title = new String(TL.readString(buffer));
-    address = new String(TL.readString(buffer));
+    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  address = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public MessageActionGeoChatCreate(String title, String address) {
@@ -20,8 +20,8 @@ public class MessageActionGeoChatCreate extends tl.TMessageAction {
     if (boxed) {
       buffer.putInt(0x6f038ebc);
     }
-    TL.writeString(buffer, title.getBytes(), false);
-    TL.writeString(buffer, address.getBytes(), false);
+    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, address.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at MessageActionGeoChatCreate: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

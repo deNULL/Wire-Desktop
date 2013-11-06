@@ -7,7 +7,7 @@ public class PeerNotifySettings extends tl.TPeerNotifySettings {
   
   public PeerNotifySettings(ByteBuffer buffer) {
     mute_until = buffer.getInt();
-    sound = new String(TL.readString(buffer));
+    try {  sound = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     show_previews = (buffer.getInt() == 0x997275b5);
     events_mask = buffer.getInt();
   }
@@ -25,7 +25,7 @@ public class PeerNotifySettings extends tl.TPeerNotifySettings {
       buffer.putInt(0x8d5e11ee);
     }
     buffer.putInt(mute_until);
-    TL.writeString(buffer, sound.getBytes(), false);
+    try { TL.writeString(buffer, sound.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putInt(show_previews ? 0x997275b5 : 0xbc799737);
     buffer.putInt(events_mask);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {

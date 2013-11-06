@@ -7,7 +7,7 @@ public class RpcError extends tl.TRpcError {
   
   public RpcError(ByteBuffer buffer) {
     error_code = buffer.getInt();
-    error_message = new String(TL.readString(buffer));
+    try {  error_message = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public RpcError(int error_code, String error_message) {
@@ -21,7 +21,7 @@ public class RpcError extends tl.TRpcError {
       buffer.putInt(0x2144ca19);
     }
     buffer.putInt(error_code);
-    TL.writeString(buffer, error_message.getBytes(), false);
+    try { TL.writeString(buffer, error_message.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at RpcError: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

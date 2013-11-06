@@ -7,9 +7,9 @@ public class InputAppEvent extends tl.TInputAppEvent {
   
   public InputAppEvent(ByteBuffer buffer) {
     time = buffer.getDouble();
-    type = new String(TL.readString(buffer));
+    try {  type = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     peer = buffer.getLong();
-    data = new String(TL.readString(buffer));
+    try {  data = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public InputAppEvent(double time, String type, long peer, String data) {
@@ -25,9 +25,9 @@ public class InputAppEvent extends tl.TInputAppEvent {
       buffer.putInt(0x770656a8);
     }
     buffer.putDouble(time);
-    TL.writeString(buffer, type.getBytes(), false);
+    try { TL.writeString(buffer, type.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putLong(peer);
-    TL.writeString(buffer, data.getBytes(), false);
+    try { TL.writeString(buffer, data.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at InputAppEvent: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

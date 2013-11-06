@@ -18,8 +18,15 @@ public class ImagePanel extends JPanel {
   private long id;
   private int scale = SCALE_OUTSIDE;
   
+  public ImagePanel() {
+    super();
+    setOpaque(false);
+  }
+  
   public void paint(Graphics g) {
-    int x = 0, y = 0, width = getWidth(), height = getHeight();
+    super.paint(g);
+    Insets insets = getInsets();
+    int x = insets.left, y = insets.top, width = getWidth() - insets.right - insets.left, height = getHeight() - insets.bottom - insets.top;
     g.drawImage(image, x, y, width, height, null); // SCALE_STRETCH
   }
   

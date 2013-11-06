@@ -7,7 +7,7 @@ public class InviteText extends tl.help.TInviteText {
 
   
   public InviteText(ByteBuffer buffer) {
-    message = new String(TL.readString(buffer));
+    try {  message = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public InviteText(String message) {
@@ -19,7 +19,7 @@ public class InviteText extends tl.help.TInviteText {
     if (boxed) {
       buffer.putInt(0x18cb9f78);
     }
-    TL.writeString(buffer, message.getBytes(), false);
+    try { TL.writeString(buffer, message.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at InviteText: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

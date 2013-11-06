@@ -7,7 +7,7 @@ public class ChatForbidden extends tl.TChat {
   
   public ChatForbidden(ByteBuffer buffer) {
     id = buffer.getInt();
-    title = new String(TL.readString(buffer));
+    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     date = buffer.getInt();
   }
   
@@ -23,7 +23,7 @@ public class ChatForbidden extends tl.TChat {
       buffer.putInt(0xfb0ccc41);
     }
     buffer.putInt(id);
-    TL.writeString(buffer, title.getBytes(), false);
+    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putInt(date);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at ChatForbidden: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));

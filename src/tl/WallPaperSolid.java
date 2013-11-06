@@ -7,7 +7,7 @@ public class WallPaperSolid extends tl.TWallPaper {
   
   public WallPaperSolid(ByteBuffer buffer) {
     id = buffer.getInt();
-    title = new String(TL.readString(buffer));
+    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     bg_color = buffer.getInt();
     color = buffer.getInt();
   }
@@ -25,7 +25,7 @@ public class WallPaperSolid extends tl.TWallPaper {
       buffer.putInt(0x63117f24);
     }
     buffer.putInt(id);
-    TL.writeString(buffer, title.getBytes(), false);
+    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putInt(bg_color);
     buffer.putInt(color);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {

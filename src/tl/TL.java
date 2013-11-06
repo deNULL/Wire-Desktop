@@ -523,7 +523,7 @@ public class TL {
 		
 		String[] value = new String[buffer.getInt()];
 		for (int i = 0; i < value.length; i++) {
-			value[i] = new String(TL.readString(buffer));
+		  try { value[i] = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
 		}
 		return value;
 	}

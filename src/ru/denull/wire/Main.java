@@ -1,22 +1,19 @@
 package ru.denull.wire;
 
+import java.awt.*;
 import java.awt.Dialog;
-import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JList;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JButton;
-import javax.swing.JTabbedPane;
-import javax.swing.JSplitPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 
 import java.awt.FlowLayout;
+import java.awt.event.*;
+import java.util.Enumeration;
+import java.util.Random;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -24,40 +21,66 @@ import javax.swing.JToggleButton;
 import javax.swing.JTextField;
 import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.AbstractListModel;
+
+import com.apple.eawt.Application;
 
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.DataService.OnUpdateListener;
 import ru.denull.mtproto.Server;
 import ru.denull.mtproto.Auth.AuthCallback;
 import ru.denull.mtproto.Server.RPCCallback;
+import ru.denull.wire.model.DialogListModel;
+import ru.denull.wire.model.MessageListModel;
 import ru.denull.wire.model.Notifier;
-import tl.TChatParticipants;
+import tl.*;
+import tl.Message;
+import tl.TChat;
 import tl.TMessage;
-import tl.TUser;
-import tl.TUserProfilePhoto;
-import tl.TUserStatus;
-import tl.UserSelf;
 import tl.contacts.TForeignLink;
 import tl.contacts.TMyLink;
-import tl.messages.Dialogs;
-import tl.messages.DialogsSlice;
-import tl.messages.GetDialogs;
-import tl.messages.TDialogs;
+import tl.messages.*;
 
 public class Main implements OnUpdateListener {
 
   private JFrame frame;
   private JList dialogList, messageList;
   private JTextField searchField;
+  private TInputPeer currentPeer;
   
   public static DataService service;
   public static Main window;
+  
+  private MessageListModel messageListModel;
+  private DialogListModel dialogListModel;
+  private JTextField messageField;
+  
 
   /**
    * Launch the application.
    */
   public static void main(String[] args) {
+    Application app = Application.getApplication();
+    app.setDockIconImage(Utils.getImage("icon_128x128.png"));
+    
+
+    System.setProperty("awt.useSystemAAFontSettings","on");
+    System.setProperty("swing.aatext", "true");
+    
+    Font font = new Font("Tahoma", java.awt.Font.PLAIN, 12);
+    Enumeration keys = UIManager.getDefaults().keys();
+    
+    while (keys.hasMoreElements()) {  
+       Object key = keys.nextElement();  
+       Object value = UIManager.get(key);  
+       if (value instanceof Font) {  
+           UIManager.put(key, font);  
+       }  
+    }
+   //SwingUtilities.updateComponentTreeUI(frame);
+    
     service = DataService.getInstance();
     
     service.connectAndPrepare(false, false, new AuthCallback() {
@@ -85,7 +108,7 @@ public class Main implements OnUpdateListener {
               service.updateListener = window;
               
               if (service.me != null) {
-                window.reloadDialogs();
+                window.dialogListModel.reloadDialogs();
               } else {
                 AuthDialog authDialog = new AuthDialog(window.frame, Dialog.ModalityType.DOCUMENT_MODAL);
                 authDialog.setVisible(true);
@@ -127,7 +150,8 @@ public class Main implements OnUpdateListener {
     
     JSplitPane splitPane = new JSplitPane();
     splitPane.setContinuousLayout(true);
-    splitPane.setDividerSize(2);
+    splitPane.setDividerSize(1);
+    splitPane.setBackground(Color.decode("0xe0e0e0"));
     splitPane.setBorder(new EmptyBorder(0, 0, 0, 0));
     frame.getContentPane().add(splitPane, BorderLayout.CENTER);
     
@@ -142,93 +166,145 @@ public class Main implements OnUpdateListener {
     JToggleButton dialogsBtn = new JToggleButton("");
     dialogsBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
     dialogsBtn.putClientProperty("JButton.segmentPosition", "first");
-    dialogsBtn.setRequestFocusEnabled(false);
+    dialogsBtn.setFocusable(false);
     dialogsBtn.setSelected(true);
     panel_2.add(dialogsBtn);
     
     JToggleButton contactsBtn = new JToggleButton("");
     contactsBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
     contactsBtn.putClientProperty("JButton.segmentPosition", "last");
-    contactsBtn.setRequestFocusEnabled(false);
+    contactsBtn.setFocusable(false);
     panel_2.add(contactsBtn);
     
     searchField = new JTextField();
     searchField.putClientProperty("JTextField.variant", "search");
+    searchField.putClientProperty("JTextField.Search.Prompt", "Найти...");
     panel_2.add(searchField);
     searchField.setColumns(10);
     
-    dialogList = new JList();
-    dialogList.setModel(new AbstractListModel() {
-      String[] values = new String[] {};
-      public int getSize() {
-        return values.length;
+    dialogList = new JList() {
+      public boolean getScrollableTracksViewportWidth() {
+        return true;
       }
-      public Object getElementAt(int index) {
-        return values[index];
-      }
-    });
+    };
+    dialogList.setBackground(UIManager.getColor("Panel.background"));
     //dialogList.setBorder(UIManager.getBorder("List.sourceListBackgroundPainter"));
     dialogList.setCellRenderer(new DialogCellRenderer(service));
-    panel.add(dialogList, BorderLayout.CENTER);
+    dialogList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    dialogList.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        if (dialogList.getSelectedIndex() > -1) {
+          tl.Dialog dialog = service.dialogManager.get(dialogList.getSelectedIndex());
+          selectDialog(dialog);
+        }
+      }
+    });
+    dialogListModel = new DialogListModel(service, dialogList);
+    dialogList.setModel(dialogListModel);
+    JScrollPane scrollPane = new JScrollPane(dialogList);
+    scrollPane.setBackground(Color.decode("0xf9f9f9"));
+    scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+    scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    panel.add(scrollPane, BorderLayout.CENTER);
     
     JPanel panel_1 = new JPanel();
     splitPane.setRightComponent(panel_1);
     panel_1.setLayout(new BorderLayout(0, 0));
     
-    messageList = new JList();
-    panel_1.add(messageList, BorderLayout.CENTER);
+    messageList = new JList() {
+      public boolean getScrollableTracksViewportWidth() {
+        return true;
+      }
+    };
+    System.out.println(messageList.getUI().toString());
+    messageList.setBackground(Color.decode("0xdfe8ef"));
+    messageList.addComponentListener(new ComponentListener() {
+      public void componentShown(ComponentEvent e) {
+      }
+      
+      public void componentResized(ComponentEvent e) {
+        messageList.setFixedCellHeight(0);
+        messageList.setFixedCellHeight(-1);
+        //messageList.revalidate();
+      }
+      
+      public void componentMoved(ComponentEvent e) {
+      }
+      
+      public void componentHidden(ComponentEvent e) {
+      }
+    });
+    scrollPane = new JScrollPane(messageList);
+    scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+    scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.setBackground(Color.decode("0xd6e4ef"));
+    scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+      public void adjustmentValueChanged(AdjustmentEvent e) {
+        if (messageListModel != null && messageList != null) {
+          messageListModel.checkForPreload(messageList.getFirstVisibleIndex());
+        }
+      }
+    });
+    panel_1.add(scrollPane, BorderLayout.CENTER);
     
-    JTextArea textArea = new JTextArea();
-    panel_1.add(textArea, BorderLayout.SOUTH);
+    messageField = new JTextField();
+    panel_1.add(messageField, BorderLayout.SOUTH);
+    //textArea.setBorder(new JTextField().getBorder());
     
+    messageField.addKeyListener(new KeyListener() {
+      
+      @Override
+      public void keyTyped(KeyEvent e) {
+      }
+      
+      @Override
+      public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+          String message = messageField.getText();
+          if (currentPeer != null && message.length() > 0) {
+            sendMessage(message, currentPeer);
+            messageField.setText("");
+          }
+        }
+      }
+
+      @Override
+      public void keyPressed(KeyEvent e) {
+      }
+    });
     
   }
   
-  public void reloadDialogs() {
-    boolean force = true;
-    final boolean cachedData = false;
-    
-    if (service.mainServer == null || !service.mainServer.transport.isConnected()){
-      //Log.i(TAG, "Not yet connected, stop");
-      return;
+  public void sendMessage(String message, TInputPeer inputPeer) {    
+    int random_id = -(new Random()).nextInt(0x10000000);
+    int peer_id = Utils.getPeerID(inputPeer, service.me);
+    TPeer peer;
+    if (peer_id > 0) {
+      peer = new PeerUser(peer_id);
+    } else {
+      peer = new PeerChat(-peer_id);
     }
-    //Log.i(TAG, "loading = " + service.dialogManager.loading);
-    if (service.dialogManager.loading) return;
-    if (!force && service.dialogManager.total > -1 && service.dialogManager.loaded.size() >= service.dialogManager.total) return;
+    final TMessage newmsg = new Message(random_id, service.me.id, peer, true, true, (int) (System.currentTimeMillis() / 1000), message, new MessageMediaEmpty());
+    newmsg.sending = true;
+    service.messageManager.store(newmsg);
+    dialogListModel.addMessage(newmsg);
+    messageListModel.addMessage(newmsg);
+    restoreDialogSelection();
+    dialogList.repaint();
+    messageList.repaint();
     
-    service.dialogManager.loading = true;
-    service.mainServer.call(new GetDialogs(cachedData ? 0 : service.dialogManager.loaded.size(), 0, 30), new RPCCallback<TDialogs>() {
-      public void done(TDialogs result) {
-        if (result instanceof Dialogs) {
-          Dialogs dialogs = (Dialogs) result;
-          service.dialogManager.total = dialogs.dialogs.length;
-          service.dialogManager.store(dialogs.dialogs, true);
-          service.chatManager.store(dialogs.chats);
-          service.userManager.store(dialogs.users);
-          service.messageManager.store(dialogs.messages);
-        } else {
-          DialogsSlice dialogs = (DialogsSlice) result;
-          service.dialogManager.total = dialogs.count;
-          service.dialogManager.store(dialogs.dialogs, cachedData);
-          service.chatManager.store(dialogs.chats);
-          service.userManager.store(dialogs.users);
-          service.messageManager.store(dialogs.messages);
-        }
-        service.dialogManager.loading = false;
-        //cachedData = false;
-        
-        dialogList.setModel(new AbstractListModel() {
-          String[] values = new String[service.dialogManager.total];
-          public int getSize() {
-            return values.length;
-          }
-          public Object getElementAt(int index) {
-            return values[index];
-          }
-        });
+    service.mainServer.call(new SendMessage(currentPeer, message, random_id), new RPCCallback<SentMessage>() {
+      public void done(SentMessage result) {
+        newmsg.id = result.id;
+        newmsg.date = result.date;
+        newmsg.sending = false;
+        service.messageManager.store(newmsg);
+        restoreDialogSelection();
+        dialogList.repaint();
+        messageList.repaint();
       }
       public void error(int code, String message) {
-        //Log.e(TAG, "Error while loading dialogs");
+        newmsg.failed = true;
       }
     });
   }
@@ -236,16 +312,127 @@ public class Main implements OnUpdateListener {
   public void reloadContacts() {
     
   }
+  
+  public void selectDialog(TChat chat) {
+    selectDialog(new InputPeerChat(chat.id));
+  }
+  
+  public void selectDialog(TUser user) {
+    TInputPeer peer = null;
+    if (user instanceof UserForeign || user instanceof UserRequest) {
+      peer = new InputPeerForeign(user.id, user.access_hash);
+    } else {
+      peer = new InputPeerContact(user.id);
+    }
+    selectDialog(peer);
+  }
+  
+  public void selectDialog(final TInputPeer peer) {
+    if (currentPeer != null &&
+        ((peer instanceof InputPeerChat && currentPeer instanceof InputPeerChat && peer.chat_id == currentPeer.chat_id) ||
+         (!(peer instanceof InputPeerChat) && !(currentPeer instanceof InputPeerChat) && peer.user_id == currentPeer.user_id))) {
+      return;
+    }
+    
+    currentPeer = peer;
+    messageListModel = new MessageListModel(service, messageList, peer);
+    
+    messageList.setModel(messageListModel);
+    messageList.setCellRenderer(new MessageCellRenderer(service, peer));
+    
+    
+ // TODO: check first two conditions
+    //if (service.mainServer == null || !service.mainServer.transport.isConnected() || loading) return;
+    
+    // prevent from loading two times at once
+    /*loading = true;
+    // TODO: use max_id instead of offset?
+    //Log.i(TAG, "Loading history up to id " + first_id);
+    service.mainServer.call(new GetHistory(peer, 0, first_id, (first_id == 0) ? PRELOAD_COUNT : LOAD_COUNT), new RPCCallback<TMessages>() {
+      public void done(final TMessages result) {
+        if (result.messages.length > 0 && result.messages[0].unread) {
+          for (TMessage message : result.messages) {
+            message.unread = false;
+          }
+          service.dialogManager.resetUnread(peer);
+          service.mainServer.call(new ReadHistory(peer, result.messages[0].id, 0), new Server.RPCCallback<TLObject>() {
+            public void done(TLObject result) {
+            }
+            public void error(int code, String message) {
+            }
+          });
+        }
+        
+        service.chatManager.store(result.chats);
+        service.userManager.store(result.users);
+        
+        final boolean forceCached = (service.messageManager.get(result.messages[result.messages.length - 1].id) != service.messageManager.empty);
+        service.messageManager.store(result.messages);
+        
+        if (result instanceof Messages) {
+          total = result.messages.length;
+        } else {
+          total = ((MessagesSlice) result).count;
+        }
+        
+        activity.ui(new Runnable() {
+          public void run() {*/
+            /*if (cachedData) {
+              items.clear();
+              cachedData = false;
+            }*/
+            /*cachedData = add(result.messages); // if loaded data overlaps data from cache, we can continue loading from cache
+            if (cachedData) {
+              Log.i(TAG, "Overlaps cached data, will now load from cache");
+            } else
+            if (forceCached) {
+              cachedData = true;
+              Log.i(TAG, "Last loaded item is already in cache, will now load from cache");
+            }
+            loading = false;
+            
+            checkForPreload();
+          }
+        }, true);
+      }
+      public void error(int code, String message) {
+        Log.e(TAG, "Error while loading messages");
+      }
+    });*/
+  }
+  
+  public void selectDialog(tl.Dialog dialog) {
+    if (dialog.peer instanceof PeerUser) {
+      selectDialog(service.userManager.get(((PeerUser) dialog.peer).user_id));
+    } else {
+      selectDialog(new InputPeerChat(((PeerChat) dialog.peer).chat_id));
+    }
+  }
 
   public void authorized(TUser user) {
     service.logged((UserSelf) user);
-    reloadDialogs();
+    dialogListModel.reloadDialogs();
   }
 
   @Override
   public void onNewMessage(TMessage message, boolean fresh) {
     // TODO Auto-generated method stub
+    restoreDialogSelection();
     dialogList.repaint();
+    if (currentPeer != null &&
+        ((message.to_id instanceof PeerChat && currentPeer instanceof InputPeerChat && message.to_id.chat_id == currentPeer.chat_id) ||
+         (message.to_id instanceof PeerUser && !(currentPeer instanceof InputPeerChat) && message.to_id.user_id == currentPeer.user_id))) {
+      messageListModel.addMessage(message);
+      //messageList
+      
+      service.dialogManager.resetUnread(currentPeer);
+      service.mainServer.call(new ReadHistory(currentPeer, message.id, 0), new Server.RPCCallback<TLObject>() {
+        public void done(TLObject result) {
+        }
+        public void error(int code, String message) {
+        }
+      });
+    }
   }
 
   @Override
@@ -263,12 +450,14 @@ public class Main implements OnUpdateListener {
   @Override
   public void onDeleteMessages(int[] messages, boolean fresh) {
     // TODO Auto-generated method stub
+    restoreDialogSelection();
     dialogList.repaint();
   }
 
   @Override
   public void onRestoreMessages(int[] messages, boolean fresh) {
     // TODO Auto-generated method stub
+    restoreDialogSelection();
     dialogList.repaint();
   }
 
@@ -335,4 +524,15 @@ public class Main implements OnUpdateListener {
     
   }
   
+  public void restoreDialogSelection() {
+    if (currentPeer == null) return;
+    for (int i = 0; i < service.dialogManager.loaded.size(); i++) {
+      tl.Dialog d = service.dialogManager.loaded.get(i);
+      if ((d.peer instanceof PeerChat && currentPeer instanceof InputPeerChat && d.peer.chat_id == currentPeer.chat_id) ||
+          (!(d.peer instanceof PeerChat) && !(currentPeer instanceof InputPeerChat) && d.peer.user_id == currentPeer.user_id)) {
+        dialogList.setSelectedIndex(i);
+        break;
+      }      
+    }
+  }
 }

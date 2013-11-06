@@ -9,7 +9,7 @@ public class SendInvites extends tl.TLFunction {
   
   public SendInvites(ByteBuffer buffer) {
     phone_numbers = TL.readVectorString(buffer, true);
-    message = new String(TL.readString(buffer));
+    try {  message = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public SendInvites(String[] phone_numbers, String message) {
@@ -23,7 +23,7 @@ public class SendInvites extends tl.TLFunction {
       buffer.putInt(0x771c1d97);
     }
     TL.writeVector(buffer, phone_numbers, true, false);
-    TL.writeString(buffer, message.getBytes(), false);
+    try { TL.writeString(buffer, message.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at SendInvites: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

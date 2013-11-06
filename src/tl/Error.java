@@ -7,7 +7,7 @@ public class Error extends tl.TError {
   
   public Error(ByteBuffer buffer) {
     code = buffer.getInt();
-    text = new String(TL.readString(buffer));
+    try {  text = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public Error(int code, String text) {
@@ -21,7 +21,7 @@ public class Error extends tl.TError {
       buffer.putInt(0xc4b9f9bb);
     }
     buffer.putInt(code);
-    TL.writeString(buffer, text.getBytes(), false);
+    try { TL.writeString(buffer, text.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at Error: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

@@ -1,9 +1,14 @@
 package tl;
 
+import java.awt.Image;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class MessageMediaVideo extends tl.TMessageMedia {
+import javax.imageio.ImageIO;
 
+public class MessageMediaVideo extends tl.TMessageMedia {
+  public Image cached;
   
   public MessageMediaVideo(ByteBuffer buffer) {
     video = (tl.TVideo) TL.read(buffer);
@@ -31,5 +36,20 @@ public class MessageMediaVideo extends tl.TMessageMedia {
   
   public String toString() {
     return "(messageMediaVideo video:" + video + ")";
+  }
+
+  public Image getThumbnail() {
+    if (cached == null) {
+      Video video = (Video) this.video;
+      if (video.thumb instanceof PhotoCachedSize) {
+        try {
+          cached = ImageIO.read(new ByteArrayInputStream(((PhotoCachedSize) video.thumb).bytes));
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        //cached.setDensity(DisplayMetrics.DENSITY_LOW);
+      }
+    }
+    return cached;
   }
 }

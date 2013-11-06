@@ -11,7 +11,7 @@ public class UploadProfilePhoto extends tl.TLFunction {
   
   public UploadProfilePhoto(ByteBuffer buffer) {
     file = (tl.TInputFile) TL.read(buffer);
-    caption = new String(TL.readString(buffer));
+    try {  caption = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     geo_point = (tl.TInputGeoPoint) TL.read(buffer);
     crop = (tl.TInputPhotoCrop) TL.read(buffer);
   }
@@ -29,7 +29,7 @@ public class UploadProfilePhoto extends tl.TLFunction {
       buffer.putInt(0xd50f9c88);
     }
     file.writeTo(buffer, true);
-    TL.writeString(buffer, caption.getBytes(), false);
+    try { TL.writeString(buffer, caption.getBytes("UTF8"), false); } catch (Exception e) { };
     geo_point.writeTo(buffer, true);
     crop.writeTo(buffer, true);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {

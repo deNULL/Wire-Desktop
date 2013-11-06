@@ -10,7 +10,7 @@ public class SendMessage extends tl.TLFunction {
   
   public SendMessage(ByteBuffer buffer) {
     peer = (tl.TInputPeer) TL.read(buffer);
-    message = new String(TL.readString(buffer));
+    try {  message = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     random_id = buffer.getLong();
   }
   
@@ -26,7 +26,7 @@ public class SendMessage extends tl.TLFunction {
       buffer.putInt(0x4cde0aab);
     }
     peer.writeTo(buffer, true);
-    TL.writeString(buffer, message.getBytes(), false);
+    try { TL.writeString(buffer, message.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putLong(random_id);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at SendMessage: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));

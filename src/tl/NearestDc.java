@@ -6,7 +6,7 @@ public class NearestDc extends tl.TNearestDc {
 
   
   public NearestDc(ByteBuffer buffer) {
-    country = new String(TL.readString(buffer));
+    try {  country = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     this_dc = buffer.getInt();
     nearest_dc = buffer.getInt();
   }
@@ -22,7 +22,7 @@ public class NearestDc extends tl.TNearestDc {
     if (boxed) {
       buffer.putInt(0x8e1a1775);
     }
-    TL.writeString(buffer, country.getBytes(), false);
+    try { TL.writeString(buffer, country.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putInt(this_dc);
     buffer.putInt(nearest_dc);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {

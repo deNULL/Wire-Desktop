@@ -15,7 +15,7 @@ public class Search extends tl.TLFunction {
   
   public Search(ByteBuffer buffer) {
     peer = (tl.TInputGeoChat) TL.read(buffer);
-    q = new String(TL.readString(buffer));
+    try {  q = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     filter = (tl.TMessagesFilter) TL.read(buffer);
     min_date = buffer.getInt();
     max_date = buffer.getInt();
@@ -41,7 +41,7 @@ public class Search extends tl.TLFunction {
       buffer.putInt(0xcfcdc44d);
     }
     peer.writeTo(buffer, true);
-    TL.writeString(buffer, q.getBytes(), false);
+    try { TL.writeString(buffer, q.getBytes("UTF8"), false); } catch (Exception e) { };
     filter.writeTo(buffer, true);
     buffer.putInt(min_date);
     buffer.putInt(max_date);

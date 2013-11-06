@@ -133,7 +133,7 @@ public class TypingManager {
   
   // checks if user is typing now
   public boolean isTyping(int user_id) {
-    return users.get(user_id);
+    return users.containsKey(user_id) && users.get(user_id);
   }
   
   // return null if nobody in chat is typing, formatted string otherwise

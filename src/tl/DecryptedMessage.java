@@ -8,7 +8,7 @@ public class DecryptedMessage extends tl.TDecryptedMessage {
   public DecryptedMessage(ByteBuffer buffer) {
     random_id = buffer.getLong();
     random_bytes = TL.readString(buffer);
-    message = new String(TL.readString(buffer));
+    try {  message = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     media = (tl.TDecryptedMessageMedia) TL.read(buffer);
   }
   
@@ -26,7 +26,7 @@ public class DecryptedMessage extends tl.TDecryptedMessage {
     }
     buffer.putLong(random_id);
     TL.writeString(buffer, random_bytes, false);
-    TL.writeString(buffer, message.getBytes(), false);
+    try { TL.writeString(buffer, message.getBytes("UTF8"), false); } catch (Exception e) { };
     media.writeTo(buffer, true);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at DecryptedMessage: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));

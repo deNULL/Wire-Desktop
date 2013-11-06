@@ -1,5 +1,7 @@
 package tl;
 
+import java.awt.Image;
+
 public abstract class TMessage extends tl.TLObject {
   public String message;
   public int id;
@@ -12,4 +14,7 @@ public abstract class TMessage extends tl.TLObject {
   public tl.TMessageMedia media;
   public int fwd_date;
   public boolean out;
+  public Image preview;
+  public boolean sending;
+  public boolean failed;
 }

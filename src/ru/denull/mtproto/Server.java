@@ -63,7 +63,7 @@ public class Server implements ReadTaskCallback {
 		//Log.i(TAG, "Using session #" + session_id);
 		
 		//pref = service.getSharedPreferences(service.getString(R.string.preferences_auth) + "-" + address + ":" + port, Context.MODE_PRIVATE);
-		pref = Preferences.userRoot().node("server/" + address + ":" + port);
+		pref = Preferences.userRoot().node("wire/server/" + address + ":" + port);
 		old_session_id = pref.getLong("session_id", 0);
 		pref.putLong("session_id", session_id);
 		try {

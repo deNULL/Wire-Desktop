@@ -7,10 +7,10 @@ public class UserRequest extends tl.TUser {
   
   public UserRequest(ByteBuffer buffer) {
     id = buffer.getInt();
-    first_name = new String(TL.readString(buffer));
-    last_name = new String(TL.readString(buffer));
+    try {  first_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  last_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     access_hash = buffer.getLong();
-    phone = new String(TL.readString(buffer));
+    try {  phone = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     photo = (tl.TUserProfilePhoto) TL.read(buffer);
     status = (tl.TUserStatus) TL.read(buffer);
   }
@@ -31,10 +31,10 @@ public class UserRequest extends tl.TUser {
       buffer.putInt(0x22e8ceb0);
     }
     buffer.putInt(id);
-    TL.writeString(buffer, first_name.getBytes(), false);
-    TL.writeString(buffer, last_name.getBytes(), false);
+    try { TL.writeString(buffer, first_name.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, last_name.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putLong(access_hash);
-    TL.writeString(buffer, phone.getBytes(), false);
+    try { TL.writeString(buffer, phone.getBytes("UTF8"), false); } catch (Exception e) { };
     photo.writeTo(buffer, true);
     status.writeTo(buffer, true);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {

@@ -12,7 +12,7 @@ public class Message extends tl.TMessage {
     out = (buffer.getInt() == 0x997275b5);
     unread = (buffer.getInt() == 0x997275b5);
     date = buffer.getInt();
-    message = new String(TL.readString(buffer));
+    try {  message = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     media = (tl.TMessageMedia) TL.read(buffer);
   }
   
@@ -38,7 +38,7 @@ public class Message extends tl.TMessage {
     buffer.putInt(out ? 0x997275b5 : 0xbc799737);
     buffer.putInt(unread ? 0x997275b5 : 0xbc799737);
     buffer.putInt(date);
-    TL.writeString(buffer, message.getBytes(), false);
+    try { TL.writeString(buffer, message.getBytes("UTF8"), false); } catch (Exception e) { };
     media.writeTo(buffer, true);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at Message: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));

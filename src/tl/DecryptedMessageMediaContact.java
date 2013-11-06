@@ -6,9 +6,9 @@ public class DecryptedMessageMediaContact extends tl.TDecryptedMessageMedia {
 
   
   public DecryptedMessageMediaContact(ByteBuffer buffer) {
-    phone_number = new String(TL.readString(buffer));
-    first_name = new String(TL.readString(buffer));
-    last_name = new String(TL.readString(buffer));
+    try {  phone_number = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  first_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  last_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     user_id = buffer.getInt();
   }
   
@@ -24,9 +24,9 @@ public class DecryptedMessageMediaContact extends tl.TDecryptedMessageMedia {
     if (boxed) {
       buffer.putInt(0x588a0a97);
     }
-    TL.writeString(buffer, phone_number.getBytes(), false);
-    TL.writeString(buffer, first_name.getBytes(), false);
-    TL.writeString(buffer, last_name.getBytes(), false);
+    try { TL.writeString(buffer, phone_number.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, first_name.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, last_name.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putInt(user_id);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at DecryptedMessageMediaContact: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));

@@ -7,8 +7,8 @@ public class DcOption extends tl.TDcOption {
   
   public DcOption(ByteBuffer buffer) {
     id = buffer.getInt();
-    hostname = new String(TL.readString(buffer));
-    ip_address = new String(TL.readString(buffer));
+    try {  hostname = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  ip_address = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     port = buffer.getInt();
   }
   
@@ -25,8 +25,8 @@ public class DcOption extends tl.TDcOption {
       buffer.putInt(0x2ec2a43c);
     }
     buffer.putInt(id);
-    TL.writeString(buffer, hostname.getBytes(), false);
-    TL.writeString(buffer, ip_address.getBytes(), false);
+    try { TL.writeString(buffer, hostname.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, ip_address.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putInt(port);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at DcOption: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));

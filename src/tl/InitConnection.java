@@ -11,9 +11,9 @@ public class InitConnection extends tl.TLFunction {
   
   public InitConnection(ByteBuffer buffer) {
     api_id = buffer.getInt();
-    device_model = new String(TL.readString(buffer));
-    system_version = new String(TL.readString(buffer));
-    app_version = new String(TL.readString(buffer));
+    try {  device_model = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  system_version = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  app_version = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     query = (tl.TLObject) TL.read(buffer);
   }
   
@@ -31,9 +31,9 @@ public class InitConnection extends tl.TLFunction {
       buffer.putInt(0x3fc12e08);
     }
     buffer.putInt(api_id);
-    TL.writeString(buffer, device_model.getBytes(), false);
-    TL.writeString(buffer, system_version.getBytes(), false);
-    TL.writeString(buffer, app_version.getBytes(), false);
+    try { TL.writeString(buffer, device_model.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, system_version.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, app_version.getBytes("UTF8"), false); } catch (Exception e) { };
     query.writeTo(buffer, true);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at InitConnection: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));

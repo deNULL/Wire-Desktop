@@ -9,9 +9,9 @@ public class SignIn extends tl.TLFunction {
   public String phone_code;
   
   public SignIn(ByteBuffer buffer) {
-    phone_number = new String(TL.readString(buffer));
-    phone_code_hash = new String(TL.readString(buffer));
-    phone_code = new String(TL.readString(buffer));
+    try {  phone_number = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  phone_code_hash = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  phone_code = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public SignIn(String phone_number, String phone_code_hash, String phone_code) {
@@ -25,9 +25,9 @@ public class SignIn extends tl.TLFunction {
     if (boxed) {
       buffer.putInt(0xbcd51581);
     }
-    TL.writeString(buffer, phone_number.getBytes(), false);
-    TL.writeString(buffer, phone_code_hash.getBytes(), false);
-    TL.writeString(buffer, phone_code.getBytes(), false);
+    try { TL.writeString(buffer, phone_number.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, phone_code_hash.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, phone_code.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at SignIn: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

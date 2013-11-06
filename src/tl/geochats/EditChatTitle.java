@@ -10,8 +10,8 @@ public class EditChatTitle extends tl.TLFunction {
   
   public EditChatTitle(ByteBuffer buffer) {
     peer = (tl.TInputGeoChat) TL.read(buffer);
-    title = new String(TL.readString(buffer));
-    address = new String(TL.readString(buffer));
+    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  address = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public EditChatTitle(tl.TInputGeoChat peer, String title, String address) {
@@ -26,8 +26,8 @@ public class EditChatTitle extends tl.TLFunction {
       buffer.putInt(0x4c8e2273);
     }
     peer.writeTo(buffer, true);
-    TL.writeString(buffer, title.getBytes(), false);
-    TL.writeString(buffer, address.getBytes(), false);
+    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, address.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at EditChatTitle: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

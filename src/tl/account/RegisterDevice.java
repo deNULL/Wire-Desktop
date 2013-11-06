@@ -14,12 +14,12 @@ public class RegisterDevice extends tl.TLFunction {
   
   public RegisterDevice(ByteBuffer buffer) {
     token_type = buffer.getInt();
-    token = new String(TL.readString(buffer));
-    device_model = new String(TL.readString(buffer));
-    system_version = new String(TL.readString(buffer));
-    app_version = new String(TL.readString(buffer));
+    try {  token = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  device_model = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  system_version = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  app_version = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     app_sandbox = (buffer.getInt() == 0x997275b5);
-    lang_code = new String(TL.readString(buffer));
+    try {  lang_code = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public RegisterDevice(int token_type, String token, String device_model, String system_version, String app_version, boolean app_sandbox, String lang_code) {
@@ -38,12 +38,12 @@ public class RegisterDevice extends tl.TLFunction {
       buffer.putInt(0x446c712c);
     }
     buffer.putInt(token_type);
-    TL.writeString(buffer, token.getBytes(), false);
-    TL.writeString(buffer, device_model.getBytes(), false);
-    TL.writeString(buffer, system_version.getBytes(), false);
-    TL.writeString(buffer, app_version.getBytes(), false);
+    try { TL.writeString(buffer, token.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, device_model.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, system_version.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, app_version.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putInt(app_sandbox ? 0x997275b5 : 0xbc799737);
-    TL.writeString(buffer, lang_code.getBytes(), false);
+    try { TL.writeString(buffer, lang_code.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at RegisterDevice: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

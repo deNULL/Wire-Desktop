@@ -70,7 +70,7 @@ public class MessageManager {
   		values.put(COLUMN_NAME_PEER, message.to_id instanceof PeerUser ? 
           (message.out ? ((PeerUser) message.to_id).user_id : message.from_id) :
           -((PeerChat) message.to_id).chat_id);
-  		values.put(COLUMN_NAME_BODY, message.writeToByteArray());
+  		//values.put(COLUMN_NAME_BODY, message.writeToByteArray());
   		values.put(COLUMN_NAME_OUTDATED, 0);
   		db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 	  }

@@ -8,7 +8,7 @@ public class Search extends tl.TLFunction {
   public int limit;
   
   public Search(ByteBuffer buffer) {
-    q = new String(TL.readString(buffer));
+    try {  q = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     limit = buffer.getInt();
   }
   
@@ -22,7 +22,7 @@ public class Search extends tl.TLFunction {
     if (boxed) {
       buffer.putInt(0x11f812d8);
     }
-    TL.writeString(buffer, q.getBytes(), false);
+    try { TL.writeString(buffer, q.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putInt(limit);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at Search: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));

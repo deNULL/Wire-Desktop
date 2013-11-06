@@ -7,9 +7,9 @@ public class InputPhoneContact extends tl.TInputContact {
   
   public InputPhoneContact(ByteBuffer buffer) {
     client_id = buffer.getLong();
-    phone = new String(TL.readString(buffer));
-    first_name = new String(TL.readString(buffer));
-    last_name = new String(TL.readString(buffer));
+    try {  phone = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  first_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  last_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public InputPhoneContact(long client_id, String phone, String first_name, String last_name) {
@@ -25,9 +25,9 @@ public class InputPhoneContact extends tl.TInputContact {
       buffer.putInt(0xf392b7f4);
     }
     buffer.putLong(client_id);
-    TL.writeString(buffer, phone.getBytes(), false);
-    TL.writeString(buffer, first_name.getBytes(), false);
-    TL.writeString(buffer, last_name.getBytes(), false);
+    try { TL.writeString(buffer, phone.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, first_name.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, last_name.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at InputPhoneContact: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

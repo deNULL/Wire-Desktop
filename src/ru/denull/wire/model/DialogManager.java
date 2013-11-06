@@ -3,6 +3,8 @@ package ru.denull.wire.model;
 import java.nio.ByteBuffer;
 import java.util.*;
 
+import com.apple.eawt.Application;
+
 import ru.denull.mtproto.DataService;
 import ru.denull.wire.Utils;
 import tl.*;
@@ -31,6 +33,16 @@ public class DialogManager {
 	public boolean loading = false;
 	
 	public static final Dialog empty = new Dialog(new PeerUser(0), 0, 0);
+	
+
+  
+  private int totalUnread = 0;
+  public void updateUnreadCount(int unread) {
+    totalUnread = unread;
+    
+    Application app = Application.getApplication();
+    app.setDockIconBadge(totalUnread > 0 ? Utils.toCount(totalUnread) : "");    
+  }
 	
 	public DialogManager(DataService service, SQLiteDatabase db) {
 		this.service = service;
@@ -73,6 +85,7 @@ public class DialogManager {
       dialog.top_message = message.id;
       if (!message.out) {
         dialog.unread_count++;
+        updateUnreadCount(totalUnread + 1);
       }
 	  } else {
 	    dialog = new Dialog(message.to_id instanceof PeerChat ? message.to_id : new PeerUser(message.from_id), message.id, 1);
@@ -87,6 +100,7 @@ public class DialogManager {
 	  for (Dialog dialog : loaded) {
       if ((dialog.peer instanceof PeerUser && ((PeerUser) dialog.peer).user_id == peer_id) ||
           (dialog.peer instanceof PeerChat && ((PeerChat) dialog.peer).chat_id == -peer_id)) {
+        updateUnreadCount(Math.max(0, totalUnread - dialog.unread_count));
         dialog.unread_count = 0;
         break;
       }
@@ -109,6 +123,7 @@ public class DialogManager {
 		if (reset) {
 			db.delete(TABLE_NAME, null, null);
 			loaded.clear();
+			totalUnread = 0;
 		}
 		
 		for (TDialog dialog : dialogs) {
@@ -121,6 +136,7 @@ public class DialogManager {
 			db.insert(TABLE_NAME, null, values);
 			
 			loaded.add((Dialog) dialog);
+			totalUnread += dialog.unread_count;
 		}
 	}
 }

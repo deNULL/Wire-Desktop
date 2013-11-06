@@ -6,7 +6,7 @@ public class PhotoSizeEmpty extends tl.TPhotoSize {
 
   
   public PhotoSizeEmpty(ByteBuffer buffer) {
-    type = new String(TL.readString(buffer));
+    try {  type = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public PhotoSizeEmpty(String type) {
@@ -18,7 +18,7 @@ public class PhotoSizeEmpty extends tl.TPhotoSize {
     if (boxed) {
       buffer.putInt(0xe17e23c);
     }
-    TL.writeString(buffer, type.getBytes(), false);
+    try { TL.writeString(buffer, type.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at PhotoSizeEmpty: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

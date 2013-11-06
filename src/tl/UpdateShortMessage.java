@@ -8,7 +8,7 @@ public class UpdateShortMessage extends tl.TUpdates {
   public UpdateShortMessage(ByteBuffer buffer) {
     id = buffer.getInt();
     from_id = buffer.getInt();
-    message = new String(TL.readString(buffer));
+    try {  message = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     pts = buffer.getInt();
     date = buffer.getInt();
     seq = buffer.getInt();
@@ -30,7 +30,7 @@ public class UpdateShortMessage extends tl.TUpdates {
     }
     buffer.putInt(id);
     buffer.putInt(from_id);
-    TL.writeString(buffer, message.getBytes(), false);
+    try { TL.writeString(buffer, message.getBytes("UTF8"), false); } catch (Exception e) { };
     buffer.putInt(pts);
     buffer.putInt(date);
     buffer.putInt(seq);

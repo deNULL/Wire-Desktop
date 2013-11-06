@@ -1,11 +1,15 @@
 package ru.denull.wire.model;
 
+import java.awt.Image;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.Server.RPCCallback;
+import ru.denull.wire.ImagePanel;
+import ru.denull.wire.Utils;
 import tl.*;
 
 public class ChatManager {
@@ -107,41 +111,41 @@ public class ChatManager {
     return result;
 	}
 
-  /*static Bitmap[] placeholders = new Bitmap[8];
-	public void getImage(int id, ImageView view, boolean big) {
+  static Image[] placeholders = new Image[8];
+  public void getImage(int id, ImagePanel view, boolean big) {
     TChat chat = get(id);
     if (chat != null && chat instanceof Chat && ((Chat) chat).photo instanceof ChatPhoto) {
       if (big) {
         if (!service.fileManager.queryImage(((ChatPhoto) ((Chat) chat).photo).photo_big, view)) {
-          view.setImageBitmap(getPlaceholder(c, id));
+          view.setImage(getPlaceholder(id));
         }
       } else {
         if (!service.fileManager.queryImage(((ChatPhoto) ((Chat) chat).photo).photo_small, view)) {
-          view.setImageBitmap(getPlaceholder(c, id));
+          view.setImage(getPlaceholder(id));
         }
       }
     } else {
-      view.setImageBitmap(getPlaceholder(c, id));
+      view.setImage(getPlaceholder(id));
     }
   }
-	
-	public Bitmap getPlaceholder(Context c, int id) {
-    int index = (id + ((id * 7) >> 4)) & 7;
-    Bitmap result = placeholders[index];
+  
+  public Image getPlaceholder(int id) {
+    int index = id % 8;
+    Image result = placeholders[index];
     if (result != null) return result;
     
     switch (index) {
-      case 0: result = BitmapFactory.decodeResource(c.getResources(), R.drawable.group_placeholder_red); break;
-      case 1: result = BitmapFactory.decodeResource(c.getResources(), R.drawable.group_placeholder_green); break;
-      case 2: result = BitmapFactory.decodeResource(c.getResources(), R.drawable.group_placeholder_yellow); break;
-      case 3: result = BitmapFactory.decodeResource(c.getResources(), R.drawable.group_placeholder_blue); break;
-      case 4: result = BitmapFactory.decodeResource(c.getResources(), R.drawable.group_placeholder_purple); break;
-      case 5: result = BitmapFactory.decodeResource(c.getResources(), R.drawable.group_placeholder_pink); break;
-      case 6: result = BitmapFactory.decodeResource(c.getResources(), R.drawable.group_placeholder_cyan); break;
-      case 7: result = BitmapFactory.decodeResource(c.getResources(), R.drawable.group_placeholder_orange); break;
+      case 0: result = Utils.getImage("group_placeholder_red.png"); break;
+      case 1: result = Utils.getImage("group_placeholder_green.png"); break;
+      case 2: result = Utils.getImage("group_placeholder_yellow.png"); break;
+      case 3: result = Utils.getImage("group_placeholder_blue.png"); break;
+      case 4: result = Utils.getImage("group_placeholder_purple.png"); break;
+      case 5: result = Utils.getImage("group_placeholder_pink.png"); break;
+      case 6: result = Utils.getImage("group_placeholder_cyan.png"); break;
+      case 7: result = Utils.getImage("group_placeholder_orange.png"); break;
     }
     
     placeholders[index] = result;
     return result;
-  }*/
+  }
 }

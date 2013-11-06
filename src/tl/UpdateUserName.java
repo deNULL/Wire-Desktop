@@ -7,8 +7,8 @@ public class UpdateUserName extends tl.TUpdate {
   
   public UpdateUserName(ByteBuffer buffer) {
     user_id = buffer.getInt();
-    first_name = new String(TL.readString(buffer));
-    last_name = new String(TL.readString(buffer));
+    try {  first_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  last_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public UpdateUserName(int user_id, String first_name, String last_name) {
@@ -23,8 +23,8 @@ public class UpdateUserName extends tl.TUpdate {
       buffer.putInt(0xda22d9ad);
     }
     buffer.putInt(user_id);
-    TL.writeString(buffer, first_name.getBytes(), false);
-    TL.writeString(buffer, last_name.getBytes(), false);
+    try { TL.writeString(buffer, first_name.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, last_name.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at UpdateUserName: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

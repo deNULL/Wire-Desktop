@@ -8,8 +8,8 @@ public class UpdateNewAuthorization extends tl.TUpdate {
   public UpdateNewAuthorization(ByteBuffer buffer) {
     auth_key_id = buffer.getLong();
     date = buffer.getInt();
-    device = new String(TL.readString(buffer));
-    location = new String(TL.readString(buffer));
+    try {  device = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  location = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public UpdateNewAuthorization(long auth_key_id, int date, String device, String location) {
@@ -26,8 +26,8 @@ public class UpdateNewAuthorization extends tl.TUpdate {
     }
     buffer.putLong(auth_key_id);
     buffer.putInt(date);
-    TL.writeString(buffer, device.getBytes(), false);
-    TL.writeString(buffer, location.getBytes(), false);
+    try { TL.writeString(buffer, device.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, location.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at UpdateNewAuthorization: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

@@ -11,8 +11,8 @@ public class UserFull extends tl.TUserFull {
     profile_photo = (tl.TPhoto) TL.read(buffer);
     notify_settings = (tl.TPeerNotifySettings) TL.read(buffer);
     blocked = (buffer.getInt() == 0x997275b5);
-    real_first_name = new String(TL.readString(buffer));
-    real_last_name = new String(TL.readString(buffer));
+    try {  real_first_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  real_last_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public UserFull(tl.TUser user, tl.contacts.TLink link, tl.TPhoto profile_photo, tl.TPeerNotifySettings notify_settings, boolean blocked, String real_first_name, String real_last_name) {
@@ -35,8 +35,8 @@ public class UserFull extends tl.TUserFull {
     profile_photo.writeTo(buffer, true);
     notify_settings.writeTo(buffer, true);
     buffer.putInt(blocked ? 0x997275b5 : 0xbc799737);
-    TL.writeString(buffer, real_first_name.getBytes(), false);
-    TL.writeString(buffer, real_last_name.getBytes(), false);
+    try { TL.writeString(buffer, real_first_name.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, real_last_name.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at UserFull: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

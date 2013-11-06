@@ -10,10 +10,10 @@ public class CreateGeoChat extends tl.TLFunction {
   public String venue;
   
   public CreateGeoChat(ByteBuffer buffer) {
-    title = new String(TL.readString(buffer));
+    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     geo_point = (tl.TInputGeoPoint) TL.read(buffer);
-    address = new String(TL.readString(buffer));
-    venue = new String(TL.readString(buffer));
+    try {  address = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  venue = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public CreateGeoChat(String title, tl.TInputGeoPoint geo_point, String address, String venue) {
@@ -28,10 +28,10 @@ public class CreateGeoChat extends tl.TLFunction {
     if (boxed) {
       buffer.putInt(0xe092e16);
     }
-    TL.writeString(buffer, title.getBytes(), false);
+    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
     geo_point.writeTo(buffer, true);
-    TL.writeString(buffer, address.getBytes(), false);
-    TL.writeString(buffer, venue.getBytes(), false);
+    try { TL.writeString(buffer, address.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, venue.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at CreateGeoChat: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

@@ -9,7 +9,7 @@ public class CreateChat extends tl.TLFunction {
   
   public CreateChat(ByteBuffer buffer) {
     users = TL.readVector(buffer, true, new tl.TInputUser[0]);
-    title = new String(TL.readString(buffer));
+    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public CreateChat(tl.TInputUser[] users, String title) {
@@ -23,7 +23,7 @@ public class CreateChat extends tl.TLFunction {
       buffer.putInt(0x419d9aee);
     }
     TL.writeVector(buffer, users, true, true);
-    TL.writeString(buffer, title.getBytes(), false);
+    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at CreateChat: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

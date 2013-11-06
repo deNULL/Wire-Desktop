@@ -7,7 +7,7 @@ public class GetContacts extends tl.TLFunction {
   public String hash;
   
   public GetContacts(ByteBuffer buffer) {
-    hash = new String(TL.readString(buffer));
+    try {  hash = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
   }
   
   public GetContacts(String hash) {
@@ -19,7 +19,7 @@ public class GetContacts extends tl.TLFunction {
     if (boxed) {
       buffer.putInt(0x22c6aa08);
     }
-    TL.writeString(buffer, hash.getBytes(), false);
+    try { TL.writeString(buffer, hash.getBytes("UTF8"), false); } catch (Exception e) { };
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at GetContacts: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }

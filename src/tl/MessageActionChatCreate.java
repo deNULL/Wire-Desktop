@@ -6,7 +6,7 @@ public class MessageActionChatCreate extends tl.TMessageAction {
 
   
   public MessageActionChatCreate(ByteBuffer buffer) {
-    title = new String(TL.readString(buffer));
+    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     users = TL.readVectorInt(buffer, true);
   }
   
@@ -20,7 +20,7 @@ public class MessageActionChatCreate extends tl.TMessageAction {
     if (boxed) {
       buffer.putInt(0xa6638b9a);
     }
-    TL.writeString(buffer, title.getBytes(), false);
+    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
     TL.writeVector(buffer, users, true, false);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at MessageActionChatCreate: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));

@@ -7,9 +7,9 @@ public class UserSelf extends tl.TUser {
   
   public UserSelf(ByteBuffer buffer) {
     id = buffer.getInt();
-    first_name = new String(TL.readString(buffer));
-    last_name = new String(TL.readString(buffer));
-    phone = new String(TL.readString(buffer));
+    try {  first_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  last_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    try {  phone = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
     photo = (tl.TUserProfilePhoto) TL.read(buffer);
     status = (tl.TUserStatus) TL.read(buffer);
     inactive = (buffer.getInt() == 0x997275b5);
@@ -31,9 +31,9 @@ public class UserSelf extends tl.TUser {
       buffer.putInt(0x720535ec);
     }
     buffer.putInt(id);
-    TL.writeString(buffer, first_name.getBytes(), false);
-    TL.writeString(buffer, last_name.getBytes(), false);
-    TL.writeString(buffer, phone.getBytes(), false);
+    try { TL.writeString(buffer, first_name.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, last_name.getBytes("UTF8"), false); } catch (Exception e) { };
+    try { TL.writeString(buffer, phone.getBytes("UTF8"), false); } catch (Exception e) { };
     photo.writeTo(buffer, true);
     status.writeTo(buffer, true);
     buffer.putInt(inactive ? 0x997275b5 : 0xbc799737);
