@@ -3,7 +3,7 @@ package ru.denull.wire.model;
 import java.nio.ByteBuffer;
 import java.util.*;
 
-import com.apple.eawt.Application;
+//import com.apple.eawt.Application;
 
 import ru.denull.mtproto.DataService;
 import ru.denull.wire.Utils;
@@ -40,8 +40,22 @@ public class DialogManager {
   public void updateUnreadCount(int unread) {
     totalUnread = unread;
     
-    Application app = Application.getApplication();
-    app.setDockIconBadge(totalUnread > 0 ? Utils.toCount(totalUnread) : "");    
+    //Application app = Application.getApplication();
+    //app.setDockIconBadge();  
+    if (System.getProperty("os.name").contains("Mac")) {
+      try {
+        Object app = 
+          Class.forName("com.apple.eawt.Application")
+          .getMethod("getApplication", (Class[]) null)
+          .invoke(null, (Object[]) null);
+        
+        app.getClass()
+          .getMethod("setDockIconBadge", new Class[] { String.class })
+          .invoke(app, new Object[] { totalUnread > 0 ? Utils.toCount(totalUnread) : "" });
+      } catch (Exception e) {
+        //fail quietly
+      }
+    }
   }
 	
 	public DialogManager(DataService service, SQLiteDatabase db) {

@@ -25,7 +25,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.AbstractListModel;
 
-import com.apple.eawt.Application;
+//import com.apple.eawt.Application;
+
 
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.DataService.OnUpdateListener;
@@ -62,8 +63,23 @@ public class Main implements OnUpdateListener {
    * Launch the application.
    */
   public static void main(String[] args) {
-    Application app = Application.getApplication();
-    app.setDockIconImage(Utils.getImage("icon_128x128.png"));
+    //Application app = Application.getApplication();
+    //app.setDockIconImage( Utils.getImage("icon_128x128.png"));
+    
+    if (System.getProperty("os.name").contains("Mac")) {
+      try {
+        Object app = 
+          Class.forName("com.apple.eawt.Application")
+          .getMethod("getApplication", (Class[]) null)
+          .invoke(null, (Object[]) null);
+        
+        app.getClass()
+          .getMethod("setDockIconImage", new Class[] { Image.class })
+          .invoke(app, new Object[] { Utils.getImage("icon_128x128.png") });
+      } catch (Exception e) {
+        //fail quietly
+      }
+    }
     
 
     System.setProperty("awt.useSystemAAFontSettings","on");

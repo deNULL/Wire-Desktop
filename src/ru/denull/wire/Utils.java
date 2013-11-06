@@ -798,9 +798,17 @@ public class Utils {
       return name;
     }
     
-    String appBundle = com.apple.eio.FileManager.getPathToApplicationBundle();
-    if (new File(appBundle + "/Contents/Resources/Java/" + name).exists()) {
-      return appBundle + "/Contents/Resources/Java/" + name;
+    if (System.getProperty("os.name").contains("Mac")) {
+      try {
+        String appBundle = (String) Class.forName("com.apple.eio.FileManager")
+            .getMethod("getPathToApplicationBundle", (Class[]) null)
+            .invoke(null, (Object[]) null);
+        if (new File(appBundle + "/Contents/Resources/Java/" + name).exists()) {
+          return appBundle + "/Contents/Resources/Java/" + name;
+        }
+      } catch (Exception e) {
+        //fail quietly
+      }
     }
     
     return "";
