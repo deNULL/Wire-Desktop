@@ -1,5 +1,6 @@
 package ru.denull.wire.model;
 
+import java.awt.Rectangle;
 import java.util.LinkedList;
 
 import javax.swing.AbstractListModel;
@@ -24,8 +25,8 @@ public class MessageListModel extends AbstractListModel {
   public static final int PRELOAD_FROM_CACHE_COUNT = 20;
   public static final int LOAD_FROM_CACHE_COUNT = 50;
   public static final int LOAD_FROM_CACHE_DISTANCE = 10;
-  public static final int PRELOAD_COUNT = 30;
-  public static final int LOAD_COUNT = 40;
+  public static final int PRELOAD_COUNT = 80;
+  public static final int LOAD_COUNT = 50;
   public static final int LOAD_DISTANCE = 20;
   private DataService service;
   private JList list;
@@ -36,9 +37,13 @@ public class MessageListModel extends AbstractListModel {
   boolean loadingFromCache = false;
   boolean initializing = true;
   boolean cachedData = true;
+  boolean starting = true;
   int total = -1;
   int loaded = 0;
   int first_id = 0;
+  
+  boolean scrollToLast = true;
+  boolean updatingScroll = false;
   
   public MessageListModel(DataService service, JList list, TInputPeer peer) {
     this.service = service;
@@ -84,8 +89,12 @@ public class MessageListModel extends AbstractListModel {
     return !(getItem(position) instanceof Integer);
   }*/
   
-  public boolean checkForPreload(int firstVisible) {
-    if (loading || initializing) return true;
+  public boolean scrolled(int firstVisible, int lastVisible) {
+    if (updatingScroll) return true;
+    
+    scrollToLast = (lastVisible == -1) || (lastVisible >= getSize() - 1);
+    
+    if (loading || loadingFromCache || initializing) return true;
     if (total > -1 && loaded >= total) {
       return false;
     }
@@ -191,39 +200,18 @@ public class MessageListModel extends AbstractListModel {
   public boolean add(TMessage[] messages) {
     initializing = true;
     
-    int scrollPos = list.getFirstVisibleIndex();
-    int scrollOffs = 0;
-    boolean resetScroll = true;
-    
-    /*if (listView != null) {
-      View firstItem = listView.getChildAt(listView.getHeaderViewsCount());
-      if (firstItem != null) {
-        scrollPos = listView.getPositionForView(firstItem);
-        Log.i(TAG, "First item: " + scrollPos);
-        
-        scrollOffs = firstItem.getTop() - Utils.px(12);
-        
-        Log.i(TAG, "Last visible: " + listView.getLastVisiblePosition() + ", total: " + items.size());
-        if (listView.getLastVisiblePosition() >= items.size() - 1) {
-          resetScroll = false;
-        }
-      } else {
-        resetScroll = false;
-      }    
-      
-    }*/
-    
-    int lastIndex = list.getLastVisibleIndex();
-    int oldSize = items.size();
-    final boolean lastVisible = (lastIndex == oldSize - 1);
-    
+    //scrollToLast = (list.getLastVisibleIndex() == -1) || (list.getLastVisibleIndex() >= getSize() - 1);
+    System.out.println("last: " + list.getLastVisibleIndex() + ", size: " + getSize());
+    final int oldSize = items.size();    
+    final Rectangle oldRect = list.getVisibleRect();
+    System.out.println(oldRect);
     
     boolean merge = false;
     LinkedList<Object> oldItems = null;
     if (!items.isEmpty() && messages.length > 0 && items.getLast() instanceof TMessage) {
       TMessage last = (TMessage) items.getLast();
       if (last.id <= messages[0].id) {
-        if (last.id >= messages[messages.length - 1].id) { // merge (loaded and new data overlap)
+        if (last.id >= messages[messages.length - 1].id || true) { // merge (loaded and new data overlap)
           merge = true;
           while (!items.isEmpty()) {
             Object l = items.getLast();
@@ -258,9 +246,9 @@ public class MessageListModel extends AbstractListModel {
         }
         items.addFirst(message);
         
-        if (!merge) {
+        //if (!merge) {
           first_id = message.id;
-        }
+        //}
         last = message;
         loaded++;
       //}
@@ -276,44 +264,59 @@ public class MessageListModel extends AbstractListModel {
       oldItems.addAll(items);
       items = oldItems;
     }
-    
-    scrollPos += (items.size() - oldSize);
 
-    fireIntervalAdded(this, oldSize, items.size() - 1);
+    //fireIntervalAdded(this, oldSize, items.size() - 1);
+    //fireIntervalAdded(this, 0, items.size());
+    //fireContentsChanged(this, 0, items.size());
+    //fireIntervalRemoved(this, 0, items.size() - 1);
     System.out.println("oldSize: " + oldSize + ", new size: " + items.size());
     /*if (listView != null && resetScroll) {
       listView.setSelectionFromTop(scrollPos, scrollOffs);
     }*/
-    final int __scrollPos = scrollPos;
+    final int diff = (items.size() - oldSize);
+    
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
-        if (lastVisible) {
-          list.ensureIndexIsVisible(items.size() - 1);
-        } else {
-          list.ensureIndexIsVisible(__scrollPos);
+        updatingScroll = true;
+        int li = list.getLastVisibleIndex();
+        if (items.size() - oldSize - 1 >= 0) {
+          fireIntervalAdded(this, 0, items.size() - oldSize - 1);
         }
+        if (scrollToLast) {
+          //list.ensureIndexIsVisible(items.size() - 1);
+          list.scrollRectToVisible(list.getCellBounds(items.size() - 1, items.size() - 1));
+        } else
+        if (diff > 0) {
+          //int fi = list.getFirstVisibleIndex();
+          //list.ensureIndexIsVisible(li + diff);
+          Rectangle addedRect = list.getCellBounds(0, items.size() - oldSize - 1);
+          list.scrollRectToVisible(new Rectangle(oldRect.x, oldRect.y + addedRect.height, oldRect.width, oldRect.height));
+          //list.ensureIndexIsVisible(fi + diff);
+        }
+        updatingScroll = false;
         initializing = false;
+        starting = false;
       }
     });
     
     return merge;
   }
-  public void addMessage(TMessage message) {
-    int lastIndex = list.getLastVisibleIndex();
-    int oldSize = items.size();
-    boolean lastVisible = (lastIndex == oldSize - 1);
-    
+  public void addMessage(TMessage message) {    
     Object first = items.isEmpty() ? null : items.getLast();
     if (first == null || (first instanceof TMessage && !Utils.sameDay(((TMessage) first).date, message.date))) {
       items.add(message.date);
     }
     items.add(message);
 
-    fireIntervalAdded(this, items.size() - 1, items.size() - 1);
-    if (lastVisible) {
+    if (scrollToLast) {
       SwingUtilities.invokeLater(new Runnable() {
         public void run() {
-          list.ensureIndexIsVisible(items.size() - 1);
+          updatingScroll = true;
+          fireIntervalAdded(this, items.size() - 1, items.size() - 1);
+          //list.ensureIndexIsVisible(items.size() - 1);
+          list.scrollRectToVisible(list.getCellBounds(items.size() - 1, items.size() - 1));
+          updatingScroll = false;
+          scrollToLast = true;
         }
       });
     }

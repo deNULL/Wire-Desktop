@@ -695,6 +695,11 @@ public class DataService {
         	while (!Thread.interrupted() && !server.resolveNetworkProblem(false)) {
         		// restoring connection
         	}
+        } catch (IOException e) { // Connection reset by peer
+          Log.w(TAG, "Socket exception: " + e.getMessage());
+          while (!Thread.interrupted() && !server.resolveNetworkProblem(false)) {
+            // restoring connection
+          }
         } catch (Exception e) {
           e.printStackTrace();
           if (callback != null) {

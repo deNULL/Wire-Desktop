@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import javax.swing.*;
 
 import java.awt.FlowLayout;
+import java.awt.dnd.*;
 import java.awt.event.*;
 import java.util.Enumeration;
 import java.util.Random;
@@ -26,6 +27,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.AbstractListModel;
 
 //import com.apple.eawt.Application;
+
+
+
 
 
 import ru.denull.mtproto.DataService;
@@ -164,6 +168,8 @@ public class Main implements OnUpdateListener {
     frame.getContentPane().setLayout(new BorderLayout(0, 0));
     frame.setTitle("Wire");
     
+    
+    
     JSplitPane splitPane = new JSplitPane();
     splitPane.setContinuousLayout(true);
     splitPane.setDividerSize(1);
@@ -256,8 +262,8 @@ public class Main implements OnUpdateListener {
     scrollPane.setBackground(Color.decode("0xd6e4ef"));
     scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
       public void adjustmentValueChanged(AdjustmentEvent e) {
-        if (messageListModel != null && messageList != null) {
-          messageListModel.checkForPreload(messageList.getFirstVisibleIndex());
+        if (messageListModel != null && messageList != null && !e.getValueIsAdjusting()) {
+          messageListModel.scrolled(messageList.getFirstVisibleIndex(), messageList.getLastVisibleIndex());
         }
       }
     });
@@ -289,6 +295,24 @@ public class Main implements OnUpdateListener {
       }
     });
     
+    new DropTarget(messageList, new DropTargetListener() {
+      public void dropActionChanged(DropTargetDragEvent dtde) {
+      }
+      
+      public void drop(DropTargetDropEvent dtde) {
+        
+      }
+      
+      public void dragOver(DropTargetDragEvent dtde) {
+      }
+      
+      public void dragExit(DropTargetEvent dte) {
+      }
+      
+      public void dragEnter(DropTargetDragEvent dtde) {
+        
+      }
+    });
   }
   
   public void sendMessage(String message, TInputPeer inputPeer) {    
