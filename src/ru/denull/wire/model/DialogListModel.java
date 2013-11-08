@@ -32,7 +32,7 @@ public class DialogListModel extends AbstractListModel {
     this.list = list;
     
     //peer_id = Utils.getPeerID(peer, service.me);
-    reloadDialogs();
+    //reloadDialogs();
   }
 
   public Object getElementAt(int index) {

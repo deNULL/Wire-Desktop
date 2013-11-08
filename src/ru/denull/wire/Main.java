@@ -83,8 +83,14 @@ public class Main implements OnUpdateListener {
       } catch (Exception e) {
         //fail quietly
       }
+    } else
+    if (System.getProperty("os.name").contains("Windows")) {
+      try {
+        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
-    
 
     System.setProperty("awt.useSystemAAFontSettings","on");
     System.setProperty("swing.aatext", "true");
@@ -126,6 +132,7 @@ public class Main implements OnUpdateListener {
               window = new Main();
               window.frame.setVisible(true);
               service.updateListener = window;
+              //service.me = null;
               
               if (service.me != null) {
                 window.dialogListModel.reloadDialogs();
@@ -166,9 +173,7 @@ public class Main implements OnUpdateListener {
     frame.setBounds(200, 200, 820, 600);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.getContentPane().setLayout(new BorderLayout(0, 0));
-    frame.setTitle("Wire");
-    
-    
+    frame.setTitle("Wire");    
     
     JSplitPane splitPane = new JSplitPane();
     splitPane.setContinuousLayout(true);
@@ -190,12 +195,14 @@ public class Main implements OnUpdateListener {
     dialogsBtn.putClientProperty("JButton.segmentPosition", "first");
     dialogsBtn.setFocusable(false);
     dialogsBtn.setSelected(true);
+    dialogsBtn.setPreferredSize(new Dimension(24, 16));
     panel_2.add(dialogsBtn);
     
     JToggleButton contactsBtn = new JToggleButton("");
     contactsBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
     contactsBtn.putClientProperty("JButton.segmentPosition", "last");
     contactsBtn.setFocusable(false);
+    contactsBtn.setPreferredSize(new Dimension(24, 16));
     panel_2.add(contactsBtn);
     
     searchField = new JTextField();

@@ -40,7 +40,7 @@ public class AuthDialog extends JDialog {
    */
   public AuthDialog(Window window, ModalityType modality) {
     super(window, modality);
-    setBounds(0, 0, 500, 240);
+    setBounds(window.getX() + (window.getWidth() - 500) / 2, window.getY() + (window.getHeight() - 240) / 2, 500, 240);
     getContentPane().setLayout(new BorderLayout());
     getRootPane().putClientProperty("apple.awt.documentModalSheet", "true");
     setResizable(false);
