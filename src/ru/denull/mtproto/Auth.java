@@ -25,7 +25,7 @@ public class Auth {
 	
 	public AuthState state = AuthState.NONE;
 	private long retry_id;
-	private AuthCallback callback;
+	private ArrayList<AuthCallback> callbacks = new ArrayList<AuthCallback>();
 	private boolean importAuthorization;
 	
 	private byte[] nonce, server_nonce, new_nonce;
@@ -57,6 +57,7 @@ public class Auth {
       }
       e.printStackTrace();
     }*/
+		System.out.println("auth key = " + (pref.get("auth_key", "").length() > 0 ? "true" : "false") + ", authorisation = " +  pref.getBoolean("authorized", false));
 		
 		this.auth_key = Base64.decode(pref.get("auth_key", ""));
 		this.auth_key_id = pref.getLong("auth_key_id", 0);
@@ -107,8 +108,12 @@ public class Auth {
 	private void fail() {
 		reset(true);
 		state = AuthState.FAILED;
-		callback.error();
-		callback = null;
+		synchronized (callbacks) {
+  		for (AuthCallback callback : callbacks) {
+  		  callback.error();
+  		}
+  		callbacks.clear();
+		}
 	}
 	
 	private void complete() {
@@ -140,19 +145,27 @@ public class Auth {
       e.printStackTrace();
     }
 		
-	  callback.done(server, auth_key);
-	  callback = null;
+
+    synchronized (callbacks) {
+      for (AuthCallback callback : callbacks) {
+        callback.done(server, auth_key);
+      }
+      callbacks.clear();
+    }
 	}
 	
 	public boolean generateKey(boolean forceRegenerate, final AuthCallback callback) {
 	  return generateKey(forceRegenerate, callback, false);
 	}
 	public boolean generateKey(boolean forceRegenerate, final AuthCallback callback, boolean importAutorization) {
-		if (state != AuthState.NONE && state != AuthState.FAILED && state != AuthState.COMPLETE) {
+	  if (callback != null) {
+      callbacks.add(callback);
+    }
+	  
+		if (state != AuthState.NONE && state != AuthState.FAILED && state != AuthState.COMPLETE) {  
 			return false; // already in progress
 		}
 		
-    this.callback = callback;
     this.importAuthorization = importAutorization;
 		
 		if (state == AuthState.COMPLETE && !forceRegenerate) {

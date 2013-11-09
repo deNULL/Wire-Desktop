@@ -36,6 +36,7 @@ import javax.swing.AbstractListModel;
 
 
 
+
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.DataService.OnUpdateListener;
 import ru.denull.mtproto.Server;
@@ -100,6 +101,8 @@ public class Main implements OnUpdateListener {
 
     System.setProperty("awt.useSystemAAFontSettings","on");
     System.setProperty("swing.aatext", "true");
+    
+    //UIManager.put("List.lockToPositionOnScroll", Boolean.FALSE);
     
     Font font = new Font("Tahoma", java.awt.Font.PLAIN, 12);
     Enumeration keys = UIManager.getDefaults().keys();
@@ -294,6 +297,21 @@ public class Main implements OnUpdateListener {
       public boolean getScrollableTracksViewportWidth() {
         return true;
       }
+
+      @Override
+      public int getScrollableUnitIncrement(Rectangle visibleRect,
+          int orientation, int direction) {
+        //return super.getScrollableUnitIncrement(visibleRect, orientation, direction);
+        return 20;
+      }
+
+      @Override
+      public int getScrollableBlockIncrement(Rectangle visibleRect,
+          int orientation, int direction) {
+        return super.getScrollableBlockIncrement(visibleRect, orientation, direction);
+      }
+      
+      
     };
     System.out.println(messageList.getUI().toString());
     messageList.setBackground(Color.decode("0xdfe8ef"));

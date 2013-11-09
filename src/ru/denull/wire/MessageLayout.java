@@ -81,8 +81,8 @@ public class MessageLayout implements LayoutManager2 {
         body.setBounds(leftSide ? pos : (size.width - pos - width), insets.top, width, height);
         //System.out.println(width + "X" + height);
       } else {
-        width = body.getPreferredSize().width;
-        body.setBounds(leftSide ? pos : (size.width - pos - width), insets.top, width, body.getPreferredSize().height);
+        width = Math.min((int) (size.width * bodyWeight), body.getPreferredSize().width);
+        body.setBounds(leftSide ? pos : (size.width - pos - width), insets.top, width, width * body.getPreferredSize().height / body.getPreferredSize().width);
       }
       
       pos += width;
@@ -127,7 +127,8 @@ public class MessageLayout implements LayoutManager2 {
         height = Math.max(height, Math.max(getPreferredSize(html, true, Math.max((int) (width * bodyWeight), min.width)) + vmargin, min.height) + messageBottomMargin);
         //System.out.println("width: " + width + ", h" +  Math.max(getPreferredSize(html, true, Math.max((int) (width * bodyWeight), min.width)).height + vmargin, min.height));
       } else {
-        height = Math.max(height, body.getPreferredSize().height + messageBottomMargin);
+        int w = Math.min((int) (width * bodyWeight), body.getPreferredSize().width);
+        height = Math.max(height, w * body.getPreferredSize().height / body.getPreferredSize().width + messageBottomMargin);
       }
     }
     
@@ -157,7 +158,7 @@ public class MessageLayout implements LayoutManager2 {
         Dimension min = body.getMinimumSize();
         height = Math.max(height, min.height);
       } else {
-        height = Math.max(height, body.getPreferredSize().height);
+        height = Math.max(height, 10);
       }
     }
     

@@ -63,4 +63,22 @@ public class MessageMediaPhoto extends tl.TMessageMedia {
     }
     return cached;
   }
+  
+  public TFileLocation getLocation(String type) {
+    TFileLocation loc = null;
+    for (TPhotoSize size : ((Photo) photo).sizes) {
+      if (size instanceof PhotoSize) {
+        loc = ((PhotoSize) size).location;
+        if (((PhotoSize) size).type.equals(type)) break;
+      } else if (size instanceof PhotoCachedSize) {
+        loc = ((PhotoCachedSize) size).location;
+        if (((PhotoCachedSize) size).type.equals(type)) break;
+      }
+    }
+    return loc;
+  }
+  
+  public TFileLocation getFullsize() {
+    return getLocation("x"); // TODO: select appropriate resolution
+  }
 }

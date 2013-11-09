@@ -1,6 +1,8 @@
 package ru.denull.wire;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
@@ -149,12 +151,18 @@ public class MessageCellRenderer implements ListCellRenderer {
         panel.add(thumbPanel, MessageLayout.BODY);
         Image thumbnail = null;
 
+        int maxw = 0;
+        int maxh = 0;
+        for (TPhotoSize size : ((Photo) media.photo).sizes) {
+          maxw = Math.max(maxw, size.w);
+          maxh = Math.max(maxh, size.h);
+        }
         if (message.preview != null) { // uploading photo
           thumbnail = message.preview;
           
           thumbPanel.setPreferredSize(new Dimension(
-            (int) (19 + Math.sqrt(15000f * thumbnail.getWidth(null) / thumbnail.getHeight(null))),
-            (int) (10 + Math.sqrt(15000f * thumbnail.getHeight(null) / thumbnail.getWidth(null)))
+            Math.min(maxw, (int) (19 + Math.sqrt(50000f * thumbnail.getWidth(null) / thumbnail.getHeight(null)))),
+            Math.min(maxh, (int) (10 + Math.sqrt(50000f * thumbnail.getHeight(null) / thumbnail.getWidth(null))))
           ));
         } else {        
           thumbnail = media.getThumbnail();
@@ -162,25 +170,43 @@ public class MessageCellRenderer implements ListCellRenderer {
             if (size instanceof PhotoSize) {
               String type = ((PhotoSize) size).type;
               if (type.equals("x") || type.equals("y") || type.equals("w")) {
-                thumbPanel.setPreferredSize(new Dimension(
-                  (int) (19 + Math.sqrt(15000f * ((PhotoSize) size).w / ((PhotoSize) size).h)),
-                  (int) (10 + Math.sqrt(15000f * ((PhotoSize) size).h / ((PhotoSize) size).w))
-                ));
+                thumbPanel.setPreferredSize(getOptimalSize(size.w, size.h));
                 break;
               }
             }
           }
         }
-        for (TPhotoSize size : ((Photo) media.photo).sizes) {
-          if (size instanceof PhotoSize) {
-            String type = ((PhotoSize) size).type;
-            if (type.equals("x") || type.equals("y") || type.equals("w")) {
-              thumbPanel.setMaximumSize(new Dimension(size.w, size.h));
-              break;
-            }
-          }
-        }
+        thumbPanel.setMaximumSize(new Dimension(maxw, maxh));
         thumbPanel.setImage(thumbnail);
+        
+        TFileLocation location = media.getFullsize();
+        int state = service.fileManager.getState(location);
+        JProgressBar progressBar;
+        switch (state & FileManager.STATE_LOADING_MASK) {
+        case FileManager.STATE_NOT_LOADING:
+          /*JButton downloadBtn = new JButton("Загрузить");
+          downloadBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            }
+          });
+          panel.add(downloadBtn, MessageLayout.ACTIONS);*/
+          progressBar = new JProgressBar();
+          progressBar.setValue(0);
+          //panel.add(progressBar, MessageLayout.ACTIONS);
+          service.fileManager.queryImage(location, thumbPanel);
+          break;
+        case FileManager.STATE_QUEUED:
+        case FileManager.STATE_IN_PROGRESS:
+          progressBar = new JProgressBar();
+          progressBar.setValue(state & FileManager.STATE_PROGRESS_MASK);
+          //panel.add(progressBar, MessageLayout.ACTIONS);
+          break;
+        case FileManager.STATE_COMPLETE:
+          JButton openBtn = new JButton("Открыть");
+          service.fileManager.queryImage(location, thumbPanel);
+          //panel.add(openBtn, MessageLayout.ACTIONS);
+          break;
+        }
         
         /*Button btnLoad = ViewHolder.get(convertView, R.id.btn_load);
         btnLoad.setTag(message);
@@ -221,10 +247,7 @@ public class MessageCellRenderer implements ListCellRenderer {
         Video video = (Video) media.video;
         thumbPanel.setImage(media.getThumbnail());
         
-        thumbPanel.setPreferredSize(new Dimension(
-          (int) (19 + Math.sqrt(15000f * video.w / video.h)),
-          (int) (10 + Math.sqrt(15000f * video.h / video.w))
-        ));
+        thumbPanel.setPreferredSize(getOptimalSize(video.w, video.h));
         thumbPanel.setMaximumSize(new Dimension(video.w, video.h));
         
         /*Button btnLoad = ViewHolder.get(convertView, R.id.btn_load);
@@ -265,7 +288,7 @@ public class MessageCellRenderer implements ListCellRenderer {
             new NinePatchBorder(Utils.getImage("msg_in.png"), 4, 13, 31, 4, 4, 13, 4, 4));
         panel.add(thumbPanel, MessageLayout.BODY);
 
-        thumbPanel.setPreferredSize(new Dimension(360, 240));
+        thumbPanel.setPreferredSize(new Dimension(377, 248));
         try {
           thumbPanel.setImage(ImageIO.read(new URL(
               "http://maps.googleapis.com/maps/api/staticmap?" +
@@ -346,5 +369,23 @@ public class MessageCellRenderer implements ListCellRenderer {
       
       return panel;
     }
+  }
+  
+  private Dimension getOptimalSize(int w, int h) {
+    // Try to set fixed area first (100 kilopixels), so all pictures look roughly same size
+    int optw = (int) Math.sqrt(100000f * w / h);
+    int opth = (int) Math.sqrt(100000f * h / w);
+    
+    // We don't want to upscale images
+    optw = Math.min(optw, w);
+    opth = Math.min(opth, h);
+    
+    // We don't need to think about width - MessageLayout scales image as needed, but we want to limit height here
+    if (opth > 480) {
+      opth = 480;
+      optw = w * 480 / h;
+    }
+    
+    return new Dimension(19 + optw, 10 + opth);
   }
 }

@@ -61,6 +61,7 @@ public class Server implements ReadTaskCallback {
 		Random rand = new Random();
 		session_id = rand.nextLong();
 		//Log.i(TAG, "Using session #" + session_id);
+		System.out.println("New connection to server " + address + ":" + port + " (session " + session_id + ")");
 		
 		//pref = service.getSharedPreferences(service.getString(R.string.preferences_auth) + "-" + address + ":" + port, Context.MODE_PRIVATE);
 		pref = Preferences.userRoot().node("wire/server/" + address + ":" + port);

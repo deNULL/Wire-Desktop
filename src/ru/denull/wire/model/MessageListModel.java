@@ -92,7 +92,10 @@ public class MessageListModel extends AbstractListModel {
   public boolean scrolled(int firstVisible, int lastVisible) {
     if (updatingScroll) return true;
     
-    scrollToLast = (lastVisible == -1) || (lastVisible >= getSize() - 1);
+    if (lastVisible > -1) {
+      scrollToLast = (lastVisible >= getSize() - 1);
+      System.out.println("firstVis: " + firstVisible + ", lastVisible: " + lastVisible + ", size: " + getSize());
+    }
     
     if (loading || loadingFromCache || initializing) return true;
     if (total > -1 && loaded >= total) {
@@ -288,13 +291,17 @@ public class MessageListModel extends AbstractListModel {
           if (items.size() > 0) {
             //list.ensureIndexIsVisible(items.size() - 1);
             list.scrollRectToVisible(list.getCellBounds(items.size() - 1, items.size() - 1));
+            System.out.println("scroll to last (add)");
           }
         } else
         if (diff > 0) {
           //int fi = list.getFirstVisibleIndex();
           //list.ensureIndexIsVisible(li + diff);
           Rectangle addedRect = list.getCellBounds(0, items.size() - oldSize - 1);
+          System.out.println("addedRect: " + addedRect + ", whole: " + list.getCellBounds(0, items.size() - 1) + ", visible: " + list.getVisibleRect() + ", old: " + oldRect);
           list.scrollRectToVisible(new Rectangle(oldRect.x, oldRect.y + addedRect.height, oldRect.width, oldRect.height));
+         
+          System.out.println("now visible: " + list.getVisibleRect());
           //list.ensureIndexIsVisible(fi + diff);
         }
         updatingScroll = false;
@@ -312,15 +319,16 @@ public class MessageListModel extends AbstractListModel {
     }
     items.add(message);
 
+    fireIntervalAdded(this, items.size() - 1, items.size() - 1);
     if (scrollToLast) {
       SwingUtilities.invokeLater(new Runnable() {
         public void run() {
           updatingScroll = true;
-          fireIntervalAdded(this, items.size() - 1, items.size() - 1);
           //list.ensureIndexIsVisible(items.size() - 1);
           list.scrollRectToVisible(list.getCellBounds(items.size() - 1, items.size() - 1));
           updatingScroll = false;
           scrollToLast = true;
+          System.out.println("scroll to last (addMessage)");
         }
       });
     }

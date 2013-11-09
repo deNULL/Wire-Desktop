@@ -508,35 +508,38 @@ public class DataService {
       String serverId = address + ":" + port;
       Server server = null;
       
-      // try to get from socket pool 
-      if (servers.containsKey(serverId)) {
-        server = servers.get(serverId);
-        
-        if (forceReconnect) {
-          try {
-						server.reconnect();
-					} catch (IOException e) {
-						e.printStackTrace();
-						if (callback != null) {
-	            callback.error(500, "Unable to reconnect");
-	          }
-					}
-        }
-      }
-      
-      // make new connection
-      if (server == null) {
-        try {
-          server = new Server(DataService.this, address, port);
-        } catch (IOException e) {
-          e.printStackTrace();
-          if (callback != null) {
-            callback.error(500, "Unable to connect");
+      synchronized (servers) {
+        // try to get from socket pool 
+        if (servers.containsKey(serverId)) {
+          server = servers.get(serverId);
+          
+          if (forceReconnect) {
+            try {
+  						server.reconnect();
+  					} catch (IOException e) {
+  						e.printStackTrace();
+  						if (callback != null) {
+  	            callback.error(500, "Unable to reconnect");
+  	          }
+  					}
           }
-          return;
         }
         
-        servers.put(serverId, server);
+        // make new connection
+        if (server == null) {
+          try {
+            server = new Server(DataService.this, address, port);
+          } catch (IOException e) {
+            e.printStackTrace();
+            if (callback != null) {
+              callback.error(500, "Unable to connect");
+            }
+            return;
+          }
+          
+          servers.put(serverId, server);
+        } 
+      
       }
       
       // set as our main socket
