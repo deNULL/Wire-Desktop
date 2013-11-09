@@ -538,7 +538,7 @@ public class Utils {
     
     String ending = (user instanceof UserSelf ? "и" : "");//"(а)"
     
-    String actionDesc = "сделал" + ending + " что-то";
+    String actionDesc = "";
     if (action instanceof MessageActionChatCreate) {
       actionDesc = "создал" + ending + " чат";
     } else if (action instanceof MessageActionChatEditTitle) {
@@ -554,7 +554,11 @@ public class Utils {
     } else if (action instanceof MessageActionChatDeleteUser) {
       TUser mentioned = service.userManager.get(((MessageActionChatDeleteUser) action).user_id);
       boolean self = (user.id == mentioned.id);
-      actionDesc = "исключил" + ending + " " + (mentioned instanceof UserSelf ? (self ? "себя" : "вас") : (self ? "себя" : (mentioned.first_name + " " + mentioned.last_name))) + " из чата";
+      if (self) {
+        actionDesc = (user instanceof UserSelf ? "вышли" : "вышел") + " из чата";
+      } else {
+        actionDesc = "исключил" + ending + " " + (mentioned instanceof UserSelf ? "вас" : (mentioned.first_name + " " + mentioned.last_name)) + " из чата";
+      }
     }
     return (user instanceof UserEmpty) ? "" : (user instanceof UserSelf ? "Вы" : (user.first_name + " " + user.last_name)) + " " + actionDesc;
   }

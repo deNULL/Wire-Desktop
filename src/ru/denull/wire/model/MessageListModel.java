@@ -283,8 +283,10 @@ public class MessageListModel extends AbstractListModel {
           fireIntervalAdded(this, 0, items.size() - oldSize - 1);
         }
         if (scrollToLast) {
-          //list.ensureIndexIsVisible(items.size() - 1);
-          list.scrollRectToVisible(list.getCellBounds(items.size() - 1, items.size() - 1));
+          if (items.size() > 0) {
+            //list.ensureIndexIsVisible(items.size() - 1);
+            list.scrollRectToVisible(list.getCellBounds(items.size() - 1, items.size() - 1));
+          }
         } else
         if (diff > 0) {
           //int fi = list.getFirstVisibleIndex();

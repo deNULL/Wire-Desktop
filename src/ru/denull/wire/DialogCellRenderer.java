@@ -179,8 +179,11 @@ public class DialogCellRenderer implements ListCellRenderer {
     
     //panel.setBackground(Color.WHITE);
     if (selected) {
-      //panel.setBackground(UIManager.getColor("List.selectionBackground"));
-      panel.setBorder(UIManager.getBorder("List.sourceList" + (focused ? "Focused" : "") + "SelectionBackgroundPainter"));
+      if (System.getProperty("os.name").contains("Mac")) {
+        panel.setBorder(UIManager.getBorder("List.sourceList" + (focused ? "Focused" : "") + "SelectionBackgroundPainter"));
+      } else {
+        panel.setBackground(UIManager.getColor("List.selectionBackground"));
+      }
     } else {
       //panel.setBorder(UIManager.getBorder("List.sourceListBackgroundPainter"));
     }

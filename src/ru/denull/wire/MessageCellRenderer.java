@@ -117,8 +117,8 @@ public class MessageCellRenderer implements ListCellRenderer {
         JPanel bodyPanel = new JPanel(new BorderLayout());
         bodyPanel.setOpaque(false);
         bodyPanel.setBorder(message.out ?
-            new NinePatchBorder(Utils.getImage("msg_out.png"), 4, 4, 31, 13, 4, 8, 4, 13) : 
-            new NinePatchBorder(Utils.getImage("msg_in.png"), 4, 13, 31, 4, 4, 17, 4, 4));
+            new NinePatchBorder(Utils.getImage("msg_out.png"), 4, 4, 31, 13, 4, 8, 4, 14) : 
+            new NinePatchBorder(Utils.getImage("msg_in.png"), 4, 13, 31, 4, 4, 17, 4, 5));
         bodyPanel.add(bodyLabel, BorderLayout.CENTER);
         //bodyLabel.setMinimumSize(new Dimension(32, 28));
         
