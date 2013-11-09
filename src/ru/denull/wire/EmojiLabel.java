@@ -162,7 +162,8 @@ public class EmojiLabel extends JComponent {
       } else
       if (code == 0x00A9 || code == 0x00AE || code > 0x2100) { // 2-byte emoji
         icon = Utils.getEmojiIcon(code);
-        skip = 1;
+        //System.out.println("next:" + (int)ch[i+1]);
+        skip = (i + 1 < len && ch[i + 1] == 65039) ? 1 : 0;
       }
       
       boolean nonLetter = Character.isLetterOrDigit(ch[i]);

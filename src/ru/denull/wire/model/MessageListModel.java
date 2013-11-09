@@ -282,6 +282,7 @@ public class MessageListModel extends AbstractListModel {
         if (items.size() - oldSize - 1 >= 0) {
           fireIntervalAdded(this, 0, items.size() - oldSize - 1);
         }
+        
         if (scrollToLast) {
           if (items.size() > 0) {
             //list.ensureIndexIsVisible(items.size() - 1);

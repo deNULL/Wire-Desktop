@@ -198,7 +198,7 @@ public class DataService {
   
   public boolean checkingState = false; // prevent multiple queries
   public void checkUpdates() {
-    if (mainServer == null || checkingState) return;
+    if (mainServer == null || checkingState) return; // TODO: check this
     
     checkingState = true;
     if (updates_pts < 0 || updates_date < 0) { // invalid (not initialized) state
@@ -235,13 +235,13 @@ public class DataService {
             updates_date = Math.max(updates_date, ((State) diff.intermediate_state).date);
             updates_seq = Math.max(updates_seq, ((State) diff.intermediate_state).seq);
             
-            for (TMessage message : diff.new_messages) {
+            /*for (TMessage message : diff.new_messages) {
               processNewMessage(message, false);
             }
             
             for (TUpdate update : diff.other_updates) {
               processUpdate(update, false);
-            }
+            }*/
             
             checkUpdates(); // request next updates
           } else
@@ -255,13 +255,13 @@ public class DataService {
             updates_date = Math.max(updates_date, ((State) diff.state).date);
             updates_seq = Math.max(updates_seq, ((State) diff.state).seq);
             
-            for (TMessage message : diff.new_messages) {
+            /*for (TMessage message : diff.new_messages) {
               processNewMessage(message, false);
             }
             
             for (TUpdate update : diff.other_updates) {
               processUpdate(update, false);
-            }
+            }*/
           }
         }
 

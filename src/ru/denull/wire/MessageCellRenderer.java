@@ -1,9 +1,13 @@
 package ru.denull.wire;
 
 import java.awt.*;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.Document;
@@ -246,7 +250,28 @@ public class MessageCellRenderer implements ListCellRenderer {
         duration.setText(Utils.toDuration(video.duration));*/
       } else
       if (message.media instanceof MessageMediaGeo) {
-        MessageMediaGeo media = ((MessageMediaGeo) message.media);
+        ImagePanel thumbPanel = new ImagePanel();
+        thumbPanel.setBorder(message.out ?
+            new NinePatchBorder(Utils.getImage("msg_out.png"), 4, 4, 31, 13, 4, 4, 4, 13) : 
+            new NinePatchBorder(Utils.getImage("msg_in.png"), 4, 13, 31, 4, 4, 13, 4, 4));
+        panel.add(thumbPanel, MessageLayout.BODY);
+
+        thumbPanel.setPreferredSize(new Dimension(360, 240));
+        try {
+          thumbPanel.setImage(ImageIO.read(new URL(
+              "http://maps.googleapis.com/maps/api/staticmap?" +
+              "center=" + message.media.geo.lat + "," + message.media.geo.lng + "&" +
+              "markers=color:red%7C" + message.media.geo.lat + "," + message.media.geo.lng + "&" +
+              "zoom=14&" + 
+              "size=360x240&" + 
+              "maptype=roadmap&" + 
+              "sensor=false&" +
+              "visual_refresh=true")));
+        } catch (MalformedURLException e) {
+          e.printStackTrace();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
         
         /*ImageButton thumb = ViewHolder.get(convertView, R.id.thumb);
         thumb.setImageBitmap(null);
@@ -260,7 +285,27 @@ public class MessageCellRenderer implements ListCellRenderer {
         progressBlock.setVisibility(View.INVISIBLE);*/
       } else
       if (message.media instanceof MessageMediaContact) {
+        TUser from = (!message.out && peer instanceof InputPeerChat) ? service.userManager.get(message.from_id) : null;
+        String fromName = null;
+        Color fromColor = null;
+        if (from != null) {
+          fromColor = Color.decode("0x" + Utils.userColors[from.id & 7]);
+          fromName = from.first_name + " " + from.last_name;
+        }
+        String forwName = "Контакт\n" + message.media.first_name + " " + message.media.last_name;
+        Color forwColor = Color.decode("0x006fc8");
+        EmojiLabel bodyLabel = new EmojiLabel(message.media.phone_number, fromName, fromColor, forwName, forwColor);
         
+        JPanel bodyPanel = new JPanel(new BorderLayout());
+        bodyPanel.setOpaque(false);
+        bodyPanel.setBorder(message.out ?
+            new NinePatchBorder(Utils.getImage("msg_out.png"), 4, 4, 31, 13, 4, 8, 4, 14) : 
+            new NinePatchBorder(Utils.getImage("msg_in.png"), 4, 13, 31, 4, 4, 17, 4, 5));
+        bodyPanel.add(bodyLabel, BorderLayout.CENTER);
+        
+        layout.setHTMLBody(bodyLabel, 8, 25);
+        
+        panel.add(bodyPanel, MessageLayout.BODY);
       }
       
       if (message.out) {
