@@ -205,10 +205,10 @@ public class MessageListModel extends AbstractListModel {
     initializing = true;
     
     //scrollToLast = (list.getLastVisibleIndex() == -1) || (list.getLastVisibleIndex() >= getSize() - 1);
-    System.out.println("last: " + list.getLastVisibleIndex() + ", size: " + getSize());
+    //System.out.println("last: " + list.getLastVisibleIndex() + ", size: " + getSize());
     final int oldSize = items.size();    
     final Rectangle oldRect = list.getVisibleRect();
-    System.out.println(oldRect);
+    //System.out.println(oldRect);
     
     boolean merge = false;
     LinkedList<Object> oldItems = null;
@@ -273,7 +273,7 @@ public class MessageListModel extends AbstractListModel {
     //fireIntervalAdded(this, 0, items.size());
     //fireContentsChanged(this, 0, items.size());
     //fireIntervalRemoved(this, 0, items.size() - 1);
-    System.out.println("oldSize: " + oldSize + ", new size: " + items.size());
+    //System.out.println("oldSize: " + oldSize + ", new size: " + items.size());
     /*if (listView != null && resetScroll) {
       listView.setSelectionFromTop(scrollPos, scrollOffs);
     }*/
@@ -291,17 +291,17 @@ public class MessageListModel extends AbstractListModel {
           if (items.size() > 0) {
             //list.ensureIndexIsVisible(items.size() - 1);
             list.scrollRectToVisible(list.getCellBounds(items.size() - 1, items.size() - 1));
-            System.out.println("scroll to last (add)");
+            //System.out.println("scroll to last (add)");
           }
         } else
         if (diff > 0) {
           //int fi = list.getFirstVisibleIndex();
           //list.ensureIndexIsVisible(li + diff);
           Rectangle addedRect = list.getCellBounds(0, items.size() - oldSize - 1);
-          System.out.println("addedRect: " + addedRect + ", whole: " + list.getCellBounds(0, items.size() - 1) + ", visible: " + list.getVisibleRect() + ", old: " + oldRect);
+          //System.out.println("addedRect: " + addedRect + ", whole: " + list.getCellBounds(0, items.size() - 1) + ", visible: " + list.getVisibleRect() + ", old: " + oldRect);
           list.scrollRectToVisible(new Rectangle(oldRect.x, oldRect.y + addedRect.height, oldRect.width, oldRect.height));
          
-          System.out.println("now visible: " + list.getVisibleRect());
+          //System.out.println("now visible: " + list.getVisibleRect());
           //list.ensureIndexIsVisible(fi + diff);
         }
         updatingScroll = false;
@@ -328,7 +328,7 @@ public class MessageListModel extends AbstractListModel {
           list.scrollRectToVisible(list.getCellBounds(items.size() - 1, items.size() - 1));
           updatingScroll = false;
           scrollToLast = true;
-          System.out.println("scroll to last (addMessage)");
+          //System.out.println("scroll to last (addMessage)");
         }
       });
     }

@@ -313,7 +313,7 @@ public class Main implements OnUpdateListener {
       
       
     };
-    System.out.println(messageList.getUI().toString());
+    //System.out.println(messageList.getUI().toString());
     messageList.setBackground(Color.decode("0xdfe8ef"));
     messageList.addComponentListener(new ComponentListener() {
       public void componentShown(ComponentEvent e) {

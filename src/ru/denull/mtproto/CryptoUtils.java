@@ -6,6 +6,7 @@ import java.security.*;
 import java.security.spec.*;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.zip.*;
 
 import javax.crypto.BadPaddingException;
@@ -94,14 +95,18 @@ public class CryptoUtils {
   }
   // returns such a prime number that x is divisible by
   // bad: 1524705608009140637 (shanks), 2291122014370375721
+  
+  // 2012708483660954293
 	public static BigInteger factor(BigInteger x) {
-		Log.i(TAG, "Factorisation started (" + x + ")...");
-		if (x.compareTo(BigInteger.valueOf(Long.valueOf(Integer.MAX_VALUE) * Long.valueOf(Integer.MAX_VALUE))) < 0) {
+		//Log.i(TAG, "Factorisation started (" + x + ")...");
+		if (x.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) < 0) {
 			//Log.i(TAG, "Shanks result: " + factor_shanks(x.longValue()));
 			//Log.i(TAG, "Fermat result: " + factor_fermat(x.longValue()));
 			//Log.i(TAG, "Pollard result: " + factor_pollard(x.longValue()));
 			
-			return BigInteger.valueOf(factor_shanks(x.longValue()));
+			//return BigInteger.valueOf(factor_shanks(x.longValue()));
+		  
+		  return BigInteger.valueOf(findSmallMultiplierLopatin(x.longValue()));
 		}
 		Log.w(TAG, "Using long arithmetics");
 		
@@ -374,4 +379,64 @@ public class CryptoUtils {
     System.arraycopy(buffer, 0, buf2, 1, buffer.length);
     return new BigInteger(buf2);
   }
+	
+	public static long GCD(long a, long b) {
+    while (a != 0 && b != 0) {
+        while ((b & 1) == 0) {
+            b >>= 1;
+        }
+        while ((a & 1) == 0) {
+            a >>= 1;
+        }
+        if (a > b) {
+            a -= b;
+        } else {
+            b -= a;
+        }
+    }
+    return b == 0 ? a : b;
+	}
+
+	public static long findSmallMultiplierLopatin(long what) {
+    Random r = new Random();
+    long g = 0;
+    int it = 0;
+    for (int i = 0; i < 3; i++) {
+        int q = (r.nextInt(128) & 15) + 17;
+        long x = r.nextInt(1000000000) + 1, y = x;
+        int lim = 1 << (i + 18);
+        for (int j = 1; j < lim; j++) {
+            ++it;
+            long a = x, b = x, c = q;
+            while (b != 0) {
+                if ((b & 1) != 0) {
+                    c += a;
+                    if (c >= what) {
+                        c -= what;
+                    }
+                }
+                a += a;
+                if (a >= what) {
+                    a -= what;
+                }
+                b >>= 1;
+            }
+            x = c;
+            long z = x < y ? y - x : x - y;
+            g = GCD(z, what);
+            if (g != 1) {
+                break;
+            }
+            if ((j & (j - 1)) == 0) {
+                y = x;
+            }
+        }
+        if (g > 1) {
+            break;
+        }
+    }
+
+    long p = what / g;
+    return Math.min(p, g);
+	}
 }
