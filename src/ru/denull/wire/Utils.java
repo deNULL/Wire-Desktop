@@ -4,7 +4,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
@@ -14,23 +17,7 @@ import javax.swing.JTextPane;
 import javax.swing.text.*;
 
 import ru.denull.mtproto.DataService;
-import tl.InputPeerChat;
-import tl.InputPeerContact;
-import tl.InputPeerForeign;
-import tl.InputPeerSelf;
-import tl.MessageActionChatAddUser;
-import tl.MessageActionChatCreate;
-import tl.MessageActionChatDeletePhoto;
-import tl.MessageActionChatDeleteUser;
-import tl.MessageActionChatEditPhoto;
-import tl.MessageActionChatEditTitle;
-import tl.MessageService;
-import tl.TInputPeer;
-import tl.TMessage;
-import tl.TMessageAction;
-import tl.TUser;
-import tl.UserEmpty;
-import tl.UserSelf;
+import tl.*;
 
 public class Utils {
   /**
@@ -469,7 +456,7 @@ public class Utils {
   }
   
   public static String toDate(int date) {
-    return "";// DateFormat.format("dd.MM.yyyy", date * 1000L).toString();
+    return new SimpleDateFormat("dd.MM.yyyy").format(new Date(date * 1000L));
   }
   
   public static String toSize(int size) {
@@ -582,6 +569,24 @@ public class Utils {
     }
 
     return "<html>" + text + "</html>";
+  }
+  
+  public static String toStatus(TUserStatus status, boolean full) {
+    if (status instanceof UserStatusOnline) { // TODO: somehow set timer to update status when it expires
+      return "<html><font color='#006fc8'>в сети</font></html>";
+    } else
+    if (status instanceof UserStatusOffline){
+      int was_online = ((UserStatusOffline) status).was_online;
+      if (was_online == 0) {
+        return "невидимый";
+      } else
+      if (sameDay(was_online, (int) (System.currentTimeMillis() / 1000))) {
+        return "заходил" + (full ? " сегодня" : "") + " в " + toTime(was_online);
+      } else {
+        return "заходил " + toDate(was_online) + (full ? " в " + toTime(was_online) : "");
+      }
+    }
+    return "не в сети";
   }
   
   public static void fixEmoji(JLabel label) {

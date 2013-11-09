@@ -144,7 +144,7 @@ public class TypingManager {
     }
     
     if (typing.size() > 2) {
-      return typing.size() + " members are typing...";
+      return typing.size() + " участника печатают...";
     }
     
     int num = 0;
@@ -157,7 +157,7 @@ public class TypingManager {
       result += user.first_name;
       num++;
     }
-    return result + (typing.size() == 1 ? " is " : " are ") + "typing...";
+    return result + (typing.size() == 1 ? " печатает" : " печатают") + "...";
   }
   
   // null if not typing, formatted string otherwise
@@ -168,11 +168,11 @@ public class TypingManager {
       }
       
       if (!full) {
-        return "typing...";
+        return "печатает...";
       }
       
       TUser user = service.userManager.get(peer_id);
-      return user.first_name + " " + user.last_name + " is typing...";
+      return user.first_name + " " + user.last_name + " печатает...";
     } else {
       return areTyping(-peer_id);
     }

@@ -51,7 +51,7 @@ public class DialogListModel extends AbstractListModel {
     boolean force = true;
     final boolean cachedData = false;
     
-    if (service.mainServer == null || !service.mainServer.transport.isConnected()){
+    if (service.mainServer == null/* || !service.mainServer.transport.isConnected()*/){
       //Log.i(TAG, "Not yet connected, stop");
       return;
     }

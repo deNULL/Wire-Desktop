@@ -32,14 +32,16 @@ import javax.swing.AbstractListModel;
 
 
 
+
+
+
+
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.DataService.OnUpdateListener;
 import ru.denull.mtproto.Server;
 import ru.denull.mtproto.Auth.AuthCallback;
 import ru.denull.mtproto.Server.RPCCallback;
-import ru.denull.wire.model.DialogListModel;
-import ru.denull.wire.model.MessageListModel;
-import ru.denull.wire.model.Notifier;
+import ru.denull.wire.model.*;
 import tl.*;
 import tl.Message;
 import tl.TChat;
@@ -60,7 +62,12 @@ public class Main implements OnUpdateListener {
   
   private MessageListModel messageListModel;
   private DialogListModel dialogListModel;
+  private DialogCellRenderer dialogListRenderer;
+  private ContactListModel contactListModel;
+  private ContactListRenderer contactListRenderer;
   private JTextField messageField;
+  private JToggleButton dialogsBtn;
+  private JToggleButton contactsBtn;
   
 
   /**
@@ -135,6 +142,7 @@ public class Main implements OnUpdateListener {
               
               if (service.me != null) {
                 window.dialogListModel.reloadDialogs();
+                window.contactListModel.reload();
               } else {
                 AuthDialog authDialog = new AuthDialog(window.frame, Dialog.ModalityType.DOCUMENT_MODAL);
                 authDialog.setVisible(true);
@@ -187,21 +195,54 @@ public class Main implements OnUpdateListener {
     
     JPanel panel_2 = new JPanel();
     panel.add(panel_2, BorderLayout.NORTH);
+    panel_2.setBackground(Color.decode("0xf9f9f9"));
     panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
     
-    JToggleButton dialogsBtn = new JToggleButton("");
+    dialogsBtn = new JToggleButton("");
     dialogsBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
     dialogsBtn.putClientProperty("JButton.segmentPosition", "first");
     dialogsBtn.setFocusable(false);
     dialogsBtn.setSelected(true);
-    dialogsBtn.setPreferredSize(new Dimension(24, 16));
+    dialogsBtn.setPreferredSize(new Dimension(24, 14));
+    dialogsBtn.setMinimumSize(new Dimension(24, 14));
+    dialogsBtn.setIcon(new ImageIcon(Utils.getImage("dialogs_up.png")));
+    dialogsBtn.setSelectedIcon(new ImageIcon(Utils.getImage("dialogs_down.png")));
+    //dialogsBtn.setPressedIcon(new ImageIcon(Utils.getImage("dialogs_down.png")));
+    dialogsBtn.setIconTextGap(0);
+    dialogsBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        dialogsBtn.setSelected(true);
+        contactsBtn.setSelected(false);
+        
+        dialogList.setCellRenderer(null);
+        dialogList.setModel(dialogListModel);
+        dialogList.setCellRenderer(dialogListRenderer);
+        restoreDialogSelection();
+      }
+    });
     panel_2.add(dialogsBtn);
     
-    JToggleButton contactsBtn = new JToggleButton("");
+    contactsBtn = new JToggleButton("");
     contactsBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
     contactsBtn.putClientProperty("JButton.segmentPosition", "last");
     contactsBtn.setFocusable(false);
-    contactsBtn.setPreferredSize(new Dimension(24, 16));
+    contactsBtn.setPreferredSize(new Dimension(24, 14));
+    contactsBtn.setMinimumSize(new Dimension(24, 14));
+    contactsBtn.setIcon(new ImageIcon(Utils.getImage("contacts_up.png")));
+    contactsBtn.setSelectedIcon(new ImageIcon(Utils.getImage("contacts_down.png")));
+    //contactsBtn.setPressedIcon(new ImageIcon(Utils.getImage("contacts_down.png")));
+    contactsBtn.setIconTextGap(0);
+    contactsBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        dialogsBtn.setSelected(false);
+        contactsBtn.setSelected(true);
+
+        dialogList.setCellRenderer(null);
+        dialogList.setModel(contactListModel);
+        dialogList.setCellRenderer(contactListRenderer);
+        restoreDialogSelection();
+      }
+    });
     panel_2.add(contactsBtn);
     
     searchField = new JTextField();
@@ -217,13 +258,20 @@ public class Main implements OnUpdateListener {
     };
     dialogList.setBackground(UIManager.getColor("Panel.background"));
     //dialogList.setBorder(UIManager.getBorder("List.sourceListBackgroundPainter"));
-    dialogList.setCellRenderer(new DialogCellRenderer(service));
+    dialogListRenderer = new DialogCellRenderer(service);
+    dialogList.setCellRenderer(dialogListRenderer);
     dialogList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     dialogList.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         if (dialogList.getSelectedIndex() > -1) {
-          tl.Dialog dialog = service.dialogManager.get(dialogList.getSelectedIndex());
-          selectDialog(dialog);
+          if (dialogsBtn.isSelected()) {
+            tl.Dialog dialog = service.dialogManager.get(dialogList.getSelectedIndex());
+            selectDialog(dialog);
+          } else
+          if (contactsBtn.isSelected()) {
+            TUser user = service.userManager.get((Integer) contactListModel.getElementAt(dialogList.getSelectedIndex()));
+            selectDialog(user);
+          }
         }
       }
     });
@@ -234,6 +282,9 @@ public class Main implements OnUpdateListener {
     scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
     scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     panel.add(scrollPane, BorderLayout.CENTER);
+    
+    contactListModel = new ContactListModel(service, dialogList);
+    contactListRenderer = new ContactListRenderer(service);
     
     JPanel panel_1 = new JPanel();
     splitPane.setRightComponent(panel_1);
@@ -355,10 +406,6 @@ public class Main implements OnUpdateListener {
     });
   }
   
-  public void reloadContacts() {
-    
-  }
-  
   public void selectDialog(TChat chat) {
     selectDialog(new InputPeerChat(chat.id));
   }
@@ -458,6 +505,7 @@ public class Main implements OnUpdateListener {
   public void authorized(TUser user) {
     service.logged((UserSelf) user);
     dialogListModel.reloadDialogs();
+    contactListModel.reload();
   }
 
   @Override
@@ -572,13 +620,24 @@ public class Main implements OnUpdateListener {
   
   public void restoreDialogSelection() {
     if (currentPeer == null) return;
-    for (int i = 0; i < service.dialogManager.loaded.size(); i++) {
-      tl.Dialog d = service.dialogManager.loaded.get(i);
-      if ((d.peer instanceof PeerChat && currentPeer instanceof InputPeerChat && d.peer.chat_id == currentPeer.chat_id) ||
-          (!(d.peer instanceof PeerChat) && !(currentPeer instanceof InputPeerChat) && d.peer.user_id == currentPeer.user_id)) {
-        dialogList.setSelectedIndex(i);
-        break;
-      }      
+    if (dialogsBtn.isSelected()) {
+      for (int i = 0; i < service.dialogManager.loaded.size(); i++) {
+        tl.Dialog d = service.dialogManager.loaded.get(i);
+        if ((d.peer instanceof PeerChat && currentPeer instanceof InputPeerChat && d.peer.chat_id == currentPeer.chat_id) ||
+            (!(d.peer instanceof PeerChat) && !(currentPeer instanceof InputPeerChat) && d.peer.user_id == currentPeer.user_id)) {
+          dialogList.setSelectedIndex(i);
+          break;
+        }      
+      }
+    } else {
+      for (int i = 0; i < contactListModel.getSize(); i++) {
+        int user_id = (Integer) contactListModel.getElementAt(i);
+        if (!(currentPeer instanceof InputPeerChat) && user_id == currentPeer.user_id) {
+          dialogList.setSelectedIndex(i);
+          return;
+        }      
+      }
+      //dialogList.setSelectedIndex(-1);
     }
   }
 }

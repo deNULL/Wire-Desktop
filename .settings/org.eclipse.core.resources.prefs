@@ -1,6 +1,8 @@
 eclipse.preferences.version=1
 encoding//src/ru/denull/wire/AuthDialog.java=UTF-8
+encoding//src/ru/denull/wire/ContactListRenderer.java=UTF-8
 encoding//src/ru/denull/wire/DialogCellRenderer.java=UTF-8
 encoding//src/ru/denull/wire/Main.java=UTF-8
 encoding//src/ru/denull/wire/MessageCellRenderer.java=UTF-8
 encoding//src/ru/denull/wire/Utils.java=UTF-8
+encoding//src/ru/denull/wire/model/TypingManager.java=UTF-8

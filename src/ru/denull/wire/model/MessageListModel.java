@@ -56,11 +56,11 @@ public class MessageListModel extends AbstractListModel {
   }
 
   public Object getElementAt(int index) {
-    return items.get(index);
+    return (index < items.size()) ? items.get(index) : null;
   }
 
   public int getSize() {
-    return items.size();
+    return Math.max(1, items.size());
   }
 
   /*public int getItemViewType(int position) {
@@ -165,7 +165,7 @@ public class MessageListModel extends AbstractListModel {
         service.chatManager.store(result.chats);
         service.userManager.store(result.users);
         
-        final boolean forceCached = (service.messageManager.get(result.messages[result.messages.length - 1].id) != MessageManager.empty);
+        final boolean forceCached = false;// (service.messageManager.get(result.messages[result.messages.length - 1].id) != MessageManager.empty);
         service.messageManager.store(result.messages);
         
         if (result instanceof Messages) {
@@ -186,6 +186,7 @@ public class MessageListModel extends AbstractListModel {
           cachedData = true;
           System.out.println("Last loaded item is already in cache, will now load from cache");
         }
+        cachedData = false;
         loading = false;
         
         //checkForPreload();
