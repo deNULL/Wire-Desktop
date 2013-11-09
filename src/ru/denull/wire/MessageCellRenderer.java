@@ -117,8 +117,8 @@ public class MessageCellRenderer implements ListCellRenderer {
         JPanel bodyPanel = new JPanel(new BorderLayout());
         bodyPanel.setOpaque(false);
         bodyPanel.setBorder(message.out ?
-            new NinePatchBorder(Utils.getImage("msg_out.png"), 4, 4, 31, 13, 4, 8, 4, 17) : 
-            new NinePatchBorder(Utils.getImage("msg_in.png"), 4, 13, 31, 4, 4, 17, 4, 8));
+            new NinePatchBorder(Utils.getImage("msg_out.png"), 4, 4, 31, 13, 4, 8, 4, 13) : 
+            new NinePatchBorder(Utils.getImage("msg_in.png"), 4, 13, 31, 4, 4, 17, 4, 4));
         bodyPanel.add(bodyLabel, BorderLayout.CENTER);
         //bodyLabel.setMinimumSize(new Dimension(32, 28));
         
@@ -155,6 +155,15 @@ public class MessageCellRenderer implements ListCellRenderer {
                 ));
                 break;
               }
+            }
+          }
+        }
+        for (TPhotoSize size : ((Photo) media.photo).sizes) {
+          if (size instanceof PhotoSize) {
+            String type = ((PhotoSize) size).type;
+            if (type.equals("x") || type.equals("y") || type.equals("w")) {
+              thumbPanel.setMaximumSize(new Dimension(size.w, size.h));
+              break;
             }
           }
         }
@@ -203,6 +212,7 @@ public class MessageCellRenderer implements ListCellRenderer {
           (int) (19 + Math.sqrt(15000f * video.w / video.h)),
           (int) (10 + Math.sqrt(15000f * video.h / video.w))
         ));
+        thumbPanel.setMaximumSize(new Dimension(video.w, video.h));
         
         /*Button btnLoad = ViewHolder.get(convertView, R.id.btn_load);
         btnLoad.setTag(message);

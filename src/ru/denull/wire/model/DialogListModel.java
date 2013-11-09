@@ -43,6 +43,10 @@ public class DialogListModel extends AbstractListModel {
     return service.dialogManager.loaded.size();
   }
   
+  public void updateContents() {
+    fireContentsChanged(this, 0, getSize() - 1);
+  }
+  
   public void reloadDialogs() {
     boolean force = true;
     final boolean cachedData = false;

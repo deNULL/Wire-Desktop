@@ -126,6 +126,8 @@ public class EmojiLabel extends JComponent {
       return new Point(x, y);
     }
     
+    y++;
+    
     int max = 0;
     
     Font font = getFont();
@@ -160,6 +162,7 @@ public class EmojiLabel extends JComponent {
       } else
       if (code == 0x00A9 || code == 0x00AE || code > 0x2100) { // 2-byte emoji
         icon = Utils.getEmojiIcon(code);
+        skip = 1;
       }
       
       boolean nonLetter = Character.isLetterOrDigit(ch[i]);
@@ -169,7 +172,7 @@ public class EmojiLabel extends JComponent {
         
         int width = (int) font.getStringBounds(ch, lastWord, i + (icon == null ? 1 : 0), frc).getWidth();
         boolean wrap = false;
-        if (i > lastWord) {
+        if (i > lastWord && x > 0) {
           wrap = (x + width > maxWidth);
           if (!wrap && !whitespace && (icon == null)) {
             width = (int) font.getStringBounds(ch, lastWord, i + 1, frc).getWidth();
@@ -228,7 +231,7 @@ public class EmojiLabel extends JComponent {
   }
 
   public Dimension getMinimumSize() {
-    return new Dimension(center ? 28 : Integer.MAX_VALUE, center ? 28 : 34);
+    return new Dimension(center ? 4 : Integer.MAX_VALUE, center ? 28 : 34);
   }
   
   public Dimension getPreferredSize() {

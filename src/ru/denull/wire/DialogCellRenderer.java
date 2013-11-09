@@ -32,10 +32,14 @@ public class DialogCellRenderer implements ListCellRenderer {
     
     JLabel unreadLabel = new JLabel();
     //unreadLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
-    unreadLabel.setMinimumSize(new Dimension(16, 64));
-    unreadLabel.setPreferredSize(new Dimension(16, 64));
-    constraints = new GridBagConstraints();
-    panel.add(unreadLabel, Utils.GBConstraints(0, 0, 1, 2));
+    unreadLabel.setMinimumSize(new Dimension(9, 64));
+    unreadLabel.setPreferredSize(new Dimension(9, 64));
+    if (dialog.unread_count > 0) {
+      unreadLabel.setIcon(new ImageIcon(Utils.getImage("unread.png")));
+    }
+    constraints = Utils.GBConstraints(0, 0, 1, 2);
+    constraints.insets = new Insets(0, 3, 0, 3);
+    panel.add(unreadLabel, constraints);
     
     ImagePanel iconLabel = new ImagePanel();
     //iconLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
@@ -92,7 +96,7 @@ public class DialogCellRenderer implements ListCellRenderer {
       titleLabel.setForeground(selected ? Color.WHITE : Color.BLACK);
       //titleLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
       constraints = Utils.GBConstraints(2, 0, 1, 1);
-      constraints.insets = new Insets(7, 7, 0, 0);
+      constraints.insets = new Insets(6, 7, 2, 0);
       constraints.weightx = 1;
       constraints.anchor = GridBagConstraints.LINE_START;
       panel.add(titleLabel, constraints);
@@ -135,16 +139,18 @@ public class DialogCellRenderer implements ListCellRenderer {
       titleLabel.setForeground(selected ? Color.WHITE : Color.BLACK);
       //titleLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
       constraints = Utils.GBConstraints(2, 0, 1, 1);
-      constraints.insets = new Insets(7, 7, 0, 0);
+      constraints.insets = new Insets(6, 7, 2, 0);
       constraints.weightx = 1;
       constraints.anchor = GridBagConstraints.LINE_START;
       panel.add(titleLabel, constraints);
 
       String typing = service.typingManager.getStatus(user_id, false);
-      JLabel messageLabel = new JLabel(typing == null ? getMessagePreview(message) : typing);
+      EmojiLabel messageLabel = new EmojiLabel(typing == null ? getMessagePreview(message) : typing);
       messageLabel.setForeground(selected ? Color.WHITE : ((typing == null && !(message.media instanceof MessageMediaEmpty)) ? Color.decode("0x006fc8") : Color.BLACK));
       //messageLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
       messageLabel.setMinimumSize(new Dimension(0, 0));
+      messageLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+      messageLabel.center = false;
       constraints = Utils.GBConstraints(2, 1, 2, 1);
       constraints.insets = new Insets(0, 7, 0, 0);
       constraints.weightx = 1;

@@ -180,7 +180,8 @@ public class FileManager {
           bitmap = ImageIO.read(new ByteArrayInputStream(result));
         } catch (IOException e1) {
           // TODO Auto-generated catch block
-          e1.printStackTrace();
+          //e1.printStackTrace();
+          //Invalid JPEG file structure: two SOI markers
         }
         
         // store in memory
@@ -523,7 +524,9 @@ public class FileManager {
             view.setImage(ImageIO.read(new ByteArrayInputStream((byte[]) cached.getObjectValue())));
           } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            //e.printStackTrace();
+            // Sometimes fails with
+            // Invalid JPEG file structure: two SOI markers
           }
         }
         return true;

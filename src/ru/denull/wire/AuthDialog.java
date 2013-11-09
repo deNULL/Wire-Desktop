@@ -45,7 +45,7 @@ public class AuthDialog extends JDialog {
     getRootPane().putClientProperty("apple.awt.documentModalSheet", "true");
     setResizable(false);
     
-    JLabel iconLabel = new JLabel(new ImageIcon("res/icon72.png"));
+    JLabel iconLabel = new JLabel(new ImageIcon(Utils.getImage("icon72.png")));
     iconLabel.setVerticalAlignment(SwingConstants.TOP);
     iconLabel.setBorder(new EmptyBorder(20, 20, 20, 20));
     getContentPane().add(iconLabel, BorderLayout.WEST);
