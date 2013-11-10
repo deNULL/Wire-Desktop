@@ -85,8 +85,8 @@ public class DialogManager {
 	public void addMessage(TMessage message) {
 	  int index = 0;
 	  for (Dialog dialog : loaded) {
-	    if ((dialog.peer instanceof PeerUser && message.to_id instanceof PeerUser && ((PeerUser) dialog.peer).user_id == message.from_id) ||
-	        (dialog.peer instanceof PeerChat && message.to_id instanceof PeerChat && ((PeerChat) dialog.peer).chat_id == ((PeerChat) message.to_id).chat_id)) {
+	    if ((dialog.peer instanceof PeerUser && message.to_id instanceof PeerUser && (dialog.peer.user_id == message.from_id || dialog.peer.user_id == message.to_id.user_id)) ||
+	        (dialog.peer instanceof PeerChat && message.to_id instanceof PeerChat && dialog.peer.chat_id == message.to_id.chat_id)) {
 	      break; 
 	    }
 	    index++;
@@ -102,7 +102,7 @@ public class DialogManager {
         updateUnreadCount(totalUnread + 1);
       }
 	  } else {
-	    dialog = new Dialog(message.to_id instanceof PeerChat ? message.to_id : new PeerUser(message.from_id), message.id, 1);
+	    dialog = new Dialog(message.to_id instanceof PeerChat ? message.to_id : new PeerUser(message.out ? message.to_id.user_id : message.from_id), message.id, 1);
 	  }
 	  
 	  loaded.addFirst(dialog);

@@ -34,7 +34,7 @@ public class DialogCellRenderer implements ListCellRenderer {
     //unreadLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
     unreadLabel.setMinimumSize(new Dimension(9, 64));
     unreadLabel.setPreferredSize(new Dimension(9, 64));
-    if (dialog.unread_count > 0) {
+    if (dialog.unread_count > 0 && !message.out) {
       unreadLabel.setIcon(new ImageIcon(Utils.getImage("unread.png")));
     }
     constraints = Utils.GBConstraints(0, 0, 1, 2);
