@@ -35,6 +35,11 @@ import javax.swing.AbstractListModel;
 //import com.apple.eawt.Application;
 
 
+
+
+
+
+
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.DataService.OnUpdateListener;
 import ru.denull.mtproto.Server;
@@ -73,7 +78,7 @@ public class Main implements OnUpdateListener {
   final JFileChooser fc = new JFileChooser();
   FileDialog fd;
   private JPanel sendPanel;
-  
+  public static int currentMods = 0;
 
   /**
    * Launch the application.
@@ -122,6 +127,7 @@ public class Main implements OnUpdateListener {
        }  
     }
    //SwingUtilities.updateComponentTreeUI(frame);
+    
     
     service = DataService.getInstance();
     
@@ -206,6 +212,29 @@ public class Main implements OnUpdateListener {
       }
     });
     
+    JMenuBar menuBar = new JMenuBar();
+
+    //Build the first menu.
+    JMenu menu = new JMenu("Настройки");
+    menuBar.add(menu);
+  
+    //a group of JMenuItems
+    JMenuItem menuItem = new JMenuItem("Сбросить авторизацию");
+    menuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Preferences pref = Preferences.userRoot().node("wire");
+        try {
+          pref.removeNode();
+        } catch (BackingStoreException e1) {
+          e1.printStackTrace();
+        }
+        System.out.println("Removed all preferences, exiting");
+        System.exit(0);
+      }
+    });
+    menu.add(menuItem);
+    frame.setJMenuBar(menuBar);
+    
     JSplitPane splitPane = new JSplitPane();
     splitPane.setContinuousLayout(true);
     splitPane.setDividerSize(1);
@@ -274,19 +303,22 @@ public class Main implements OnUpdateListener {
     searchField.putClientProperty("JTextField.variant", "search");
     searchField.putClientProperty("JTextField.Search.Prompt", "Найти...");
     searchField.setAlignmentY(Component.CENTER_ALIGNMENT);
-    searchField.setPreferredSize(new Dimension(0, 32));
+    //searchField.setPreferredSize(new Dimension(0, 32));
     searchField.getDocument().addDocumentListener(new DocumentListener() {
       public void removeUpdate(DocumentEvent e) {
-        dialogListModel.filter(searchField.getText());
-        contactListModel.filter(searchField.getText());
+        String query = searchField.getForeground().equals(Color.LIGHT_GRAY) ? "" : searchField.getText();
+        dialogListModel.filter(query);
+        contactListModel.filter(query);
       }
       public void insertUpdate(DocumentEvent e) {
-        dialogListModel.filter(searchField.getText());
-        contactListModel.filter(searchField.getText());
+        String query = searchField.getForeground().equals(Color.LIGHT_GRAY) ? "" : searchField.getText();
+        dialogListModel.filter(query);
+        contactListModel.filter(query);
       }
       public void changedUpdate(DocumentEvent e) {
-        dialogListModel.filter(searchField.getText());
-        contactListModel.filter(searchField.getText());
+        String query = searchField.getForeground().equals(Color.LIGHT_GRAY) ? "" : searchField.getText();
+        dialogListModel.filter(query);
+        contactListModel.filter(query);
       }
     });
     panel_2.add(searchField);
@@ -393,29 +425,16 @@ public class Main implements OnUpdateListener {
     sendPanel.setMinimumSize(new Dimension(0, 1));
     panel_1.add(sendPanel, BorderLayout.SOUTH);
     
-    messageField = new JTextField("Новое сообщение...");
+    messageField = new JTextField();
     messageField.setBorder(new EmptyBorder(2, 2, 2, 2));
-    messageField.setForeground(Color.LIGHT_GRAY);
-    messageField.addFocusListener(new FocusListener() {
-      public void focusLost(FocusEvent e) {
-        if (messageField.getText().length() == 0) {
-          messageField.setText("Новое сообщение...");
-          messageField.setForeground(Color.LIGHT_GRAY);
-        }
-      }
-      public void focusGained(FocusEvent e) {
-        if (messageField.getForeground().equals(Color.LIGHT_GRAY)) {
-          messageField.setText("");
-          messageField.setForeground(Color.BLACK);
-        }
-      }
-    });
+    addHint(messageField, "Новое сообщение...");
     sendPanel.add(messageField);
     //textArea.setBorder(new JTextField().getBorder());
     
     JButton attachBtn = new JButton(new ImageIcon(Utils.getImage("attach_photo.png")));
     attachBtn.setRolloverIcon(new ImageIcon(Utils.getImage("attach_photo_highlight.png")));
     attachBtn.setBorderPainted(false);
+    attachBtn.setBorder(null);
     attachBtn.setPreferredSize(new Dimension(22, 18));
     attachBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     attachBtn.addActionListener(new ActionListener() {
@@ -429,7 +448,7 @@ public class Main implements OnUpdateListener {
         fd.setVisible(true);
         String filename = fd.getFile();
         if (filename != null) {
-          sendFiles(new File[]{ new File(filename) });
+          sendFiles(new File[]{ new File(fd.getDirectory() + System.getProperty("file.separator") + fd.getFile()) });
         }
       }
     });
@@ -500,8 +519,32 @@ public class Main implements OnUpdateListener {
     });
     
     dialogList.addAncestorListener( new RequestFocusListener() );
+    
+
+    if (!System.getProperty("os.name").contains("Mac")) {
+      addHint(searchField, "Найти...");
+    }
   }
   
+  private void addHint(final JTextField field, final String hint) {
+    field.setForeground(Color.LIGHT_GRAY);
+    field.setText(hint);
+    field.addFocusListener(new FocusListener() {
+      public void focusLost(FocusEvent e) {
+        if (field.getText().length() == 0) {
+          field.setText(hint);
+          field.setForeground(Color.LIGHT_GRAY);
+        }
+      }
+      public void focusGained(FocusEvent e) {
+        if (field.getForeground().equals(Color.LIGHT_GRAY)) {
+          field.setText("");
+          field.setForeground(Color.BLACK);
+        }
+      }
+    });
+  }
+
   public void sendMessage(String message, TInputPeer inputPeer) {    
     int random_id = -(new Random()).nextInt(0x10000000);
     int peer_id = Utils.getPeerID(inputPeer, service.me);
@@ -773,7 +816,7 @@ public class Main implements OnUpdateListener {
     }
   }
 
-  private void sendFile(File file) {
+  private void sendFile(final File file) {
     if (currentPeer == null) return;
     
     final TInputPeer peer = currentPeer;
@@ -835,9 +878,10 @@ public class Main implements OnUpdateListener {
           }*/
         }
         
-        public void complete(TInputFile file) {
+        public void complete(TInputFile ifile) {
+          System.out.println("uploaded " + file.getName());
           // 3. send message with uploaded image to server
-          service.mainServer.call(new SendMedia(peer, new InputMediaUploadedPhoto(file), random_id), new RPCCallback<StatedMessage>() {
+          service.mainServer.call(new SendMedia(peer, new InputMediaUploadedPhoto(ifile), random_id), new RPCCallback<StatedMessage>() {
             public void done(StatedMessage result) {
               // 4. replace fake message with real one
               futureMessage.id = result.message.id;

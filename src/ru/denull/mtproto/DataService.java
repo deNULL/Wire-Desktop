@@ -16,6 +16,7 @@ import java.util.prefs.Preferences;
 import net.sf.ehcache.CacheManager;
 import ru.denull.mtproto.Auth.AuthCallback;
 import ru.denull.mtproto.Auth.AuthState;
+import ru.denull.wire.Main;
 import ru.denull.wire.Utils;
 import ru.denull.wire.model.*;
 import tl.*;
