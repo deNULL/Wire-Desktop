@@ -38,8 +38,8 @@ public class MessageCellRenderer implements ListCellRenderer {
       label.setOpaque(true);
       label.setForeground(Color.decode("0x80879b"));
       label.setBackground(Color.decode("0xdfe8ef"));
-      label.setFont(new Font("Tahoma", Font.PLAIN, 12));
-      label.setBorder(new EmptyBorder(4, 4, 4, 4));    
+      label.setFont(new Font("Tahoma", Font.PLAIN, 18));
+      label.setBorder(new EmptyBorder(50, 4, 50, 4));    
       return label;
     } else
     if (item instanceof Integer) {
@@ -386,6 +386,6 @@ public class MessageCellRenderer implements ListCellRenderer {
       optw = w * 480 / h;
     }
     
-    return new Dimension(19 + optw, 10 + opth);
+    return new Dimension(17 + optw, 8 + opth);
   }
 }

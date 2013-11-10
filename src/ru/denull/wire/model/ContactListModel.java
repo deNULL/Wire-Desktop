@@ -30,6 +30,8 @@ public class ContactListModel extends AbstractListModel {
   int loaded = 0;
   int first_id = 0;
   ArrayList<Integer> items = new ArrayList<Integer>();
+  ArrayList<Integer> filtered = null;
+  String filterQuery = null;
   
   public ContactListModel(DataService service, JList list) {
     this.service = service;
@@ -40,11 +42,44 @@ public class ContactListModel extends AbstractListModel {
   }
 
   public Object getElementAt(int index) {
-    return items.get(index);
+    return (filtered == null) ? items.get(index) : filtered.get(index);
   }
 
   public int getSize() {
-    return items.size();
+    return (filtered == null) ? items.size() : filtered.size();
+  }
+  
+  public void filter(String query) {
+    filter(query, false);
+  }
+  
+  public void filter(String query, boolean force) {
+    if (query != null) {
+      query = query.trim().toLowerCase();
+    }
+    
+    if (!force && filterQuery != null && filterQuery.equals(query)) {
+      return;
+    }
+    
+    if (query == null || query.length() == 0) {
+      filtered = null;
+      filterQuery = null;
+      fireContentsChanged(this, 0, getSize() - 1);
+      return;
+    }
+    
+    filtered = new ArrayList<Integer>();
+    for (Integer user_id : items) {
+      TUser user = service.userManager.get(user_id);
+      boolean matches = (user.first_name + " " + user.last_name).toLowerCase().indexOf(query) >= 0 || (user.last_name + " " + user.first_name).toLowerCase().indexOf(query) >= 0;
+      
+      if (matches) {
+        filtered.add(user_id);
+      }
+    }
+    filterQuery = query;
+    fireContentsChanged(this, 0, getSize() - 1);
   }
   
   public void updateContents() {
@@ -76,7 +111,7 @@ public class ContactListModel extends AbstractListModel {
           service.userManager.store(((Contacts) result).users);
         }
 
-        fireContentsChanged(list, 0, getSize() - 1);
+        filter(filterQuery, true);
       }
       public void error(int code, String message) {
         //Log.e(TAG, "Unable to get contacts");

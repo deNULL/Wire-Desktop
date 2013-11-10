@@ -42,13 +42,14 @@ public class ContactListRenderer implements ListCellRenderer {
     titleLabel.setForeground(selected ? Color.WHITE : Color.BLACK);
     //titleLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
     constraints = Utils.GBConstraints(1, 0, 1, 1);
-    constraints.insets = new Insets(2, 7, 2, 0);
+    constraints.insets = new Insets(4, 7, 2, 0);
     constraints.weightx = 1;
     constraints.anchor = GridBagConstraints.LINE_START;
     panel.add(titleLabel, constraints);
       
     JLabel statusLabel = new JLabel(Utils.toStatus(user.status, false));
     statusLabel.setForeground(selected ? Color.WHITE : Color.BLACK);
+    statusLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
     //titleLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
     constraints = Utils.GBConstraints(1, 1, 1, 1);
     constraints.insets = new Insets(0, 7, 2, 0);

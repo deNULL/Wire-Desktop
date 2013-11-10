@@ -94,7 +94,7 @@ public class MessageListModel extends AbstractListModel {
     
     if (lastVisible > -1) {
       scrollToLast = (lastVisible >= getSize() - 1);
-      System.out.println("firstVis: " + firstVisible + ", lastVisible: " + lastVisible + ", size: " + getSize());
+      //System.out.println("firstVis: " + firstVisible + ", lastVisible: " + lastVisible + ", size: " + getSize());
     }
     
     if (loading || loadingFromCache || initializing) return true;
@@ -119,7 +119,7 @@ public class MessageListModel extends AbstractListModel {
     if (!cachedData || loadingFromCache) return;
     
     loadingFromCache = true;
-    System.out.println("Loading history from cache up to id " + first_id);
+    //System.out.println("Loading history from cache up to id " + first_id);
     service.threadPool.submit(new Runnable() {
       public void run() {
         if (cachedData) { // still allowed to query data from DB
@@ -130,7 +130,7 @@ public class MessageListModel extends AbstractListModel {
             add(data);
             if (data.length < PRELOAD_FROM_CACHE_COUNT) { // found outdated message or just end of cache
               cachedData = false;
-              System.out.println("Gap in cache or cache just ended, will now load from server");
+              //System.out.println("Gap in cache or cache just ended, will now load from server");
             }
             
             //checkForPreload();
@@ -149,7 +149,7 @@ public class MessageListModel extends AbstractListModel {
     // prevent from loading two times at once
     loading = true;
     // TODO: use max_id instead of offset?
-    System.out.println("Loading history up to id " + first_id);
+    //System.out.println("Loading history up to id " + first_id);
     service.mainServer.call(new GetHistory(peer, 0, first_id, (first_id == 0) ? PRELOAD_COUNT : LOAD_COUNT), new RPCCallback<TMessages>() {
       public void done(final TMessages result) {
         if (result.messages.length > 0 && result.messages[0].unread) {
@@ -183,11 +183,11 @@ public class MessageListModel extends AbstractListModel {
         }*/
         cachedData = add(result.messages); // if loaded data overlaps data from cache, we can continue loading from cache
         if (cachedData) {
-          System.out.println("Overlaps cached data, will now load from cache");
+          //System.out.println("Overlaps cached data, will now load from cache");
         } else
         if (forceCached) {
           cachedData = true;
-          System.out.println("Last loaded item is already in cache, will now load from cache");
+          //System.out.println("Last loaded item is already in cache, will now load from cache");
         }
         cachedData = false;
         loading = false;

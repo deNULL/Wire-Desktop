@@ -1,5 +1,6 @@
 package ru.denull.wire.model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import javax.swing.AbstractListModel;
@@ -10,8 +11,7 @@ import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.Server;
 import ru.denull.mtproto.Server.RPCCallback;
 import ru.denull.wire.Utils;
-import tl.TInputPeer;
-import tl.TLObject;
+import tl.*;
 import tl.TMessage;
 import tl.messages.*;
 
@@ -27,6 +27,9 @@ public class DialogListModel extends AbstractListModel {
   int loaded = 0;
   int first_id = 0;
   
+  LinkedList<Dialog> filtered = null;
+  String filterQuery = null;
+  
   public DialogListModel(DataService service, JList list) {
     this.service = service;
     this.list = list;
@@ -36,11 +39,49 @@ public class DialogListModel extends AbstractListModel {
   }
 
   public Object getElementAt(int index) {
-    return service.dialogManager.loaded.get(index);
+    return (filtered == null) ? service.dialogManager.loaded.get(index) : filtered.get(index);
   }
 
   public int getSize() {
-    return service.dialogManager.loaded.size();
+    return (filtered == null) ? service.dialogManager.loaded.size() : filtered.size();
+  }
+
+  public void filter(String query) {
+    filter(query, false);
+  }
+  
+  public void filter(String query, boolean force) {
+    if (query != null) {
+      query = query.trim().toLowerCase();
+    }
+    
+    if (!force && filterQuery != null && filterQuery.equals(query)) {
+      return;
+    }
+    
+    if (query == null || query.length() == 0) {
+      filtered = null;
+      filterQuery = null;
+      fireContentsChanged(this, 0, getSize() - 1);
+      return;
+    }
+    
+    filtered = new LinkedList<Dialog>();
+    for (Dialog dialog : service.dialogManager.loaded) {
+      boolean matches = false;
+      if (dialog.peer instanceof PeerChat) {
+        matches = service.chatManager.get(dialog.peer.chat_id).title.toLowerCase().indexOf(query) >= 0;
+      } else {
+        TUser user = service.userManager.get(dialog.peer.user_id);
+        matches = (user.first_name + " " + user.last_name).toLowerCase().indexOf(query) >= 0 || (user.last_name + " " + user.first_name).toLowerCase().indexOf(query) >= 0;
+      }
+      
+      if (matches) {
+        filtered.add(dialog);
+      }
+    }
+    filterQuery = query;
+    fireContentsChanged(this, 0, getSize() - 1);
   }
   
   public void updateContents() {
@@ -89,7 +130,9 @@ public class DialogListModel extends AbstractListModel {
             return values[index];
           }
         });*/
-        fireContentsChanged(list, 0, service.dialogManager.loaded.size() - 1);
+        //fireContentsChanged(list, 0, service.dialogManager.loaded.size() - 1);
+        
+        filter(filterQuery, true);
       }
       public void error(int code, String message) {
         //Log.e(TAG, "Error while loading dialogs");

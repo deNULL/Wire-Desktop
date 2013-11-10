@@ -22,11 +22,12 @@ import javax.swing.JToggleButton;
 import javax.swing.JTextField;
 import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.*;
 import javax.swing.AbstractListModel;
 
 //import com.apple.eawt.Application;
+
+
 
 
 
@@ -200,6 +201,7 @@ public class Main implements OnUpdateListener {
     panel.add(panel_2, BorderLayout.NORTH);
     panel_2.setBackground(Color.decode("0xf9f9f9"));
     panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
+    panel_2.add(Box.createRigidArea(new Dimension(3, 0)));
     
     dialogsBtn = new JToggleButton("");
     dialogsBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
@@ -229,8 +231,8 @@ public class Main implements OnUpdateListener {
     contactsBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
     contactsBtn.putClientProperty("JButton.segmentPosition", "last");
     contactsBtn.setFocusable(false);
-    contactsBtn.setPreferredSize(new Dimension(24, 14));
-    contactsBtn.setMinimumSize(new Dimension(24, 14));
+    contactsBtn.setPreferredSize(new Dimension(24, 32));
+    contactsBtn.setMinimumSize(new Dimension(24, 32));
     contactsBtn.setIcon(new ImageIcon(Utils.getImage("contacts_up.png")));
     contactsBtn.setSelectedIcon(new ImageIcon(Utils.getImage("contacts_down.png")));
     //contactsBtn.setPressedIcon(new ImageIcon(Utils.getImage("contacts_down.png")));
@@ -251,6 +253,22 @@ public class Main implements OnUpdateListener {
     searchField = new JTextField();
     searchField.putClientProperty("JTextField.variant", "search");
     searchField.putClientProperty("JTextField.Search.Prompt", "Найти...");
+    searchField.setAlignmentY(Component.CENTER_ALIGNMENT);
+    searchField.setPreferredSize(new Dimension(0, 32));
+    searchField.getDocument().addDocumentListener(new DocumentListener() {
+      public void removeUpdate(DocumentEvent e) {
+        dialogListModel.filter(searchField.getText());
+        contactListModel.filter(searchField.getText());
+      }
+      public void insertUpdate(DocumentEvent e) {
+        dialogListModel.filter(searchField.getText());
+        contactListModel.filter(searchField.getText());
+      }
+      public void changedUpdate(DocumentEvent e) {
+        dialogListModel.filter(searchField.getText());
+        contactListModel.filter(searchField.getText());
+      }
+    });
     panel_2.add(searchField);
     searchField.setColumns(10);
     

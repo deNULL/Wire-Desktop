@@ -135,7 +135,7 @@ public class EmojiLabel extends JComponent {
     
     FontRenderContext frc = ((Graphics2D) g).getFontRenderContext();
     
-    text = text + "\n";
+    text = text.trim() + "\n";
     char[] ch = text.toCharArray();
     
     int len = ch.length;
@@ -232,11 +232,11 @@ public class EmojiLabel extends JComponent {
   }
 
   public Dimension getMinimumSize() {
-    return new Dimension(center ? 4 : Integer.MAX_VALUE, center ? 28 : 34);
+    return new Dimension(center ? 4 : Integer.MAX_VALUE, center ? 28 : 38);
   }
   
   public Dimension getPreferredSize() {
-    return new Dimension(getMaximalWidth(), 34/* Math.max(28, getHeightForWidth(getWidth()))*/);
+    return new Dimension(getMaximalWidth(), 38/* Math.max(28, getHeightForWidth(getWidth()))*/);
   }
   
 }

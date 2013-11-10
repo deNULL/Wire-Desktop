@@ -25,7 +25,7 @@ public class DialogCellRenderer implements ListCellRenderer {
     panel.setOpaque(true);
     panel.setBackground(Color.decode("0xf9f9f9"));
     GridBagConstraints constraints;
-    Dialog dialog = service.dialogManager.get(index);
+    Dialog dialog = (Dialog) item;
     TMessage message = service.messageManager.get(dialog.top_message);
     
     //panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -54,7 +54,7 @@ public class DialogCellRenderer implements ListCellRenderer {
     //dateLabel.setPreferredSize(new Dimension(60, dateLabel.getPreferredSize().height));
     //System.out.println(Utils.toTimeOrDay(message.date));
     constraints = Utils.GBConstraints(3, 0, 2, 1);
-    constraints.insets = new Insets(4, 0, 0, 4);
+    constraints.insets = new Insets(6, 0, 0, 4);
     panel.add(dateLabel, constraints);
     
     JLabel deleteLabel = new JLabel();
