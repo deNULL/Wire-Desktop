@@ -303,22 +303,25 @@ public class Main implements OnUpdateListener {
     searchField.putClientProperty("JTextField.variant", "search");
     searchField.putClientProperty("JTextField.Search.Prompt", "Найти...");
     searchField.setAlignmentY(Component.CENTER_ALIGNMENT);
-    //searchField.setPreferredSize(new Dimension(0, 32));
+    searchField.setPreferredSize(new Dimension(0, 32));
     searchField.getDocument().addDocumentListener(new DocumentListener() {
       public void removeUpdate(DocumentEvent e) {
-        String query = searchField.getForeground().equals(Color.LIGHT_GRAY) ? "" : searchField.getText();
+        String query = searchField.getForeground().equals(Color.LIGHT_GRAY) ? null : searchField.getText();
         dialogListModel.filter(query);
         contactListModel.filter(query);
+        restoreDialogSelection();
       }
       public void insertUpdate(DocumentEvent e) {
-        String query = searchField.getForeground().equals(Color.LIGHT_GRAY) ? "" : searchField.getText();
+        String query = searchField.getForeground().equals(Color.LIGHT_GRAY) ? null : searchField.getText();
         dialogListModel.filter(query);
         contactListModel.filter(query);
+        restoreDialogSelection();
       }
       public void changedUpdate(DocumentEvent e) {
-        String query = searchField.getForeground().equals(Color.LIGHT_GRAY) ? "" : searchField.getText();
+        String query = searchField.getForeground().equals(Color.LIGHT_GRAY) ? null : searchField.getText();
         dialogListModel.filter(query);
         contactListModel.filter(query);
+        restoreDialogSelection();
       }
     });
     panel_2.add(searchField);
@@ -434,6 +437,8 @@ public class Main implements OnUpdateListener {
     JButton attachBtn = new JButton(new ImageIcon(Utils.getImage("attach_photo.png")));
     attachBtn.setRolloverIcon(new ImageIcon(Utils.getImage("attach_photo_highlight.png")));
     attachBtn.setBorderPainted(false);
+    attachBtn.setOpaque(false);
+    attachBtn.setContentAreaFilled(false);
     attachBtn.setBorder(null);
     attachBtn.setPreferredSize(new Dimension(22, 18));
     attachBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -532,14 +537,14 @@ public class Main implements OnUpdateListener {
     field.addFocusListener(new FocusListener() {
       public void focusLost(FocusEvent e) {
         if (field.getText().length() == 0) {
-          field.setText(hint);
           field.setForeground(Color.LIGHT_GRAY);
+          field.setText(hint);
         }
       }
       public void focusGained(FocusEvent e) {
         if (field.getForeground().equals(Color.LIGHT_GRAY)) {
-          field.setText("");
           field.setForeground(Color.BLACK);
+          field.setText("");
         }
       }
     });
