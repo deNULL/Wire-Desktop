@@ -91,8 +91,8 @@ public class DialogCellRenderer implements ListCellRenderer {
         title.setText(htitle);
       }*/
       
-      JLabel titleLabel = new JLabel(chat.title);
-      titleLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+      JLabel titleLabel = new JLabel(chat.title.trim());
+      titleLabel.setFont(new Font(Utils.fontName, Font.BOLD, 12));
       titleLabel.setForeground(selected ? Color.WHITE : Color.BLACK);
       //titleLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
       constraints = Utils.GBConstraints(2, 0, 1, 1);
@@ -134,8 +134,8 @@ public class DialogCellRenderer implements ListCellRenderer {
 
       service.userManager.getUserpic(user_id, iconLabel, false);
       
-      JLabel titleLabel = new JLabel((user instanceof UserEmpty) ? "" : (user.first_name + " " + user.last_name));
-      titleLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+      JLabel titleLabel = new JLabel((user instanceof UserEmpty) ? "" : (user.first_name + " " + user.last_name).trim());
+      titleLabel.setFont(new Font(Utils.fontName, Font.BOLD, 12));
       titleLabel.setForeground(selected ? Color.WHITE : Color.BLACK);
       //titleLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
       constraints = Utils.GBConstraints(2, 0, 1, 1);

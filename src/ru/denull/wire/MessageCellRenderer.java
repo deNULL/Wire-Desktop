@@ -38,7 +38,7 @@ public class MessageCellRenderer implements ListCellRenderer {
       label.setOpaque(true);
       label.setForeground(Color.decode("0x80879b"));
       label.setBackground(Color.decode("0xdfe8ef"));
-      label.setFont(new Font("Tahoma", Font.PLAIN, 18));
+      label.setFont(new Font(Utils.fontName, Font.PLAIN, 18));
       label.setBorder(new EmptyBorder(50, 4, 50, 4));    
       return label;
     } else
@@ -50,7 +50,7 @@ public class MessageCellRenderer implements ListCellRenderer {
         label.setOpaque(true);
         label.setForeground(Color.decode("0x80879b"));
         label.setBackground(Color.decode("0xdfe8ef"));
-        label.setFont(new Font("Tahoma", Font.PLAIN, 12));
+        label.setFont(new Font(Utils.fontName, Font.PLAIN, 12));
         label.setBorder(new EmptyBorder(4, 4, 4, 4));
         cache.put(-(Integer) item, label);
       }
@@ -69,7 +69,7 @@ public class MessageCellRenderer implements ListCellRenderer {
         label.setOpaque(true);
         label.setForeground(Color.decode("0x80879b"));
         label.setBackground(Color.decode("0xdfe8ef"));
-        label.setFont(new Font("Tahoma", Font.PLAIN, 12));
+        label.setFont(new Font(Utils.fontName, Font.PLAIN, 12));
         label.setBorder(new EmptyBorder(4, 4, 4, 4));
         cache.put(message.id, label);
         return label;
@@ -81,7 +81,7 @@ public class MessageCellRenderer implements ListCellRenderer {
       
       JLabel timeLabel = new JLabel(Utils.toTime(message.date));
       timeLabel.setForeground(Color.decode("0x80879b"));
-      timeLabel.setFont(new Font("Tahoma", Font.PLAIN, 10));
+      timeLabel.setFont(new Font(Utils.fontName, Font.PLAIN, 10));
       panel.add(timeLabel, MessageLayout.DATE);
       
       if (!message.out) {

@@ -37,8 +37,8 @@ public class ContactListRenderer implements ListCellRenderer {
     
     service.userManager.getUserpic(user.id, iconLabel, false);
       
-    JLabel titleLabel = new JLabel(user.first_name + " " + user.last_name);
-    titleLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+    JLabel titleLabel = new JLabel((user.first_name + " " + user.last_name).trim());
+    titleLabel.setFont(new Font(Utils.fontName, Font.BOLD, 12));
     titleLabel.setForeground(selected ? Color.WHITE : Color.BLACK);
     //titleLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
     constraints = Utils.GBConstraints(1, 0, 1, 1);
@@ -48,7 +48,7 @@ public class ContactListRenderer implements ListCellRenderer {
     panel.add(titleLabel, constraints);
       
     JLabel statusLabel = new JLabel(Utils.toStatus(user.status, false));
-    statusLabel.setForeground(selected ? Color.WHITE : Color.BLACK);
+    statusLabel.setForeground(selected ? Color.WHITE : Color.decode("0x808080"));
     statusLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
     //titleLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
     constraints = Utils.GBConstraints(1, 1, 1, 1);

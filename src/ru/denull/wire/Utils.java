@@ -20,6 +20,8 @@ import ru.denull.mtproto.DataService;
 import tl.*;
 
 public class Utils {
+  public static final String fontName = "Tahoma";
+  
   /**
    *  Emoji codes combined into the groups corresponding to the categories in the interface
    *

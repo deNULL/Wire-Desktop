@@ -38,6 +38,10 @@ import javax.swing.AbstractListModel;
 
 
 
+
+
+
+
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.DataService.OnUpdateListener;
 import ru.denull.mtproto.Server;
@@ -79,6 +83,9 @@ public class Main implements OnUpdateListener {
     //Application app = Application.getApplication();
     //app.setDockIconImage( Utils.getImage("icon_128x128.png"));
     
+    System.setProperty("apple.laf.useScreenMenuBar", "true");
+    System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Wire");
+    
     if (System.getProperty("os.name").contains("Mac")) {
       try {
         Object app = 
@@ -105,7 +112,7 @@ public class Main implements OnUpdateListener {
     
     //UIManager.put("List.lockToPositionOnScroll", Boolean.FALSE);
     
-    Font font = new Font("Tahoma", java.awt.Font.PLAIN, 12);
+    Font font = new Font(Utils.fontName, java.awt.Font.PLAIN, 12);
     Enumeration keys = UIManager.getDefaults().keys();
     
     while (keys.hasMoreElements()) {  
@@ -362,8 +369,30 @@ public class Main implements OnUpdateListener {
     });
     panel_1.add(scrollPane, BorderLayout.CENTER);
     
-    messageField = new JTextField();
-    panel_1.add(messageField, BorderLayout.SOUTH);
+    JPanel sendPanel = new JPanel();
+    sendPanel.setLayout(new BoxLayout(sendPanel, BoxLayout.X_AXIS));
+    sendPanel.setBorder(new NinePatchBorder(Utils.getImage("input_border.png"), 10, 10, 10, 10, 10));
+    sendPanel.setMinimumSize(new Dimension(0, 1));
+    panel_1.add(sendPanel, BorderLayout.SOUTH);
+    
+    messageField = new JTextField("Новое сообщение...");
+    messageField.setBorder(new EmptyBorder(0, 0, 0, 0));
+    messageField.setForeground(Color.LIGHT_GRAY);
+    messageField.addFocusListener(new FocusListener() {
+      public void focusLost(FocusEvent e) {
+        if (messageField.getText().length() == 0) {
+          messageField.setText("Новое сообщение...");
+          messageField.setForeground(Color.LIGHT_GRAY);
+        }
+      }
+      public void focusGained(FocusEvent e) {
+        if (messageField.getForeground().equals(Color.LIGHT_GRAY)) {
+          messageField.setText("");
+          messageField.setForeground(Color.BLACK);
+        }
+      }
+    });
+    sendPanel.add(messageField);
     //textArea.setBorder(new JTextField().getBorder());
     
     messageField.addKeyListener(new KeyListener() {
@@ -406,6 +435,8 @@ public class Main implements OnUpdateListener {
         
       }
     });
+    
+    dialogList.addAncestorListener( new RequestFocusListener() );
   }
   
   public void sendMessage(String message, TInputPeer inputPeer) {    

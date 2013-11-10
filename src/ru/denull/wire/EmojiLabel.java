@@ -126,7 +126,7 @@ public class EmojiLabel extends JComponent {
       return new Point(x, y);
     }
     
-    y++;
+    y += 1;
     
     int max = 0;
     
