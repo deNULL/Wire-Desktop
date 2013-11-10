@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateUserPhoto extends tl.TUpdate {
 
   
-  public UpdateUserPhoto(ByteBuffer buffer) {
+  public UpdateUserPhoto(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
     date = buffer.getInt();
     photo = (tl.TUserProfilePhoto) TL.read(buffer);
@@ -19,7 +19,7 @@ public class UpdateUserPhoto extends tl.TUpdate {
     this.previous = previous;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x95313b0c);
@@ -34,7 +34,7 @@ public class UpdateUserPhoto extends tl.TUpdate {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + photo.length();
   }
   

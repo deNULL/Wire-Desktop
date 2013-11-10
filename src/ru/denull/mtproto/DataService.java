@@ -143,7 +143,11 @@ public class DataService {
   }
   
   public void setup() {
-    me = (pref.get("user", "").length() == 0) ? null : (UserSelf) TL.read(pref.get("user", ""));
+    try {
+      me = (pref.get("user", "").length() == 0) ? null : (UserSelf) TL.read(pref.get("user", ""));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     defaultServer = pref.get("server", DEBUG_SERVERS ? "173.240.5.253:443" : "173.240.5.1:443");// "95.142.192.65:80"
     updates_pts = pref.getInt("updates_pts", -1);
     updates_date = pref.getInt("updates_date", -1);
@@ -191,8 +195,12 @@ public class DataService {
     me = user;
     userManager.store(user);
     if (storeKeys) {
-      pref.put("user", user.writeToBase64());
-      pref.put("server", mainServer.address + ":" + mainServer.port);
+      try {
+        pref.put("user", user.writeToBase64());
+        pref.put("server", mainServer.address + ":" + mainServer.port);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
     mainServer.auth.logged();
   }
@@ -236,13 +244,13 @@ public class DataService {
             updates_date = Math.max(updates_date, ((State) diff.intermediate_state).date);
             updates_seq = Math.max(updates_seq, ((State) diff.intermediate_state).seq);
             
-            /*for (TMessage message : diff.new_messages) {
+            for (TMessage message : diff.new_messages) {
               processNewMessage(message, false);
             }
             
             for (TUpdate update : diff.other_updates) {
               processUpdate(update, false);
-            }*/
+            }
             
             checkUpdates(); // request next updates
           } else
@@ -256,13 +264,13 @@ public class DataService {
             updates_date = Math.max(updates_date, ((State) diff.state).date);
             updates_seq = Math.max(updates_seq, ((State) diff.state).seq);
             
-            /*for (TMessage message : diff.new_messages) {
+            for (TMessage message : diff.new_messages) {
               processNewMessage(message, false);
             }
             
             for (TUpdate update : diff.other_updates) {
               processUpdate(update, false);
-            }*/
+            }
           }
         }
 

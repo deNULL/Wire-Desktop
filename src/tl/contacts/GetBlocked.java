@@ -7,7 +7,7 @@ public class GetBlocked extends tl.TLFunction {
   public int offset;
   public int limit;
   
-  public GetBlocked(ByteBuffer buffer) {
+  public GetBlocked(ByteBuffer buffer) throws Exception {
     offset = buffer.getInt();
     limit = buffer.getInt();
   }
@@ -17,7 +17,7 @@ public class GetBlocked extends tl.TLFunction {
     this.limit = limit;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf57c350f);
@@ -30,7 +30,7 @@ public class GetBlocked extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

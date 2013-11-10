@@ -5,12 +5,12 @@ import java.nio.ByteBuffer;
 public class Video extends tl.TVideo {
 
   
-  public Video(ByteBuffer buffer) {
+  public Video(ByteBuffer buffer) throws Exception {
     id = buffer.getLong();
     access_hash = buffer.getLong();
     user_id = buffer.getInt();
     date = buffer.getInt();
-    try {  caption = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    caption = new String(TL.readString(buffer), "UTF8");
     duration = buffer.getInt();
     size = buffer.getInt();
     thumb = (tl.TPhotoSize) TL.read(buffer);
@@ -33,7 +33,7 @@ public class Video extends tl.TVideo {
     this.h = h;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5a04a49f);
@@ -42,7 +42,7 @@ public class Video extends tl.TVideo {
     buffer.putLong(access_hash);
     buffer.putInt(user_id);
     buffer.putInt(date);
-    try { TL.writeString(buffer, caption.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, caption.getBytes("UTF8"), false);
     buffer.putInt(duration);
     buffer.putInt(size);
     thumb.writeTo(buffer, true);
@@ -55,8 +55,8 @@ public class Video extends tl.TVideo {
   	return buffer;
   }
   
-  public int length() {
-    return 48 + TL.length(caption.getBytes()) + thumb.length();
+  public int length() throws Exception {
+    return 48 + TL.length(caption.getBytes("UTF8")) + thumb.length();
   }
   
   public String toString() {

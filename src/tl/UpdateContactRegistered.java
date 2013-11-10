@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateContactRegistered extends tl.TUpdate {
 
   
-  public UpdateContactRegistered(ByteBuffer buffer) {
+  public UpdateContactRegistered(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
     date = buffer.getInt();
   }
@@ -15,7 +15,7 @@ public class UpdateContactRegistered extends tl.TUpdate {
     this.date = date;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x2575bbb9);
@@ -28,7 +28,7 @@ public class UpdateContactRegistered extends tl.TUpdate {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

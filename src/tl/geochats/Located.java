@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class Located extends tl.geochats.TLocated {
 
   
-  public Located(ByteBuffer buffer) {
+  public Located(ByteBuffer buffer) throws Exception {
     results = TL.readVector(buffer, true, new tl.TChatLocated[0]);
     messages = TL.readVector(buffer, true, new tl.TGeoChatMessage[0]);
     chats = TL.readVector(buffer, true, new tl.TChat[0]);
@@ -20,7 +20,7 @@ public class Located extends tl.geochats.TLocated {
     this.users = users;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x48feb267);
@@ -35,7 +35,7 @@ public class Located extends tl.geochats.TLocated {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 32 + TL.length(results) + TL.length(messages) + TL.length(chats) + TL.length(users);
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class RpcAnswerUnknown extends tl.TRpcDropAnswer {
 
   
-  public RpcAnswerUnknown(ByteBuffer buffer) {
+  public RpcAnswerUnknown(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class RpcAnswerUnknown extends tl.TRpcDropAnswer {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5e2ad36e);
@@ -25,7 +25,7 @@ public class RpcAnswerUnknown extends tl.TRpcDropAnswer {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

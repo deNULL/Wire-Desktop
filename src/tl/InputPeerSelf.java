@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputPeerSelf extends tl.TInputPeer {
 
   
-  public InputPeerSelf(ByteBuffer buffer) {
+  public InputPeerSelf(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class InputPeerSelf extends tl.TInputPeer {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x7da07ec9);
@@ -25,7 +25,7 @@ public class InputPeerSelf extends tl.TInputPeer {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

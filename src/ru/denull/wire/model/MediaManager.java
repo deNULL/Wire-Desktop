@@ -47,7 +47,11 @@ public class MediaManager {
 	    if (cursor.getCount() > 0) {
 	      cursor.moveToFirst();
 	      while (!cursor.isAfterLast()) {
-	        result.add((TMessage) TL.read(cursor.getBlob(0)));
+	        try {
+            result.add((TMessage) TL.read(cursor.getBlob(0)));
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
 	        cursor.moveToNext();
 	      }
 	    }
@@ -105,7 +109,11 @@ public class MediaManager {
 	  ContentValues values = new ContentValues();
     values.put(_ID, message.id);
     values.put(COLUMN_NAME_PEER, peer_id);
-    values.put(COLUMN_NAME_BODY, message.writeToByteArray());
+    try {
+      values.put(COLUMN_NAME_BODY, message.writeToByteArray());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     values.put(COLUMN_NAME_TYPE, (message.media instanceof MessageMediaPhoto) ? 0 : 1);
     db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 	}

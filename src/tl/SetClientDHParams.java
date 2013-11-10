@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class SetClientDHParams extends tl.TSetClientDHParamsAnswer {
 
   
-  public SetClientDHParams(ByteBuffer buffer) {
+  public SetClientDHParams(ByteBuffer buffer) throws Exception {
     nonce = TL.readInt128(buffer);
     server_nonce = TL.readInt128(buffer);
     encrypted_data = TL.readString(buffer);
@@ -17,7 +17,7 @@ public class SetClientDHParams extends tl.TSetClientDHParamsAnswer {
     this.encrypted_data = encrypted_data;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf5045f1f);
@@ -31,7 +31,7 @@ public class SetClientDHParams extends tl.TSetClientDHParamsAnswer {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 32 + TL.length(encrypted_data);
   }
   

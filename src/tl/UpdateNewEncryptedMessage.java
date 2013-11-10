@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateNewEncryptedMessage extends tl.TUpdate {
   public tl.TMessage message;
   
-  public UpdateNewEncryptedMessage(ByteBuffer buffer) {
+  public UpdateNewEncryptedMessage(ByteBuffer buffer) throws Exception {
     message = (tl.TMessage) TL.read(buffer);
     qts = buffer.getInt();
   }
@@ -15,7 +15,7 @@ public class UpdateNewEncryptedMessage extends tl.TUpdate {
     this.qts = qts;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x12bcbd9a);
@@ -28,7 +28,7 @@ public class UpdateNewEncryptedMessage extends tl.TUpdate {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + message.length();
   }
   

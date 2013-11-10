@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class DifferenceSlice extends tl.updates.TDifference {
 
   
-  public DifferenceSlice(ByteBuffer buffer) {
+  public DifferenceSlice(ByteBuffer buffer) throws Exception {
     new_messages = TL.readVector(buffer, true, new tl.TMessage[0]);
     new_encrypted_messages = TL.readVector(buffer, true, new tl.TEncryptedMessage[0]);
     other_updates = TL.readVector(buffer, true, new tl.TUpdate[0]);
@@ -24,7 +24,7 @@ public class DifferenceSlice extends tl.updates.TDifference {
     this.intermediate_state = intermediate_state;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa8fb1981);
@@ -41,7 +41,7 @@ public class DifferenceSlice extends tl.updates.TDifference {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 44 + TL.length(new_messages) + TL.length(new_encrypted_messages) + TL.length(other_updates) + TL.length(chats) + TL.length(users) + intermediate_state.length();
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ResPQ extends tl.TResPQ {
 
   
-  public ResPQ(ByteBuffer buffer) {
+  public ResPQ(ByteBuffer buffer) throws Exception {
     nonce = TL.readInt128(buffer);
     server_nonce = TL.readInt128(buffer);
     pq = new java.math.BigInteger(1, TL.readString(buffer));
@@ -19,7 +19,7 @@ public class ResPQ extends tl.TResPQ {
     this.server_public_key_fingerprints = server_public_key_fingerprints;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x05162463);
@@ -34,7 +34,7 @@ public class ResPQ extends tl.TResPQ {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 40 + TL.length(pq.toByteArray()) + server_public_key_fingerprints.length * 8;
   }
   

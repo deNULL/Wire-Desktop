@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateReadMessages extends tl.TUpdate {
 
   
-  public UpdateReadMessages(ByteBuffer buffer) {
+  public UpdateReadMessages(ByteBuffer buffer) throws Exception {
     messages = TL.readVectorInt(buffer, true);
     pts = buffer.getInt();
   }
@@ -15,7 +15,7 @@ public class UpdateReadMessages extends tl.TUpdate {
     this.pts = pts;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc6649e31);
@@ -28,7 +28,7 @@ public class UpdateReadMessages extends tl.TUpdate {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + messages.length * 4;
   }
   

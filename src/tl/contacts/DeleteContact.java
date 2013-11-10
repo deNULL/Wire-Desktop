@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class DeleteContact extends tl.TLFunction {
   public tl.TInputUser id;
   
-  public DeleteContact(ByteBuffer buffer) {
+  public DeleteContact(ByteBuffer buffer) throws Exception {
     id = (tl.TInputUser) TL.read(buffer);
   }
   
@@ -14,7 +14,7 @@ public class DeleteContact extends tl.TLFunction {
     this.id = id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x8e953744);
@@ -26,7 +26,7 @@ public class DeleteContact extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4 + id.length();
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class GetFutureSalts extends tl.TFutureSalts {
 
   
-  public GetFutureSalts(ByteBuffer buffer) {
+  public GetFutureSalts(ByteBuffer buffer) throws Exception {
     num = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class GetFutureSalts extends tl.TFutureSalts {
     this.num = num;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb921bd04);
@@ -25,7 +25,7 @@ public class GetFutureSalts extends tl.TFutureSalts {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

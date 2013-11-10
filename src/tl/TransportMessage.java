@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class TransportMessage extends tl.TTransportMessage {
 
   
-  public TransportMessage(ByteBuffer buffer) {
+  public TransportMessage(ByteBuffer buffer) throws Exception {
     msg_id = buffer.getLong();
     seqno = buffer.getInt();
     bytes = buffer.getInt();
@@ -19,7 +19,7 @@ public class TransportMessage extends tl.TTransportMessage {
     this.body = body;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x0);
@@ -34,7 +34,7 @@ public class TransportMessage extends tl.TTransportMessage {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 20 + body.length();
   }
   

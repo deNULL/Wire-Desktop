@@ -7,7 +7,7 @@ public class ImportAuthorization extends tl.TLFunction {
   public int id;
   public byte[] bytes;
   
-  public ImportAuthorization(ByteBuffer buffer) {
+  public ImportAuthorization(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
     bytes = TL.readString(buffer);
   }
@@ -17,7 +17,7 @@ public class ImportAuthorization extends tl.TLFunction {
     this.bytes = bytes;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe3ef9613);
@@ -30,7 +30,7 @@ public class ImportAuthorization extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4 + TL.length(bytes);
   }
   

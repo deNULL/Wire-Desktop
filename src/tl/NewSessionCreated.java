@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class NewSessionCreated extends tl.TNewSession {
 
   
-  public NewSessionCreated(ByteBuffer buffer) {
+  public NewSessionCreated(ByteBuffer buffer) throws Exception {
     first_msg_id = buffer.getLong();
     unique_id = buffer.getLong();
     server_salt = buffer.getLong();
@@ -17,7 +17,7 @@ public class NewSessionCreated extends tl.TNewSession {
     this.server_salt = server_salt;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9ec20908);
@@ -31,7 +31,7 @@ public class NewSessionCreated extends tl.TNewSession {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 24;
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateShort extends tl.TUpdates {
 
   
-  public UpdateShort(ByteBuffer buffer) {
+  public UpdateShort(ByteBuffer buffer) throws Exception {
     update = (tl.TUpdate) TL.read(buffer);
     date = buffer.getInt();
   }
@@ -15,7 +15,7 @@ public class UpdateShort extends tl.TUpdates {
     this.date = date;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x78d4dec1);
@@ -28,7 +28,7 @@ public class UpdateShort extends tl.TUpdates {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + update.length();
   }
   

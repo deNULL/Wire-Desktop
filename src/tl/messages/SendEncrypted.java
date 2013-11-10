@@ -8,7 +8,7 @@ public class SendEncrypted extends tl.TLFunction {
   public long random_id;
   public byte[] data;
   
-  public SendEncrypted(ByteBuffer buffer) {
+  public SendEncrypted(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputEncryptedChat) TL.read(buffer);
     random_id = buffer.getLong();
     data = TL.readString(buffer);
@@ -20,7 +20,7 @@ public class SendEncrypted extends tl.TLFunction {
     this.data = data;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa9776773);
@@ -34,7 +34,7 @@ public class SendEncrypted extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + peer.length() + TL.length(data);
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UserEmpty extends tl.TUser {
 
   
-  public UserEmpty(ByteBuffer buffer) {
+  public UserEmpty(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class UserEmpty extends tl.TUser {
     this.id = id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x200250ba);
@@ -25,7 +25,7 @@ public class UserEmpty extends tl.TUser {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

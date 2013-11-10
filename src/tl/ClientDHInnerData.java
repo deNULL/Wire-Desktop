@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ClientDHInnerData extends tl.TClientDHInnerData {
 
   
-  public ClientDHInnerData(ByteBuffer buffer) {
+  public ClientDHInnerData(ByteBuffer buffer) throws Exception {
     nonce = TL.readInt128(buffer);
     server_nonce = TL.readInt128(buffer);
     retry_id = buffer.getLong();
@@ -19,7 +19,7 @@ public class ClientDHInnerData extends tl.TClientDHInnerData {
     this.g_b = g_b;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6643b654);
@@ -34,7 +34,7 @@ public class ClientDHInnerData extends tl.TClientDHInnerData {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 40 + TL.length(g_b.toByteArray());
   }
   

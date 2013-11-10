@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateMessageID extends tl.TUpdate {
 
   
-  public UpdateMessageID(ByteBuffer buffer) {
+  public UpdateMessageID(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
     random_id = buffer.getLong();
   }
@@ -15,7 +15,7 @@ public class UpdateMessageID extends tl.TUpdate {
     this.random_id = random_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x4e90bfd6);
@@ -28,7 +28,7 @@ public class UpdateMessageID extends tl.TUpdate {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12;
   }
   

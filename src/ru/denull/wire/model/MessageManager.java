@@ -84,7 +84,11 @@ public class MessageManager {
 			Cursor cursor = db.query(TABLE_NAME, new String[]{ COLUMN_NAME_BODY }, "_id = ?", new String[]{ id + "" }, null, null, null, "1");
 			if (cursor.getCount() > 0) {
 				cursor.moveToFirst();
-				result = (TMessage) TL.read(cursor.getBlob(0));
+				try {
+          result = (TMessage) TL.read(cursor.getBlob(0));
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
 				
 				loaded.put(result.id, result);
 			}
@@ -114,7 +118,11 @@ public class MessageManager {
     while (!cursor.isAfterLast()) {
       if (cursor.getInt(1) == 1) break; // outdated (gap ahead), stop returning results
       
-      result.add((TMessage) TL.read(cursor.getBlob(0)));
+      try {
+        result.add((TMessage) TL.read(cursor.getBlob(0)));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
       
       cursor.moveToNext();
     }

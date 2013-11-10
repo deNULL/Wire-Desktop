@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class ReceivedMessages extends tl.TLFunction {
   public int max_id;
   
-  public ReceivedMessages(ByteBuffer buffer) {
+  public ReceivedMessages(ByteBuffer buffer) throws Exception {
     max_id = buffer.getInt();
   }
   
@@ -14,7 +14,7 @@ public class ReceivedMessages extends tl.TLFunction {
     this.max_id = max_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x28abcb68);
@@ -26,7 +26,7 @@ public class ReceivedMessages extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

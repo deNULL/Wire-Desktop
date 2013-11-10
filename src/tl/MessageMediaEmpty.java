@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class MessageMediaEmpty extends tl.TMessageMedia {
 
   
-  public MessageMediaEmpty(ByteBuffer buffer) {
+  public MessageMediaEmpty(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class MessageMediaEmpty extends tl.TMessageMedia {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3ded6320);
@@ -25,7 +25,7 @@ public class MessageMediaEmpty extends tl.TMessageMedia {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class FutureSalts extends tl.TFutureSalts {
 
   
-  public FutureSalts(ByteBuffer buffer) {
+  public FutureSalts(ByteBuffer buffer) throws Exception {
     req_msg_id = buffer.getLong();
     now = buffer.getInt();
     salts = TL.readVector(buffer, false, new tl.TFutureSalt[0]);
@@ -17,7 +17,7 @@ public class FutureSalts extends tl.TFutureSalts {
     this.salts = salts;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xae500895);
@@ -31,7 +31,7 @@ public class FutureSalts extends tl.TFutureSalts {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + TL.length(salts);
   }
   

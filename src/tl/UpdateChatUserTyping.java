@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateChatUserTyping extends tl.TUpdate {
 
   
-  public UpdateChatUserTyping(ByteBuffer buffer) {
+  public UpdateChatUserTyping(ByteBuffer buffer) throws Exception {
     chat_id = buffer.getInt();
     user_id = buffer.getInt();
   }
@@ -15,7 +15,7 @@ public class UpdateChatUserTyping extends tl.TUpdate {
     this.user_id = user_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3c46cfe6);
@@ -28,7 +28,7 @@ public class UpdateChatUserTyping extends tl.TUpdate {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

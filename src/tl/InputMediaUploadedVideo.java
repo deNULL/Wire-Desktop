@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputMediaUploadedVideo extends tl.TInputMedia {
 
   
-  public InputMediaUploadedVideo(ByteBuffer buffer) {
+  public InputMediaUploadedVideo(ByteBuffer buffer) throws Exception {
     file = (tl.TInputFile) TL.read(buffer);
     duration = buffer.getInt();
     w = buffer.getInt();
@@ -19,7 +19,7 @@ public class InputMediaUploadedVideo extends tl.TInputMedia {
     this.h = h;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x4847d92a);
@@ -34,7 +34,7 @@ public class InputMediaUploadedVideo extends tl.TInputMedia {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + file.length();
   }
   

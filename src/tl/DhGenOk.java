@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class DhGenOk extends tl.TSetClientDHParamsAnswer {
 
   
-  public DhGenOk(ByteBuffer buffer) {
+  public DhGenOk(ByteBuffer buffer) throws Exception {
     nonce = TL.readInt128(buffer);
     server_nonce = TL.readInt128(buffer);
     new_nonce_hash1 = TL.readInt128(buffer);
@@ -17,7 +17,7 @@ public class DhGenOk extends tl.TSetClientDHParamsAnswer {
     this.new_nonce_hash1 = new_nonce_hash1;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3bcbf734);
@@ -31,7 +31,7 @@ public class DhGenOk extends tl.TSetClientDHParamsAnswer {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 48;
   }
   

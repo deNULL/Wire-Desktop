@@ -5,8 +5,8 @@ import java.nio.ByteBuffer;
 public class PhotoSize extends tl.TPhotoSize {
 
   
-  public PhotoSize(ByteBuffer buffer) {
-    try {  type = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+  public PhotoSize(ByteBuffer buffer) throws Exception {
+    type = new String(TL.readString(buffer), "UTF8");
     location = (tl.TFileLocation) TL.read(buffer);
     w = buffer.getInt();
     h = buffer.getInt();
@@ -21,12 +21,12 @@ public class PhotoSize extends tl.TPhotoSize {
     this.size = size;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x77bfb61b);
     }
-    try { TL.writeString(buffer, type.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, type.getBytes("UTF8"), false);
     location.writeTo(buffer, true);
     buffer.putInt(w);
     buffer.putInt(h);
@@ -37,8 +37,8 @@ public class PhotoSize extends tl.TPhotoSize {
   	return buffer;
   }
   
-  public int length() {
-    return 16 + TL.length(type.getBytes()) + location.length();
+  public int length() throws Exception {
+    return 16 + TL.length(type.getBytes("UTF8")) + location.length();
   }
   
   public String toString() {

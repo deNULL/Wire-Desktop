@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class RpcAnswerDropped extends tl.TRpcDropAnswer {
 
   
-  public RpcAnswerDropped(ByteBuffer buffer) {
+  public RpcAnswerDropped(ByteBuffer buffer) throws Exception {
     msg_id = buffer.getLong();
     seq_no = buffer.getInt();
     bytes = buffer.getInt();
@@ -17,7 +17,7 @@ public class RpcAnswerDropped extends tl.TRpcDropAnswer {
     this.bytes = bytes;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa43ad8b7);
@@ -31,7 +31,7 @@ public class RpcAnswerDropped extends tl.TRpcDropAnswer {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16;
   }
   

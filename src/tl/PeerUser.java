@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class PeerUser extends tl.TPeer {
 
   
-  public PeerUser(ByteBuffer buffer) {
+  public PeerUser(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class PeerUser extends tl.TPeer {
     this.user_id = user_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9db1bc6d);
@@ -25,7 +25,7 @@ public class PeerUser extends tl.TPeer {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

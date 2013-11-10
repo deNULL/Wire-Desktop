@@ -7,7 +7,7 @@ public class SetTyping extends tl.TLFunction {
   public tl.TInputPeer peer;
   public boolean typing;
   
-  public SetTyping(ByteBuffer buffer) {
+  public SetTyping(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputPeer) TL.read(buffer);
     typing = (buffer.getInt() == 0x997275b5);
   }
@@ -17,7 +17,7 @@ public class SetTyping extends tl.TLFunction {
     this.typing = typing;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x719839e9);
@@ -30,7 +30,7 @@ public class SetTyping extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + peer.length();
   }
   

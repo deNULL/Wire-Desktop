@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class MessageForwarded extends tl.TMessage {
 
   
-  public MessageForwarded(ByteBuffer buffer) {
+  public MessageForwarded(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
     fwd_from_id = buffer.getInt();
     fwd_date = buffer.getInt();
@@ -14,7 +14,7 @@ public class MessageForwarded extends tl.TMessage {
     out = (buffer.getInt() == 0x997275b5);
     unread = (buffer.getInt() == 0x997275b5);
     date = buffer.getInt();
-    try {  message = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    message = new String(TL.readString(buffer), "UTF8");
     media = (tl.TMessageMedia) TL.read(buffer);
   }
   
@@ -31,7 +31,7 @@ public class MessageForwarded extends tl.TMessage {
     this.media = media;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5f46804);
@@ -44,7 +44,7 @@ public class MessageForwarded extends tl.TMessage {
     buffer.putInt(out ? 0x997275b5 : 0xbc799737);
     buffer.putInt(unread ? 0x997275b5 : 0xbc799737);
     buffer.putInt(date);
-    try { TL.writeString(buffer, message.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, message.getBytes("UTF8"), false);
     media.writeTo(buffer, true);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at MessageForwarded: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
@@ -52,8 +52,8 @@ public class MessageForwarded extends tl.TMessage {
   	return buffer;
   }
   
-  public int length() {
-    return 36 + to_id.length() + TL.length(message.getBytes()) + media.length();
+  public int length() throws Exception {
+    return 36 + to_id.length() + TL.length(message.getBytes("UTF8")) + media.length();
   }
   
   public String toString() {

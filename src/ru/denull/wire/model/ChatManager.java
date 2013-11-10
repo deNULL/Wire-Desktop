@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.Server.RPCCallback;
 import ru.denull.wire.ImagePanel;
@@ -49,7 +48,11 @@ public class ChatManager {
 		ContentValues values = new ContentValues();
 		values.put(_ID, chat.id);
 		values.put(COLUMN_NAME_TITLE, chat instanceof Chat ? ((Chat) chat).title.trim().toLowerCase() : "");
-		values.put(COLUMN_NAME_BODY, chat.writeToByteArray());
+		try {
+      values.put(COLUMN_NAME_BODY, chat.writeToByteArray());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 		db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 		
 		loaded.put(chat.id, chat);
@@ -59,7 +62,11 @@ public class ChatManager {
 	public void store(TChatFull chatFull) {
 	  ContentValues values = new ContentValues();
     values.put(_ID, ((ChatFull) chatFull).id);
-    values.put(COLUMN_NAME_BODY_FULL, chatFull.writeToByteArray());
+    try {
+      values.put(COLUMN_NAME_BODY_FULL, chatFull.writeToByteArray());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     
     full.put(((ChatFull) chatFull).id, (ChatFull) chatFull);
@@ -71,7 +78,11 @@ public class ChatManager {
 	  int index = 0;
 	  cursor.moveToFirst();
 	  while (!cursor.isAfterLast()) {
-	    result[index] = (TChat) TL.read(cursor.getBlob(0));
+	    try {
+        result[index] = (TChat) TL.read(cursor.getBlob(0));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
 	    cursor.moveToNext();
 	    index++;
 	  }
@@ -85,7 +96,11 @@ public class ChatManager {
 			Cursor cursor = db.query(TABLE_NAME, new String[]{ COLUMN_NAME_BODY }, "_id = ? AND body NOT NULL", new String[]{ id + "" }, null, null, null, "1");
 			if (cursor.getCount() > 0) {
 				cursor.moveToFirst();
-				result = (TChat) TL.read(cursor.getBlob(0));
+				try {
+          result = (TChat) TL.read(cursor.getBlob(0));
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
 				
 				loaded.put(result.id, result);
 			}
@@ -101,7 +116,11 @@ public class ChatManager {
       Cursor cursor = db.query(TABLE_NAME, new String[]{ COLUMN_NAME_BODY_FULL }, "_id = ? AND body_full NOT NULL", new String[]{ id + "" }, null, null, null, "1");
       if (cursor.getCount() > 0) {
         cursor.moveToFirst();
-        result = (ChatFull) TL.read(cursor.getBlob(0));
+        try {
+          result = (ChatFull) TL.read(cursor.getBlob(0));
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
         
         full.put(id, result);
       }

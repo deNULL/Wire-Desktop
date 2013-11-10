@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class DhConfig extends tl.messages.TDhConfig {
 
   
-  public DhConfig(ByteBuffer buffer) {
+  public DhConfig(ByteBuffer buffer) throws Exception {
     g = buffer.getInt();
     p = TL.readString(buffer);
     version = buffer.getInt();
@@ -20,7 +20,7 @@ public class DhConfig extends tl.messages.TDhConfig {
     this.random = random;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x2c221edd);
@@ -35,7 +35,7 @@ public class DhConfig extends tl.messages.TDhConfig {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + TL.length(p) + TL.length(random);
   }
   

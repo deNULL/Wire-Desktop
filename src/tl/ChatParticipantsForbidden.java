@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ChatParticipantsForbidden extends tl.TChatParticipants {
 
   
-  public ChatParticipantsForbidden(ByteBuffer buffer) {
+  public ChatParticipantsForbidden(ByteBuffer buffer) throws Exception {
     chat_id = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class ChatParticipantsForbidden extends tl.TChatParticipants {
     this.chat_id = chat_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xfd2bb8a);
@@ -25,7 +25,7 @@ public class ChatParticipantsForbidden extends tl.TChatParticipants {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

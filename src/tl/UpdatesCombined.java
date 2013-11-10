@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdatesCombined extends tl.TUpdates {
 
   
-  public UpdatesCombined(ByteBuffer buffer) {
+  public UpdatesCombined(ByteBuffer buffer) throws Exception {
     updates = TL.readVector(buffer, true, new tl.TUpdate[0]);
     users = TL.readVector(buffer, true, new tl.TUser[0]);
     chats = TL.readVector(buffer, true, new tl.TChat[0]);
@@ -23,7 +23,7 @@ public class UpdatesCombined extends tl.TUpdates {
     this.seq = seq;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x725b04c3);
@@ -40,7 +40,7 @@ public class UpdatesCombined extends tl.TUpdates {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 36 + TL.length(updates) + TL.length(users) + TL.length(chats);
   }
   

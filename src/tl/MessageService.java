@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class MessageService extends tl.TMessage {
 
   
-  public MessageService(ByteBuffer buffer) {
+  public MessageService(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
     from_id = buffer.getInt();
     to_id = (tl.TPeer) TL.read(buffer);
@@ -25,7 +25,7 @@ public class MessageService extends tl.TMessage {
     this.action = action;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9f8d60bb);
@@ -43,7 +43,7 @@ public class MessageService extends tl.TMessage {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 28 + to_id.length() + action.length();
   }
   

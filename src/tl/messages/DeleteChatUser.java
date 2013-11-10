@@ -7,7 +7,7 @@ public class DeleteChatUser extends tl.TLFunction {
   public int chat_id;
   public tl.TInputUser user_id;
   
-  public DeleteChatUser(ByteBuffer buffer) {
+  public DeleteChatUser(ByteBuffer buffer) throws Exception {
     chat_id = buffer.getInt();
     user_id = (tl.TInputUser) TL.read(buffer);
   }
@@ -17,7 +17,7 @@ public class DeleteChatUser extends tl.TLFunction {
     this.user_id = user_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc3c5cd23);
@@ -30,7 +30,7 @@ public class DeleteChatUser extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + user_id.length();
   }
   

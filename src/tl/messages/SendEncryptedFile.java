@@ -9,7 +9,7 @@ public class SendEncryptedFile extends tl.TLFunction {
   public byte[] data;
   public tl.TInputEncryptedFile file;
   
-  public SendEncryptedFile(ByteBuffer buffer) {
+  public SendEncryptedFile(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputEncryptedChat) TL.read(buffer);
     random_id = buffer.getLong();
     data = TL.readString(buffer);
@@ -23,7 +23,7 @@ public class SendEncryptedFile extends tl.TLFunction {
     this.file = file;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9a901b66);
@@ -38,7 +38,7 @@ public class SendEncryptedFile extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + peer.length() + TL.length(data) + file.length();
   }
   

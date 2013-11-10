@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class StatedMessage extends tl.messages.TStatedMessage {
 
   
-  public StatedMessage(ByteBuffer buffer) {
+  public StatedMessage(ByteBuffer buffer) throws Exception {
     message = (tl.TMessage) TL.read(buffer);
     chats = TL.readVector(buffer, true, new tl.TChat[0]);
     users = TL.readVector(buffer, true, new tl.TUser[0]);
@@ -22,7 +22,7 @@ public class StatedMessage extends tl.messages.TStatedMessage {
     this.seq = seq;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd07ae726);
@@ -38,7 +38,7 @@ public class StatedMessage extends tl.messages.TStatedMessage {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 28 + message.length() + TL.length(chats) + TL.length(users);
   }
   

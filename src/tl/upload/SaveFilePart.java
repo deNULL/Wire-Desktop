@@ -8,7 +8,7 @@ public class SaveFilePart extends tl.TLFunction {
   public int file_part;
   public byte[] bytes;
   
-  public SaveFilePart(ByteBuffer buffer) {
+  public SaveFilePart(ByteBuffer buffer) throws Exception {
     file_id = buffer.getLong();
     file_part = buffer.getInt();
     bytes = TL.readString(buffer);
@@ -20,7 +20,7 @@ public class SaveFilePart extends tl.TLFunction {
     this.bytes = bytes;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb304a621);
@@ -34,7 +34,7 @@ public class SaveFilePart extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + TL.length(bytes);
   }
   

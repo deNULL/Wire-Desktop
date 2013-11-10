@@ -5,9 +5,9 @@ import java.nio.ByteBuffer;
 public class PeerNotifySettings extends tl.TPeerNotifySettings {
 
   
-  public PeerNotifySettings(ByteBuffer buffer) {
+  public PeerNotifySettings(ByteBuffer buffer) throws Exception {
     mute_until = buffer.getInt();
-    try {  sound = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    sound = new String(TL.readString(buffer), "UTF8");
     show_previews = (buffer.getInt() == 0x997275b5);
     events_mask = buffer.getInt();
   }
@@ -19,13 +19,13 @@ public class PeerNotifySettings extends tl.TPeerNotifySettings {
     this.events_mask = events_mask;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x8d5e11ee);
     }
     buffer.putInt(mute_until);
-    try { TL.writeString(buffer, sound.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, sound.getBytes("UTF8"), false);
     buffer.putInt(show_previews ? 0x997275b5 : 0xbc799737);
     buffer.putInt(events_mask);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
@@ -34,8 +34,8 @@ public class PeerNotifySettings extends tl.TPeerNotifySettings {
   	return buffer;
   }
   
-  public int length() {
-    return 12 + TL.length(sound.getBytes());
+  public int length() throws Exception {
+    return 12 + TL.length(sound.getBytes("UTF8"));
   }
   
   public String toString() {

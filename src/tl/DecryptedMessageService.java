@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class DecryptedMessageService extends tl.TDecryptedMessage {
 
   
-  public DecryptedMessageService(ByteBuffer buffer) {
+  public DecryptedMessageService(ByteBuffer buffer) throws Exception {
     random_id = buffer.getLong();
     random_bytes = TL.readString(buffer);
     action = (tl.TDecryptedMessageAction) TL.read(buffer);
@@ -17,7 +17,7 @@ public class DecryptedMessageService extends tl.TDecryptedMessage {
     this.action = action;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xaa48327d);
@@ -31,7 +31,7 @@ public class DecryptedMessageService extends tl.TDecryptedMessage {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + TL.length(random_bytes) + action.length();
   }
   

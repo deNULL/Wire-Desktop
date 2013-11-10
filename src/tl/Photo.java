@@ -5,12 +5,12 @@ import java.nio.ByteBuffer;
 public class Photo extends tl.TPhoto {
 
   
-  public Photo(ByteBuffer buffer) {
+  public Photo(ByteBuffer buffer) throws Exception {
     id = buffer.getLong();
     access_hash = buffer.getLong();
     user_id = buffer.getInt();
     date = buffer.getInt();
-    try {  caption = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    caption = new String(TL.readString(buffer), "UTF8");
     geo = (tl.TGeoPoint) TL.read(buffer);
     sizes = TL.readVector(buffer, true, new tl.TPhotoSize[0]);
   }
@@ -25,7 +25,7 @@ public class Photo extends tl.TPhoto {
     this.sizes = sizes;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x22b56751);
@@ -34,7 +34,7 @@ public class Photo extends tl.TPhoto {
     buffer.putLong(access_hash);
     buffer.putInt(user_id);
     buffer.putInt(date);
-    try { TL.writeString(buffer, caption.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, caption.getBytes("UTF8"), false);
     geo.writeTo(buffer, true);
     TL.writeVector(buffer, sizes, true, true);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
@@ -43,8 +43,8 @@ public class Photo extends tl.TPhoto {
   	return buffer;
   }
   
-  public int length() {
-    return 36 + TL.length(caption.getBytes()) + geo.length() + TL.length(sizes);
+  public int length() throws Exception {
+    return 36 + TL.length(caption.getBytes("UTF8")) + geo.length() + TL.length(sizes);
   }
   
   public String toString() {

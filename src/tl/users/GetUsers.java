@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class GetUsers extends tl.TLFunction {
   public tl.TInputUser[] id;
   
-  public GetUsers(ByteBuffer buffer) {
+  public GetUsers(ByteBuffer buffer) throws Exception {
     id = TL.readVector(buffer, true, new tl.TInputUser[0]);
   }
   
@@ -14,7 +14,7 @@ public class GetUsers extends tl.TLFunction {
     this.id = id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd91a548);
@@ -26,7 +26,7 @@ public class GetUsers extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + TL.length(id);
   }
   

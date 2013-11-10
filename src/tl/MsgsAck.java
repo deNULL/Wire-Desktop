@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class MsgsAck extends tl.TMsgsAck {
 
   
-  public MsgsAck(ByteBuffer buffer) {
+  public MsgsAck(ByteBuffer buffer) throws Exception {
     msg_ids = TL.readVectorLong(buffer, true);
   }
   
@@ -13,7 +13,7 @@ public class MsgsAck extends tl.TMsgsAck {
     this.msg_ids = msg_ids;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x62d6b459);
@@ -25,7 +25,7 @@ public class MsgsAck extends tl.TMsgsAck {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + msg_ids.length * 8;
   }
   

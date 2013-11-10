@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class ForeignLinkMutual extends tl.contacts.TForeignLink {
 
   
-  public ForeignLinkMutual(ByteBuffer buffer) {
+  public ForeignLinkMutual(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -14,7 +14,7 @@ public class ForeignLinkMutual extends tl.contacts.TForeignLink {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x1bea8ce1);
@@ -26,7 +26,7 @@ public class ForeignLinkMutual extends tl.contacts.TForeignLink {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

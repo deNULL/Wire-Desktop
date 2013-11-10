@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class MessageMediaGeo extends tl.TMessageMedia {
 
   
-  public MessageMediaGeo(ByteBuffer buffer) {
+  public MessageMediaGeo(ByteBuffer buffer) throws Exception {
     geo = (tl.TGeoPoint) TL.read(buffer);
   }
   
@@ -13,7 +13,7 @@ public class MessageMediaGeo extends tl.TMessageMedia {
     this.geo = geo;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x56e0d474);
@@ -25,7 +25,7 @@ public class MessageMediaGeo extends tl.TMessageMedia {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4 + geo.length();
   }
   

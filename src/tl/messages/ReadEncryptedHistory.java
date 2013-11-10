@@ -7,7 +7,7 @@ public class ReadEncryptedHistory extends tl.TLFunction {
   public tl.TInputEncryptedChat peer;
   public int max_date;
   
-  public ReadEncryptedHistory(ByteBuffer buffer) {
+  public ReadEncryptedHistory(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputEncryptedChat) TL.read(buffer);
     max_date = buffer.getInt();
   }
@@ -17,7 +17,7 @@ public class ReadEncryptedHistory extends tl.TLFunction {
     this.max_date = max_date;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x7f4b690a);
@@ -30,7 +30,7 @@ public class ReadEncryptedHistory extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + peer.length();
   }
   

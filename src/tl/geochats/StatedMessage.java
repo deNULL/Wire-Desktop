@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class StatedMessage extends tl.geochats.TStatedMessage {
 
   
-  public StatedMessage(ByteBuffer buffer) {
+  public StatedMessage(ByteBuffer buffer) throws Exception {
     message = (tl.TGeoChatMessage) TL.read(buffer);
     chats = TL.readVector(buffer, true, new tl.TChat[0]);
     users = TL.readVector(buffer, true, new tl.TUser[0]);
@@ -20,7 +20,7 @@ public class StatedMessage extends tl.geochats.TStatedMessage {
     this.seq = seq;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x17b1578b);
@@ -35,7 +35,7 @@ public class StatedMessage extends tl.geochats.TStatedMessage {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 24 + message.length() + TL.length(chats) + TL.length(users);
   }
   

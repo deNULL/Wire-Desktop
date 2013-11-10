@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class SaveAppLog extends tl.TLFunction {
   public tl.TInputAppEvent[] events;
   
-  public SaveAppLog(ByteBuffer buffer) {
+  public SaveAppLog(ByteBuffer buffer) throws Exception {
     events = TL.readVector(buffer, true, new tl.TInputAppEvent[0]);
   }
   
@@ -14,7 +14,7 @@ public class SaveAppLog extends tl.TLFunction {
     this.events = events;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6f02f748);
@@ -26,7 +26,7 @@ public class SaveAppLog extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + TL.length(events);
   }
   

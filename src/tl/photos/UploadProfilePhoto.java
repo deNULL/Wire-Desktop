@@ -9,9 +9,9 @@ public class UploadProfilePhoto extends tl.TLFunction {
   public tl.TInputGeoPoint geo_point;
   public tl.TInputPhotoCrop crop;
   
-  public UploadProfilePhoto(ByteBuffer buffer) {
+  public UploadProfilePhoto(ByteBuffer buffer) throws Exception {
     file = (tl.TInputFile) TL.read(buffer);
-    try {  caption = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    caption = new String(TL.readString(buffer), "UTF8");
     geo_point = (tl.TInputGeoPoint) TL.read(buffer);
     crop = (tl.TInputPhotoCrop) TL.read(buffer);
   }
@@ -23,13 +23,13 @@ public class UploadProfilePhoto extends tl.TLFunction {
     this.crop = crop;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd50f9c88);
     }
     file.writeTo(buffer, true);
-    try { TL.writeString(buffer, caption.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, caption.getBytes("UTF8"), false);
     geo_point.writeTo(buffer, true);
     crop.writeTo(buffer, true);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
@@ -38,8 +38,8 @@ public class UploadProfilePhoto extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
-    return 12 + file.length() + TL.length(caption.getBytes()) + geo_point.length() + crop.length();
+  public int length() throws Exception {
+    return 12 + file.length() + TL.length(caption.getBytes("UTF8")) + geo_point.length() + crop.length();
   }
   
   public String toString() {

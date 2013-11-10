@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 public class MessageMediaVideo extends tl.TMessageMedia {
   public Image cached;
   
-  public MessageMediaVideo(ByteBuffer buffer) {
+  public MessageMediaVideo(ByteBuffer buffer) throws Exception {
     video = (tl.TVideo) TL.read(buffer);
   }
   
@@ -18,7 +18,7 @@ public class MessageMediaVideo extends tl.TMessageMedia {
     this.video = video;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa2d24290);
@@ -30,7 +30,7 @@ public class MessageMediaVideo extends tl.TMessageMedia {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4 + video.length();
   }
   

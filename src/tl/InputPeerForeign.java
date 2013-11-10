@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputPeerForeign extends tl.TInputPeer {
 
   
-  public InputPeerForeign(ByteBuffer buffer) {
+  public InputPeerForeign(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
     access_hash = buffer.getLong();
   }
@@ -15,7 +15,7 @@ public class InputPeerForeign extends tl.TInputPeer {
     this.access_hash = access_hash;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9b447325);
@@ -28,7 +28,7 @@ public class InputPeerForeign extends tl.TInputPeer {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12;
   }
   

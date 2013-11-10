@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class SentMessage extends tl.messages.TSentMessage {
 
   
-  public SentMessage(ByteBuffer buffer) {
+  public SentMessage(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
     date = buffer.getInt();
     pts = buffer.getInt();
@@ -20,7 +20,7 @@ public class SentMessage extends tl.messages.TSentMessage {
     this.seq = seq;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd1f4d35c);
@@ -35,7 +35,7 @@ public class SentMessage extends tl.messages.TSentMessage {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16;
   }
   

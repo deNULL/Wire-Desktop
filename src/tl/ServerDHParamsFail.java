@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ServerDHParamsFail extends tl.TServerDHParams {
 
   
-  public ServerDHParamsFail(ByteBuffer buffer) {
+  public ServerDHParamsFail(ByteBuffer buffer) throws Exception {
     nonce = TL.readInt128(buffer);
     server_nonce = TL.readInt128(buffer);
     new_nonce_hash = TL.readInt128(buffer);
@@ -17,7 +17,7 @@ public class ServerDHParamsFail extends tl.TServerDHParams {
     this.new_nonce_hash = new_nonce_hash;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x79cb045d);
@@ -31,7 +31,7 @@ public class ServerDHParamsFail extends tl.TServerDHParams {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 48;
   }
   

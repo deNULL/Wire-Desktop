@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputPhotoCrop extends tl.TInputPhotoCrop {
 
   
-  public InputPhotoCrop(ByteBuffer buffer) {
+  public InputPhotoCrop(ByteBuffer buffer) throws Exception {
     crop_left = buffer.getDouble();
     crop_top = buffer.getDouble();
     crop_width = buffer.getDouble();
@@ -17,7 +17,7 @@ public class InputPhotoCrop extends tl.TInputPhotoCrop {
     this.crop_width = crop_width;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd9915325);
@@ -31,7 +31,7 @@ public class InputPhotoCrop extends tl.TInputPhotoCrop {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 24;
   }
   

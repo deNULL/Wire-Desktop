@@ -9,7 +9,7 @@ public class GetHistory extends tl.TLFunction {
   public int max_id;
   public int limit;
   
-  public GetHistory(ByteBuffer buffer) {
+  public GetHistory(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputPeer) TL.read(buffer);
     offset = buffer.getInt();
     max_id = buffer.getInt();
@@ -23,7 +23,7 @@ public class GetHistory extends tl.TLFunction {
     this.limit = limit;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x92a1df2f);
@@ -38,7 +38,7 @@ public class GetHistory extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + peer.length();
   }
   

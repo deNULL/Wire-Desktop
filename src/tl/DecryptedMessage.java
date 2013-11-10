@@ -5,10 +5,10 @@ import java.nio.ByteBuffer;
 public class DecryptedMessage extends tl.TDecryptedMessage {
 
   
-  public DecryptedMessage(ByteBuffer buffer) {
+  public DecryptedMessage(ByteBuffer buffer) throws Exception {
     random_id = buffer.getLong();
     random_bytes = TL.readString(buffer);
-    try {  message = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    message = new String(TL.readString(buffer), "UTF8");
     media = (tl.TDecryptedMessageMedia) TL.read(buffer);
   }
   
@@ -19,14 +19,14 @@ public class DecryptedMessage extends tl.TDecryptedMessage {
     this.media = media;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x1f814f1f);
     }
     buffer.putLong(random_id);
     TL.writeString(buffer, random_bytes, false);
-    try { TL.writeString(buffer, message.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, message.getBytes("UTF8"), false);
     media.writeTo(buffer, true);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at DecryptedMessage: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
@@ -34,8 +34,8 @@ public class DecryptedMessage extends tl.TDecryptedMessage {
   	return buffer;
   }
   
-  public int length() {
-    return 12 + TL.length(random_bytes) + TL.length(message.getBytes()) + media.length();
+  public int length() throws Exception {
+    return 12 + TL.length(random_bytes) + TL.length(message.getBytes("UTF8")) + media.length();
   }
   
   public String toString() {

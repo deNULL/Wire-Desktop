@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class Difference extends tl.updates.TDifference {
 
   
-  public Difference(ByteBuffer buffer) {
+  public Difference(ByteBuffer buffer) throws Exception {
     new_messages = TL.readVector(buffer, true, new tl.TMessage[0]);
     new_encrypted_messages = TL.readVector(buffer, true, new tl.TEncryptedMessage[0]);
     other_updates = TL.readVector(buffer, true, new tl.TUpdate[0]);
@@ -24,7 +24,7 @@ public class Difference extends tl.updates.TDifference {
     this.state = state;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf49ca0);
@@ -41,7 +41,7 @@ public class Difference extends tl.updates.TDifference {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 44 + TL.length(new_messages) + TL.length(new_encrypted_messages) + TL.length(other_updates) + TL.length(chats) + TL.length(users) + state.length();
   }
   

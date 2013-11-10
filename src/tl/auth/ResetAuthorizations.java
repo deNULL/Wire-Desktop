@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class ResetAuthorizations extends tl.TLFunction {
 
   
-  public ResetAuthorizations(ByteBuffer buffer) {
+  public ResetAuthorizations(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -14,7 +14,7 @@ public class ResetAuthorizations extends tl.TLFunction {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9fab0d1a);
@@ -26,7 +26,7 @@ public class ResetAuthorizations extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

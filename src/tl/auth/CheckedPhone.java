@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class CheckedPhone extends tl.auth.TCheckedPhone {
 
   
-  public CheckedPhone(ByteBuffer buffer) {
+  public CheckedPhone(ByteBuffer buffer) throws Exception {
     phone_registered = (buffer.getInt() == 0x997275b5);
     phone_invited = (buffer.getInt() == 0x997275b5);
   }
@@ -16,7 +16,7 @@ public class CheckedPhone extends tl.auth.TCheckedPhone {
     this.phone_invited = phone_invited;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe300cc3b);
@@ -29,7 +29,7 @@ public class CheckedPhone extends tl.auth.TCheckedPhone {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

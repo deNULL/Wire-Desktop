@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class RpcResult extends tl.TRpcResult {
 
   
-  public RpcResult(ByteBuffer buffer) {
+  public RpcResult(ByteBuffer buffer) throws Exception {
     req_msg_id = buffer.getLong();
     result = (tl.TLObject) TL.read(buffer);
   }
@@ -15,7 +15,7 @@ public class RpcResult extends tl.TRpcResult {
     this.result = result;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf35c6d01);
@@ -28,7 +28,7 @@ public class RpcResult extends tl.TRpcResult {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + result.length();
   }
   

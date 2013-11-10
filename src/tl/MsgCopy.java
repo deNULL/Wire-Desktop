@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class MsgCopy extends tl.TMessageCopy {
 
   
-  public MsgCopy(ByteBuffer buffer) {
+  public MsgCopy(ByteBuffer buffer) throws Exception {
     orig_message = (tl.TTransportMessage) TL.read(buffer);
   }
   
@@ -13,7 +13,7 @@ public class MsgCopy extends tl.TMessageCopy {
     this.orig_message = orig_message;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe06046b2);
@@ -25,7 +25,7 @@ public class MsgCopy extends tl.TMessageCopy {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4 + orig_message.length();
   }
   

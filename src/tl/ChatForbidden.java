@@ -5,9 +5,9 @@ import java.nio.ByteBuffer;
 public class ChatForbidden extends tl.TChat {
 
   
-  public ChatForbidden(ByteBuffer buffer) {
+  public ChatForbidden(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
-    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    title = new String(TL.readString(buffer), "UTF8");
     date = buffer.getInt();
   }
   
@@ -17,13 +17,13 @@ public class ChatForbidden extends tl.TChat {
     this.date = date;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xfb0ccc41);
     }
     buffer.putInt(id);
-    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, title.getBytes("UTF8"), false);
     buffer.putInt(date);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at ChatForbidden: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
@@ -31,8 +31,8 @@ public class ChatForbidden extends tl.TChat {
   	return buffer;
   }
   
-  public int length() {
-    return 8 + TL.length(title.getBytes());
+  public int length() throws Exception {
+    return 8 + TL.length(title.getBytes("UTF8"));
   }
   
   public String toString() {

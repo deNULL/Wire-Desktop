@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class GzipPacked extends tl.TLObject {
   public byte[] packed_data;
   
-  public GzipPacked(ByteBuffer buffer) {
+  public GzipPacked(ByteBuffer buffer) throws Exception {
     packed_data = TL.readString(buffer);
   }
   
@@ -13,7 +13,7 @@ public class GzipPacked extends tl.TLObject {
     this.packed_data = packed_data;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3072cfa1);
@@ -25,7 +25,7 @@ public class GzipPacked extends tl.TLObject {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return TL.length(packed_data);
   }
   

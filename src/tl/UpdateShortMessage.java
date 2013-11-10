@@ -5,10 +5,10 @@ import java.nio.ByteBuffer;
 public class UpdateShortMessage extends tl.TUpdates {
 
   
-  public UpdateShortMessage(ByteBuffer buffer) {
+  public UpdateShortMessage(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
     from_id = buffer.getInt();
-    try {  message = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    message = new String(TL.readString(buffer), "UTF8");
     pts = buffer.getInt();
     date = buffer.getInt();
     seq = buffer.getInt();
@@ -23,14 +23,14 @@ public class UpdateShortMessage extends tl.TUpdates {
     this.seq = seq;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd3f45784);
     }
     buffer.putInt(id);
     buffer.putInt(from_id);
-    try { TL.writeString(buffer, message.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, message.getBytes("UTF8"), false);
     buffer.putInt(pts);
     buffer.putInt(date);
     buffer.putInt(seq);
@@ -40,8 +40,8 @@ public class UpdateShortMessage extends tl.TUpdates {
   	return buffer;
   }
   
-  public int length() {
-    return 20 + TL.length(message.getBytes());
+  public int length() throws Exception {
+    return 20 + TL.length(message.getBytes("UTF8"));
   }
   
   public String toString() {

@@ -22,6 +22,7 @@ import ru.denull.mtproto.DataService.ConnectTaskCallback;
 import ru.denull.mtproto.DataService.ReadTaskCallback;
 import ru.denull.mtproto.DataService.WriteTaskCallback;
 import ru.denull.mtproto.Server.RPCCallback;
+import ru.denull.wire.model.Config;
 import tl.*;
 import tl.help.GetConfig;
 import static ru.denull.mtproto.CryptoUtils.*;
@@ -389,9 +390,15 @@ public class Server implements ReadTaskCallback {
 	  sendQueued();
 	}
 
+	
+	private boolean initPerformed = false;
 	public void call(TLFunction request, RPCCallback callback, boolean latestLayer) {
 		try {
-			send(latestLayer ? new InvokeWithLayer8(request) : request, true, true, callback);
+		  if (latestLayer && !initPerformed) {
+		    send(new InvokeWithLayer9(new InitConnection(Config.api_id, Config.getDeviceModel(), Config.getSystemVersion(), Config.app_version, "ru", request)), true, true, callback);
+		  } else {
+		    send(request, true, true, callback);
+		  }			
 		} catch (Exception e) {
 			e.printStackTrace();
 			callback.error(0, e.getMessage());

@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class GetFullChat extends tl.TLFunction {
   public int chat_id;
   
-  public GetFullChat(ByteBuffer buffer) {
+  public GetFullChat(ByteBuffer buffer) throws Exception {
     chat_id = buffer.getInt();
   }
   
@@ -14,7 +14,7 @@ public class GetFullChat extends tl.TLFunction {
     this.chat_id = chat_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3b831c66);
@@ -26,7 +26,7 @@ public class GetFullChat extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

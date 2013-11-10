@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class GetFullChat extends tl.TLFunction {
   public tl.TInputGeoChat peer;
   
-  public GetFullChat(ByteBuffer buffer) {
+  public GetFullChat(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputGeoChat) TL.read(buffer);
   }
   
@@ -14,7 +14,7 @@ public class GetFullChat extends tl.TLFunction {
     this.peer = peer;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6722dd6f);
@@ -26,7 +26,7 @@ public class GetFullChat extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4 + peer.length();
   }
   

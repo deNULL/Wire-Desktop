@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputMessagesFilterPhotoVideo extends tl.TMessagesFilter {
 
   
-  public InputMessagesFilterPhotoVideo(ByteBuffer buffer) {
+  public InputMessagesFilterPhotoVideo(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class InputMessagesFilterPhotoVideo extends tl.TMessagesFilter {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x56e9f0e4);
@@ -25,7 +25,7 @@ public class InputMessagesFilterPhotoVideo extends tl.TMessagesFilter {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

@@ -7,7 +7,7 @@ public class UpdateProfilePhoto extends tl.TLFunction {
   public tl.TInputPhoto id;
   public tl.TInputPhotoCrop crop;
   
-  public UpdateProfilePhoto(ByteBuffer buffer) {
+  public UpdateProfilePhoto(ByteBuffer buffer) throws Exception {
     id = (tl.TInputPhoto) TL.read(buffer);
     crop = (tl.TInputPhotoCrop) TL.read(buffer);
   }
@@ -17,7 +17,7 @@ public class UpdateProfilePhoto extends tl.TLFunction {
     this.crop = crop;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xeef579a0);
@@ -30,7 +30,7 @@ public class UpdateProfilePhoto extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + id.length() + crop.length();
   }
   

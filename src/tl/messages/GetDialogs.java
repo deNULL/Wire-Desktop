@@ -8,7 +8,7 @@ public class GetDialogs extends tl.TLFunction {
   public int max_id;
   public int limit;
   
-  public GetDialogs(ByteBuffer buffer) {
+  public GetDialogs(ByteBuffer buffer) throws Exception {
     offset = buffer.getInt();
     max_id = buffer.getInt();
     limit = buffer.getInt();
@@ -20,7 +20,7 @@ public class GetDialogs extends tl.TLFunction {
     this.limit = limit;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xeccf1df6);
@@ -34,7 +34,7 @@ public class GetDialogs extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12;
   }
   

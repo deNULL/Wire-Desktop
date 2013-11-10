@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class EncryptedMessageService extends tl.TEncryptedMessage {
 
   
-  public EncryptedMessageService(ByteBuffer buffer) {
+  public EncryptedMessageService(ByteBuffer buffer) throws Exception {
     random_id = buffer.getLong();
     chat_id = buffer.getInt();
     date = buffer.getInt();
@@ -19,7 +19,7 @@ public class EncryptedMessageService extends tl.TEncryptedMessage {
     this.bytes = bytes;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x23734b06);
@@ -34,7 +34,7 @@ public class EncryptedMessageService extends tl.TEncryptedMessage {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + TL.length(bytes);
   }
   

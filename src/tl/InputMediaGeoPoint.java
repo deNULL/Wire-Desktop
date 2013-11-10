@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputMediaGeoPoint extends tl.TInputMedia {
 
   
-  public InputMediaGeoPoint(ByteBuffer buffer) {
+  public InputMediaGeoPoint(ByteBuffer buffer) throws Exception {
     geo_point = (tl.TInputGeoPoint) TL.read(buffer);
   }
   
@@ -13,7 +13,7 @@ public class InputMediaGeoPoint extends tl.TInputMedia {
     this.geo_point = geo_point;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf9c44144);
@@ -25,7 +25,7 @@ public class InputMediaGeoPoint extends tl.TInputMedia {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4 + geo_point.length();
   }
   

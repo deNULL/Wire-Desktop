@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class GetConfig extends tl.TLFunction {
 
   
-  public GetConfig(ByteBuffer buffer) {
+  public GetConfig(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -14,7 +14,7 @@ public class GetConfig extends tl.TLFunction {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc4f9186b);
@@ -26,7 +26,7 @@ public class GetConfig extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

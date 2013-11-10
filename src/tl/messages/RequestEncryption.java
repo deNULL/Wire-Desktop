@@ -8,7 +8,7 @@ public class RequestEncryption extends tl.TLFunction {
   public int random_id;
   public byte[] g_a;
   
-  public RequestEncryption(ByteBuffer buffer) {
+  public RequestEncryption(ByteBuffer buffer) throws Exception {
     user_id = (tl.TInputUser) TL.read(buffer);
     random_id = buffer.getInt();
     g_a = TL.readString(buffer);
@@ -20,7 +20,7 @@ public class RequestEncryption extends tl.TLFunction {
     this.g_a = g_a;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf64daf43);
@@ -34,7 +34,7 @@ public class RequestEncryption extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + user_id.length() + TL.length(g_a);
   }
   

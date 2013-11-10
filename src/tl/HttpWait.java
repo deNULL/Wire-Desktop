@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class HttpWait extends tl.THttpWait {
 
   
-  public HttpWait(ByteBuffer buffer) {
+  public HttpWait(ByteBuffer buffer) throws Exception {
     max_delay = buffer.getInt();
     wait_after = buffer.getInt();
     max_wait = buffer.getInt();
@@ -17,7 +17,7 @@ public class HttpWait extends tl.THttpWait {
     this.max_wait = max_wait;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9299359f);
@@ -31,7 +31,7 @@ public class HttpWait extends tl.THttpWait {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12;
   }
   

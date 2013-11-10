@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class DiscardEncryption extends tl.TLFunction {
   public int chat_id;
   
-  public DiscardEncryption(ByteBuffer buffer) {
+  public DiscardEncryption(ByteBuffer buffer) throws Exception {
     chat_id = buffer.getInt();
   }
   
@@ -14,7 +14,7 @@ public class DiscardEncryption extends tl.TLFunction {
     this.chat_id = chat_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xedd923c5);
@@ -26,7 +26,7 @@ public class DiscardEncryption extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

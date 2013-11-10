@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputMediaPhoto extends tl.TInputMedia {
   public tl.TInputPhoto id;
   
-  public InputMediaPhoto(ByteBuffer buffer) {
+  public InputMediaPhoto(ByteBuffer buffer) throws Exception {
     id = (tl.TInputPhoto) TL.read(buffer);
   }
   
@@ -13,7 +13,7 @@ public class InputMediaPhoto extends tl.TInputMedia {
     this.id = id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x8f2ab2ec);
@@ -25,7 +25,7 @@ public class InputMediaPhoto extends tl.TInputMedia {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4 + id.length();
   }
   

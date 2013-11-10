@@ -8,10 +8,10 @@ public class EditChatTitle extends tl.TLFunction {
   public String title;
   public String address;
   
-  public EditChatTitle(ByteBuffer buffer) {
+  public EditChatTitle(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputGeoChat) TL.read(buffer);
-    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
-    try {  address = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    title = new String(TL.readString(buffer), "UTF8");
+    address = new String(TL.readString(buffer), "UTF8");
   }
   
   public EditChatTitle(tl.TInputGeoChat peer, String title, String address) {
@@ -20,22 +20,22 @@ public class EditChatTitle extends tl.TLFunction {
     this.address = address;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x4c8e2273);
     }
     peer.writeTo(buffer, true);
-    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
-    try { TL.writeString(buffer, address.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, title.getBytes("UTF8"), false);
+    TL.writeString(buffer, address.getBytes("UTF8"), false);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at EditChatTitle: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }
   	return buffer;
   }
   
-  public int length() {
-    return 4 + peer.length() + TL.length(title.getBytes()) + TL.length(address.getBytes());
+  public int length() throws Exception {
+    return 4 + peer.length() + TL.length(title.getBytes("UTF8")) + TL.length(address.getBytes("UTF8"));
   }
   
   public String toString() {

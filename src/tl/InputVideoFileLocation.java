@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputVideoFileLocation extends tl.TInputFileLocation {
 
   
-  public InputVideoFileLocation(ByteBuffer buffer) {
+  public InputVideoFileLocation(ByteBuffer buffer) throws Exception {
     id = buffer.getLong();
     access_hash = buffer.getLong();
   }
@@ -15,7 +15,7 @@ public class InputVideoFileLocation extends tl.TInputFileLocation {
     this.access_hash = access_hash;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3d0364ec);
@@ -28,7 +28,7 @@ public class InputVideoFileLocation extends tl.TInputFileLocation {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16;
   }
   

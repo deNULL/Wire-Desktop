@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class BadServerSalt extends tl.TBadMsgNotification {
 
   
-  public BadServerSalt(ByteBuffer buffer) {
+  public BadServerSalt(ByteBuffer buffer) throws Exception {
     bad_msg_id = buffer.getLong();
     bad_msg_seqno = buffer.getInt();
     error_code = buffer.getInt();
@@ -19,7 +19,7 @@ public class BadServerSalt extends tl.TBadMsgNotification {
     this.new_server_salt = new_server_salt;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xedab447b);
@@ -34,7 +34,7 @@ public class BadServerSalt extends tl.TBadMsgNotification {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 24;
   }
   

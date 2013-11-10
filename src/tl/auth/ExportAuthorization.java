@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class ExportAuthorization extends tl.TLFunction {
   public int dc_id;
   
-  public ExportAuthorization(ByteBuffer buffer) {
+  public ExportAuthorization(ByteBuffer buffer) throws Exception {
     dc_id = buffer.getInt();
   }
   
@@ -14,7 +14,7 @@ public class ExportAuthorization extends tl.TLFunction {
     this.dc_id = dc_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe5bfffcd);
@@ -26,7 +26,7 @@ public class ExportAuthorization extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

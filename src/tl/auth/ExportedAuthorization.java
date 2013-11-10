@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class ExportedAuthorization extends tl.auth.TExportedAuthorization {
 
   
-  public ExportedAuthorization(ByteBuffer buffer) {
+  public ExportedAuthorization(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
     bytes = TL.readString(buffer);
   }
@@ -16,7 +16,7 @@ public class ExportedAuthorization extends tl.auth.TExportedAuthorization {
     this.bytes = bytes;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xdf969c2d);
@@ -29,7 +29,7 @@ public class ExportedAuthorization extends tl.auth.TExportedAuthorization {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4 + TL.length(bytes);
   }
   

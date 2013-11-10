@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class ImportedContacts extends tl.contacts.TImportedContacts {
 
   
-  public ImportedContacts(ByteBuffer buffer) {
+  public ImportedContacts(ByteBuffer buffer) throws Exception {
     imported = TL.readVector(buffer, true, new tl.TImportedContact[0]);
     users = TL.readVector(buffer, true, new tl.TUser[0]);
   }
@@ -16,7 +16,7 @@ public class ImportedContacts extends tl.contacts.TImportedContacts {
     this.users = users;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd1cd0a4c);
@@ -29,7 +29,7 @@ public class ImportedContacts extends tl.contacts.TImportedContacts {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + TL.length(imported) + TL.length(users);
   }
   

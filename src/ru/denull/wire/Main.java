@@ -695,7 +695,7 @@ public class Main implements OnUpdateListener {
     dialogListModel.updateContents();
     if (currentPeer != null &&
         ((message.to_id instanceof PeerChat && currentPeer instanceof InputPeerChat && message.to_id.chat_id == currentPeer.chat_id) ||
-         (message.to_id instanceof PeerUser && !(currentPeer instanceof InputPeerChat) && message.to_id.user_id == currentPeer.user_id))) {
+         (message.to_id instanceof PeerUser && !(currentPeer instanceof InputPeerChat) && (message.to_id.user_id == currentPeer.user_id || message.from_id == currentPeer.user_id)))) {
       messageListModel.addMessage(message);
       //messageList
       

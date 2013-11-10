@@ -7,7 +7,7 @@ public class ImportContacts extends tl.TLFunction {
   public tl.TInputContact[] contacts;
   public boolean replace;
   
-  public ImportContacts(ByteBuffer buffer) {
+  public ImportContacts(ByteBuffer buffer) throws Exception {
     contacts = TL.readVector(buffer, true, new tl.TInputContact[0]);
     replace = (buffer.getInt() == 0x997275b5);
   }
@@ -17,7 +17,7 @@ public class ImportContacts extends tl.TLFunction {
     this.replace = replace;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xda30b32d);
@@ -30,7 +30,7 @@ public class ImportContacts extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + TL.length(contacts);
   }
   

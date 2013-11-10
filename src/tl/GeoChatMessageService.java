@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class GeoChatMessageService extends tl.TGeoChatMessage {
 
   
-  public GeoChatMessageService(ByteBuffer buffer) {
+  public GeoChatMessageService(ByteBuffer buffer) throws Exception {
     chat_id = buffer.getInt();
     id = buffer.getInt();
     from_id = buffer.getInt();
@@ -21,7 +21,7 @@ public class GeoChatMessageService extends tl.TGeoChatMessage {
     this.action = action;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd34fa24e);
@@ -37,7 +37,7 @@ public class GeoChatMessageService extends tl.TGeoChatMessage {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 20 + action.length();
   }
   

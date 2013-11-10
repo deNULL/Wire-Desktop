@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class DecryptedMessageMediaVideo extends tl.TDecryptedMessageMedia {
 
   
-  public DecryptedMessageMediaVideo(ByteBuffer buffer) {
+  public DecryptedMessageMediaVideo(ByteBuffer buffer) throws Exception {
     thumb = TL.readString(buffer);
     thumb_w = buffer.getInt();
     thumb_h = buffer.getInt();
@@ -29,7 +29,7 @@ public class DecryptedMessageMediaVideo extends tl.TDecryptedMessageMedia {
     this.iv = iv;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x4cee6ef3);
@@ -49,7 +49,7 @@ public class DecryptedMessageMediaVideo extends tl.TDecryptedMessageMedia {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 24 + TL.length(thumb) + TL.length(key) + TL.length(iv);
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class BadMsgNotification extends tl.TBadMsgNotification {
 
   
-  public BadMsgNotification(ByteBuffer buffer) {
+  public BadMsgNotification(ByteBuffer buffer) throws Exception {
     bad_msg_id = buffer.getLong();
     bad_msg_seqno = buffer.getInt();
     error_code = buffer.getInt();
@@ -17,7 +17,7 @@ public class BadMsgNotification extends tl.TBadMsgNotification {
     this.error_code = error_code;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa7eff811);
@@ -31,7 +31,7 @@ public class BadMsgNotification extends tl.TBadMsgNotification {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16;
   }
   

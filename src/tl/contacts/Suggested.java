@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class Suggested extends tl.contacts.TSuggested {
 
   
-  public Suggested(ByteBuffer buffer) {
+  public Suggested(ByteBuffer buffer) throws Exception {
     results = TL.readVector(buffer, true, new tl.TContactSuggested[0]);
     users = TL.readVector(buffer, true, new tl.TUser[0]);
   }
@@ -16,7 +16,7 @@ public class Suggested extends tl.contacts.TSuggested {
     this.users = users;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5649dcc5);
@@ -29,7 +29,7 @@ public class Suggested extends tl.contacts.TSuggested {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + TL.length(results) + TL.length(users);
   }
   

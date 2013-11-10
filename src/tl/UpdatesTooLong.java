@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdatesTooLong extends tl.TUpdates {
 
   
-  public UpdatesTooLong(ByteBuffer buffer) {
+  public UpdatesTooLong(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class UpdatesTooLong extends tl.TUpdates {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe317af7e);
@@ -25,7 +25,7 @@ public class UpdatesTooLong extends tl.TUpdates {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

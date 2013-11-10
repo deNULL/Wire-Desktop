@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class MsgDetailedInfo extends tl.TMsgDetailedInfo {
 
   
-  public MsgDetailedInfo(ByteBuffer buffer) {
+  public MsgDetailedInfo(ByteBuffer buffer) throws Exception {
     msg_id = buffer.getLong();
     answer_msg_id = buffer.getLong();
     bytes = buffer.getInt();
@@ -19,7 +19,7 @@ public class MsgDetailedInfo extends tl.TMsgDetailedInfo {
     this.status = status;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x276d3ec6);
@@ -34,7 +34,7 @@ public class MsgDetailedInfo extends tl.TMsgDetailedInfo {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 24;
   }
   

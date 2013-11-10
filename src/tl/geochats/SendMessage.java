@@ -8,9 +8,9 @@ public class SendMessage extends tl.TLFunction {
   public String message;
   public long random_id;
   
-  public SendMessage(ByteBuffer buffer) {
+  public SendMessage(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputGeoChat) TL.read(buffer);
-    try {  message = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    message = new String(TL.readString(buffer), "UTF8");
     random_id = buffer.getLong();
   }
   
@@ -20,13 +20,13 @@ public class SendMessage extends tl.TLFunction {
     this.random_id = random_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x61b0044);
     }
     peer.writeTo(buffer, true);
-    try { TL.writeString(buffer, message.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, message.getBytes("UTF8"), false);
     buffer.putLong(random_id);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at SendMessage: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
@@ -34,8 +34,8 @@ public class SendMessage extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
-    return 12 + peer.length() + TL.length(message.getBytes());
+  public int length() throws Exception {
+    return 12 + peer.length() + TL.length(message.getBytes("UTF8"));
   }
   
   public String toString() {

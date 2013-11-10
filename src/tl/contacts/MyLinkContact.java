@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class MyLinkContact extends tl.contacts.TMyLink {
 
   
-  public MyLinkContact(ByteBuffer buffer) {
+  public MyLinkContact(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -14,7 +14,7 @@ public class MyLinkContact extends tl.contacts.TMyLink {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc240ebd9);
@@ -26,7 +26,7 @@ public class MyLinkContact extends tl.contacts.TMyLink {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

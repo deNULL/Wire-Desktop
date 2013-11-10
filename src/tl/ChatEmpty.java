@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ChatEmpty extends tl.TChat {
 
   
-  public ChatEmpty(ByteBuffer buffer) {
+  public ChatEmpty(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class ChatEmpty extends tl.TChat {
     this.id = id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9ba2d800);
@@ -25,7 +25,7 @@ public class ChatEmpty extends tl.TChat {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

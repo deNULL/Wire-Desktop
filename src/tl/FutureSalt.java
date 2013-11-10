@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class FutureSalt extends tl.TFutureSalt {
 
   
-  public FutureSalt(ByteBuffer buffer) {
+  public FutureSalt(ByteBuffer buffer) throws Exception {
     valid_since = buffer.getInt();
     valid_until = buffer.getInt();
     salt = buffer.getLong();
@@ -17,7 +17,7 @@ public class FutureSalt extends tl.TFutureSalt {
     this.salt = salt;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x0949d9dc);
@@ -31,7 +31,7 @@ public class FutureSalt extends tl.TFutureSalt {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16;
   }
   

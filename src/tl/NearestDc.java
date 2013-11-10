@@ -5,8 +5,8 @@ import java.nio.ByteBuffer;
 public class NearestDc extends tl.TNearestDc {
 
   
-  public NearestDc(ByteBuffer buffer) {
-    try {  country = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+  public NearestDc(ByteBuffer buffer) throws Exception {
+    country = new String(TL.readString(buffer), "UTF8");
     this_dc = buffer.getInt();
     nearest_dc = buffer.getInt();
   }
@@ -17,12 +17,12 @@ public class NearestDc extends tl.TNearestDc {
     this.nearest_dc = nearest_dc;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x8e1a1775);
     }
-    try { TL.writeString(buffer, country.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, country.getBytes("UTF8"), false);
     buffer.putInt(this_dc);
     buffer.putInt(nearest_dc);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
@@ -31,8 +31,8 @@ public class NearestDc extends tl.TNearestDc {
   	return buffer;
   }
   
-  public int length() {
-    return 8 + TL.length(country.getBytes());
+  public int length() throws Exception {
+    return 8 + TL.length(country.getBytes("UTF8"));
   }
   
   public String toString() {

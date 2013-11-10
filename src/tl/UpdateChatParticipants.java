@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateChatParticipants extends tl.TUpdate {
 
   
-  public UpdateChatParticipants(ByteBuffer buffer) {
+  public UpdateChatParticipants(ByteBuffer buffer) throws Exception {
     participants = (tl.TChatParticipants) TL.read(buffer);
   }
   
@@ -13,7 +13,7 @@ public class UpdateChatParticipants extends tl.TUpdate {
     this.participants = participants;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x7761198);
@@ -25,7 +25,7 @@ public class UpdateChatParticipants extends tl.TUpdate {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4 + participants.length();
   }
   

@@ -8,7 +8,7 @@ public class GetDifference extends tl.TLFunction {
   public int date;
   public int qts;
   
-  public GetDifference(ByteBuffer buffer) {
+  public GetDifference(ByteBuffer buffer) throws Exception {
     pts = buffer.getInt();
     date = buffer.getInt();
     qts = buffer.getInt();
@@ -20,7 +20,7 @@ public class GetDifference extends tl.TLFunction {
     this.qts = qts;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa041495);
@@ -34,7 +34,7 @@ public class GetDifference extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12;
   }
   

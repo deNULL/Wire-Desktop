@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ReqPq extends tl.TResPQ {
 
   
-  public ReqPq(ByteBuffer buffer) {
+  public ReqPq(ByteBuffer buffer) throws Exception {
     nonce = TL.readInt128(buffer);
   }
   
@@ -13,7 +13,7 @@ public class ReqPq extends tl.TResPQ {
     this.nonce = nonce;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x60469778);
@@ -25,7 +25,7 @@ public class ReqPq extends tl.TResPQ {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16;
   }
   

@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class FileGif extends tl.storage.TFileType {
 
   
-  public FileGif(ByteBuffer buffer) {
+  public FileGif(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -14,7 +14,7 @@ public class FileGif extends tl.storage.TFileType {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xcae1aadf);
@@ -26,7 +26,7 @@ public class FileGif extends tl.storage.TFileType {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

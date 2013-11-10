@@ -5,10 +5,10 @@ import java.nio.ByteBuffer;
 public class UserDeleted extends tl.TUser {
 
   
-  public UserDeleted(ByteBuffer buffer) {
+  public UserDeleted(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
-    try {  first_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
-    try {  last_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    first_name = new String(TL.readString(buffer), "UTF8");
+    last_name = new String(TL.readString(buffer), "UTF8");
   }
   
   public UserDeleted(int id, String first_name, String last_name) {
@@ -17,22 +17,22 @@ public class UserDeleted extends tl.TUser {
     this.last_name = last_name;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb29ad7cc);
     }
     buffer.putInt(id);
-    try { TL.writeString(buffer, first_name.getBytes("UTF8"), false); } catch (Exception e) { };
-    try { TL.writeString(buffer, last_name.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, first_name.getBytes("UTF8"), false);
+    TL.writeString(buffer, last_name.getBytes("UTF8"), false);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at UserDeleted: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }
   	return buffer;
   }
   
-  public int length() {
-    return 4 + TL.length(first_name.getBytes()) + TL.length(last_name.getBytes());
+  public int length() throws Exception {
+    return 4 + TL.length(first_name.getBytes("UTF8")) + TL.length(last_name.getBytes("UTF8"));
   }
   
   public String toString() {

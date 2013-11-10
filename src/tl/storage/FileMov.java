@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class FileMov extends tl.storage.TFileType {
 
   
-  public FileMov(ByteBuffer buffer) {
+  public FileMov(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -14,7 +14,7 @@ public class FileMov extends tl.storage.TFileType {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x4b09ebbc);
@@ -26,7 +26,7 @@ public class FileMov extends tl.storage.TFileType {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

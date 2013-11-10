@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class FileLocation extends tl.TFileLocation {
 
   
-  public FileLocation(ByteBuffer buffer) {
+  public FileLocation(ByteBuffer buffer) throws Exception {
     dc_id = buffer.getInt();
     volume_id = buffer.getLong();
     local_id = buffer.getInt();
@@ -19,7 +19,7 @@ public class FileLocation extends tl.TFileLocation {
     this.secret = secret;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x53d69076);
@@ -34,7 +34,7 @@ public class FileLocation extends tl.TFileLocation {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 24;
   }
   

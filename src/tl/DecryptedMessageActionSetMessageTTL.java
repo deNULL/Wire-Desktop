@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class DecryptedMessageActionSetMessageTTL extends tl.TDecryptedMessageAction {
 
   
-  public DecryptedMessageActionSetMessageTTL(ByteBuffer buffer) {
+  public DecryptedMessageActionSetMessageTTL(ByteBuffer buffer) throws Exception {
     ttl_seconds = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class DecryptedMessageActionSetMessageTTL extends tl.TDecryptedMessageAct
     this.ttl_seconds = ttl_seconds;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa1733aec);
@@ -25,7 +25,7 @@ public class DecryptedMessageActionSetMessageTTL extends tl.TDecryptedMessageAct
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

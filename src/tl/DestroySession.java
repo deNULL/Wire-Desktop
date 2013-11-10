@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class DestroySession extends tl.TLFunction {
   public long session_id;
   
-  public DestroySession(ByteBuffer buffer) {
+  public DestroySession(ByteBuffer buffer) throws Exception {
     session_id = buffer.getLong();
   }
   
@@ -13,7 +13,7 @@ public class DestroySession extends tl.TLFunction {
     this.session_id = session_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe7512126);
@@ -25,7 +25,7 @@ public class DestroySession extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateRestoreMessages extends tl.TUpdate {
 
   
-  public UpdateRestoreMessages(ByteBuffer buffer) {
+  public UpdateRestoreMessages(ByteBuffer buffer) throws Exception {
     messages = TL.readVectorInt(buffer, true);
     pts = buffer.getInt();
   }
@@ -15,7 +15,7 @@ public class UpdateRestoreMessages extends tl.TUpdate {
     this.pts = pts;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd15de04d);
@@ -28,7 +28,7 @@ public class UpdateRestoreMessages extends tl.TUpdate {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + messages.length * 4;
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class DecryptedMessageMediaGeoPoint extends tl.TDecryptedMessageMedia {
 
   
-  public DecryptedMessageMediaGeoPoint(ByteBuffer buffer) {
+  public DecryptedMessageMediaGeoPoint(ByteBuffer buffer) throws Exception {
     lat = buffer.getDouble();
     lng = buffer.getDouble();
   }
@@ -15,7 +15,7 @@ public class DecryptedMessageMediaGeoPoint extends tl.TDecryptedMessageMedia {
     this.lng = lng;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x35480a59);
@@ -28,7 +28,7 @@ public class DecryptedMessageMediaGeoPoint extends tl.TDecryptedMessageMedia {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16;
   }
   

@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class UpdateStatus extends tl.TLFunction {
   public boolean offline;
   
-  public UpdateStatus(ByteBuffer buffer) {
+  public UpdateStatus(ByteBuffer buffer) throws Exception {
     offline = (buffer.getInt() == 0x997275b5);
   }
   
@@ -14,7 +14,7 @@ public class UpdateStatus extends tl.TLFunction {
     this.offline = offline;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6628562c);
@@ -26,7 +26,7 @@ public class UpdateStatus extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

@@ -9,11 +9,11 @@ public class CreateGeoChat extends tl.TLFunction {
   public String address;
   public String venue;
   
-  public CreateGeoChat(ByteBuffer buffer) {
-    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+  public CreateGeoChat(ByteBuffer buffer) throws Exception {
+    title = new String(TL.readString(buffer), "UTF8");
     geo_point = (tl.TInputGeoPoint) TL.read(buffer);
-    try {  address = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
-    try {  venue = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    address = new String(TL.readString(buffer), "UTF8");
+    venue = new String(TL.readString(buffer), "UTF8");
   }
   
   public CreateGeoChat(String title, tl.TInputGeoPoint geo_point, String address, String venue) {
@@ -23,23 +23,23 @@ public class CreateGeoChat extends tl.TLFunction {
     this.venue = venue;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe092e16);
     }
-    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, title.getBytes("UTF8"), false);
     geo_point.writeTo(buffer, true);
-    try { TL.writeString(buffer, address.getBytes("UTF8"), false); } catch (Exception e) { };
-    try { TL.writeString(buffer, venue.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, address.getBytes("UTF8"), false);
+    TL.writeString(buffer, venue.getBytes("UTF8"), false);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at CreateGeoChat: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }
   	return buffer;
   }
   
-  public int length() {
-    return 4 + TL.length(title.getBytes()) + geo_point.length() + TL.length(address.getBytes()) + TL.length(venue.getBytes());
+  public int length() throws Exception {
+    return 4 + TL.length(title.getBytes("UTF8")) + geo_point.length() + TL.length(address.getBytes("UTF8")) + TL.length(venue.getBytes("UTF8"));
   }
   
   public String toString() {

@@ -7,9 +7,9 @@ public class UnregisterDevice extends tl.TLFunction {
   public int token_type;
   public String token;
   
-  public UnregisterDevice(ByteBuffer buffer) {
+  public UnregisterDevice(ByteBuffer buffer) throws Exception {
     token_type = buffer.getInt();
-    try {  token = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    token = new String(TL.readString(buffer), "UTF8");
   }
   
   public UnregisterDevice(int token_type, String token) {
@@ -17,21 +17,21 @@ public class UnregisterDevice extends tl.TLFunction {
     this.token = token;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x65c55b40);
     }
     buffer.putInt(token_type);
-    try { TL.writeString(buffer, token.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, token.getBytes("UTF8"), false);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at UnregisterDevice: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }
   	return buffer;
   }
   
-  public int length() {
-    return 4 + TL.length(token.getBytes());
+  public int length() throws Exception {
+    return 4 + TL.length(token.getBytes("UTF8"));
   }
   
   public String toString() {

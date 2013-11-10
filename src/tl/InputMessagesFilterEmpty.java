@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputMessagesFilterEmpty extends tl.TMessagesFilter {
 
   
-  public InputMessagesFilterEmpty(ByteBuffer buffer) {
+  public InputMessagesFilterEmpty(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class InputMessagesFilterEmpty extends tl.TMessagesFilter {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x57e2f66c);
@@ -25,7 +25,7 @@ public class InputMessagesFilterEmpty extends tl.TMessagesFilter {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

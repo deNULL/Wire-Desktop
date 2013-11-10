@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class EncryptedChatDiscarded extends tl.TEncryptedChat {
 
   
-  public EncryptedChatDiscarded(ByteBuffer buffer) {
+  public EncryptedChatDiscarded(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class EncryptedChatDiscarded extends tl.TEncryptedChat {
     this.id = id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x13d6dd27);
@@ -25,7 +25,7 @@ public class EncryptedChatDiscarded extends tl.TEncryptedChat {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

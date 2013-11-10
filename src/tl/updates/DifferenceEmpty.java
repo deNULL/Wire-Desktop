@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class DifferenceEmpty extends tl.updates.TDifference {
 
   
-  public DifferenceEmpty(ByteBuffer buffer) {
+  public DifferenceEmpty(ByteBuffer buffer) throws Exception {
     date = buffer.getInt();
     seq = buffer.getInt();
   }
@@ -16,7 +16,7 @@ public class DifferenceEmpty extends tl.updates.TDifference {
     this.seq = seq;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5d75a138);
@@ -29,7 +29,7 @@ public class DifferenceEmpty extends tl.updates.TDifference {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

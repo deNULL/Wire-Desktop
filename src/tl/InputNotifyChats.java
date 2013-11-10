@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputNotifyChats extends tl.TInputNotifyPeer {
 
   
-  public InputNotifyChats(ByteBuffer buffer) {
+  public InputNotifyChats(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class InputNotifyChats extends tl.TInputNotifyPeer {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x4a95e84e);
@@ -25,7 +25,7 @@ public class InputNotifyChats extends tl.TInputNotifyPeer {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

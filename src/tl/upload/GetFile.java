@@ -8,7 +8,7 @@ public class GetFile extends tl.TLFunction {
   public int offset;
   public int limit;
   
-  public GetFile(ByteBuffer buffer) {
+  public GetFile(ByteBuffer buffer) throws Exception {
     location = (tl.TInputFileLocation) TL.read(buffer);
     offset = buffer.getInt();
     limit = buffer.getInt();
@@ -20,7 +20,7 @@ public class GetFile extends tl.TLFunction {
     this.limit = limit;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe3a6cfb5);
@@ -34,7 +34,7 @@ public class GetFile extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + location.length();
   }
   

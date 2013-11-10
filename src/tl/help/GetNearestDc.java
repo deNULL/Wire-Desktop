@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class GetNearestDc extends tl.TLFunction {
 
   
-  public GetNearestDc(ByteBuffer buffer) {
+  public GetNearestDc(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -14,7 +14,7 @@ public class GetNearestDc extends tl.TLFunction {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x1fb33026);
@@ -26,7 +26,7 @@ public class GetNearestDc extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

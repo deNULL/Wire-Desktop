@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class MessageActionChatAddUser extends tl.TMessageAction {
 
   
-  public MessageActionChatAddUser(ByteBuffer buffer) {
+  public MessageActionChatAddUser(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class MessageActionChatAddUser extends tl.TMessageAction {
     this.user_id = user_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5e3cfc4b);
@@ -25,7 +25,7 @@ public class MessageActionChatAddUser extends tl.TMessageAction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

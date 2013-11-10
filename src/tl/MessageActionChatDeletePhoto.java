@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class MessageActionChatDeletePhoto extends tl.TMessageAction {
 
   
-  public MessageActionChatDeletePhoto(ByteBuffer buffer) {
+  public MessageActionChatDeletePhoto(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class MessageActionChatDeletePhoto extends tl.TMessageAction {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x95e3fbef);
@@ -25,7 +25,7 @@ public class MessageActionChatDeletePhoto extends tl.TMessageAction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

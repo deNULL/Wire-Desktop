@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class Chat extends tl.messages.TChat {
 
   
-  public Chat(ByteBuffer buffer) {
+  public Chat(ByteBuffer buffer) throws Exception {
     chat = (tl.TChat) TL.read(buffer);
     users = TL.readVector(buffer, true, new tl.TUser[0]);
   }
@@ -16,7 +16,7 @@ public class Chat extends tl.messages.TChat {
     this.users = users;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x40e9002a);
@@ -29,7 +29,7 @@ public class Chat extends tl.messages.TChat {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + chat.length() + TL.length(users);
   }
   

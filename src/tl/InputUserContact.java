@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputUserContact extends tl.TInputUser {
 
   
-  public InputUserContact(ByteBuffer buffer) {
+  public InputUserContact(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class InputUserContact extends tl.TInputUser {
     this.user_id = user_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x86e94f65);
@@ -25,7 +25,7 @@ public class InputUserContact extends tl.TInputUser {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

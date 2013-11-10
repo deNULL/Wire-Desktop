@@ -5,9 +5,9 @@ import java.nio.ByteBuffer;
 public class Error extends tl.TError {
 
   
-  public Error(ByteBuffer buffer) {
+  public Error(ByteBuffer buffer) throws Exception {
     code = buffer.getInt();
-    try {  text = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    text = new String(TL.readString(buffer), "UTF8");
   }
   
   public Error(int code, String text) {
@@ -15,21 +15,21 @@ public class Error extends tl.TError {
     this.text = text;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc4b9f9bb);
     }
     buffer.putInt(code);
-    try { TL.writeString(buffer, text.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, text.getBytes("UTF8"), false);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at Error: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }
   	return buffer;
   }
   
-  public int length() {
-    return 4 + TL.length(text.getBytes());
+  public int length() throws Exception {
+    return 4 + TL.length(text.getBytes("UTF8"));
   }
   
   public String toString() {

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputMediaUploadedThumbVideo extends tl.TInputMedia {
 
   
-  public InputMediaUploadedThumbVideo(ByteBuffer buffer) {
+  public InputMediaUploadedThumbVideo(ByteBuffer buffer) throws Exception {
     file = (tl.TInputFile) TL.read(buffer);
     thumb = (tl.TInputFile) TL.read(buffer);
     duration = buffer.getInt();
@@ -21,7 +21,7 @@ public class InputMediaUploadedThumbVideo extends tl.TInputMedia {
     this.h = h;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe628a145);
@@ -37,7 +37,7 @@ public class InputMediaUploadedThumbVideo extends tl.TInputMedia {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 20 + file.length() + thumb.length();
   }
   

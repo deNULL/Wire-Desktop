@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class State extends tl.updates.TState {
 
   
-  public State(ByteBuffer buffer) {
+  public State(ByteBuffer buffer) throws Exception {
     pts = buffer.getInt();
     qts = buffer.getInt();
     date = buffer.getInt();
@@ -22,7 +22,7 @@ public class State extends tl.updates.TState {
     this.unread_count = unread_count;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa56c2a3e);
@@ -38,7 +38,7 @@ public class State extends tl.updates.TState {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 20;
   }
   

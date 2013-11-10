@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class Photos extends tl.photos.TPhotos {
 
   
-  public Photos(ByteBuffer buffer) {
+  public Photos(ByteBuffer buffer) throws Exception {
     photos = TL.readVector(buffer, true, new tl.TPhoto[0]);
     users = TL.readVector(buffer, true, new tl.TUser[0]);
   }
@@ -16,7 +16,7 @@ public class Photos extends tl.photos.TPhotos {
     this.users = users;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x8dca6aa5);
@@ -29,7 +29,7 @@ public class Photos extends tl.photos.TPhotos {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + TL.length(photos) + TL.length(users);
   }
   

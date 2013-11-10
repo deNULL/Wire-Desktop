@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class ReceivedQueue extends tl.TLFunction {
   public int max_qts;
   
-  public ReceivedQueue(ByteBuffer buffer) {
+  public ReceivedQueue(ByteBuffer buffer) throws Exception {
     max_qts = buffer.getInt();
   }
   
@@ -14,7 +14,7 @@ public class ReceivedQueue extends tl.TLFunction {
     this.max_qts = max_qts;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x55a5bb66);
@@ -26,7 +26,7 @@ public class ReceivedQueue extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class PhotoEmpty extends tl.TPhoto {
 
   
-  public PhotoEmpty(ByteBuffer buffer) {
+  public PhotoEmpty(ByteBuffer buffer) throws Exception {
     id = buffer.getLong();
   }
   
@@ -13,7 +13,7 @@ public class PhotoEmpty extends tl.TPhoto {
     this.id = id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x2331b22d);
@@ -25,7 +25,7 @@ public class PhotoEmpty extends tl.TPhoto {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

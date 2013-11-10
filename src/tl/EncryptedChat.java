@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class EncryptedChat extends tl.TEncryptedChat {
 
   
-  public EncryptedChat(ByteBuffer buffer) {
+  public EncryptedChat(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
     access_hash = buffer.getLong();
     date = buffer.getInt();
@@ -27,7 +27,7 @@ public class EncryptedChat extends tl.TEncryptedChat {
     this.key_fingerprint = key_fingerprint;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6601d14f);
@@ -46,7 +46,7 @@ public class EncryptedChat extends tl.TEncryptedChat {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 32 + TL.length(g_a_or_b) + TL.length(nonce);
   }
   

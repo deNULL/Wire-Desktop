@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class VideoEmpty extends tl.TVideo {
 
   
-  public VideoEmpty(ByteBuffer buffer) {
+  public VideoEmpty(ByteBuffer buffer) throws Exception {
     id = buffer.getLong();
   }
   
@@ -13,7 +13,7 @@ public class VideoEmpty extends tl.TVideo {
     this.id = id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc10658a8);
@@ -25,7 +25,7 @@ public class VideoEmpty extends tl.TVideo {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

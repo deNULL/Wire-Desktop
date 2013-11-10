@@ -5,11 +5,11 @@ import java.nio.ByteBuffer;
 public class InputPhoneContact extends tl.TInputContact {
 
   
-  public InputPhoneContact(ByteBuffer buffer) {
+  public InputPhoneContact(ByteBuffer buffer) throws Exception {
     client_id = buffer.getLong();
-    try {  phone = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
-    try {  first_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
-    try {  last_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    phone = new String(TL.readString(buffer), "UTF8");
+    first_name = new String(TL.readString(buffer), "UTF8");
+    last_name = new String(TL.readString(buffer), "UTF8");
   }
   
   public InputPhoneContact(long client_id, String phone, String first_name, String last_name) {
@@ -19,23 +19,23 @@ public class InputPhoneContact extends tl.TInputContact {
     this.last_name = last_name;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf392b7f4);
     }
     buffer.putLong(client_id);
-    try { TL.writeString(buffer, phone.getBytes("UTF8"), false); } catch (Exception e) { };
-    try { TL.writeString(buffer, first_name.getBytes("UTF8"), false); } catch (Exception e) { };
-    try { TL.writeString(buffer, last_name.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, phone.getBytes("UTF8"), false);
+    TL.writeString(buffer, first_name.getBytes("UTF8"), false);
+    TL.writeString(buffer, last_name.getBytes("UTF8"), false);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at InputPhoneContact: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }
   	return buffer;
   }
   
-  public int length() {
-    return 8 + TL.length(phone.getBytes()) + TL.length(first_name.getBytes()) + TL.length(last_name.getBytes());
+  public int length() throws Exception {
+    return 8 + TL.length(phone.getBytes("UTF8")) + TL.length(first_name.getBytes("UTF8")) + TL.length(last_name.getBytes("UTF8"));
   }
   
   public String toString() {

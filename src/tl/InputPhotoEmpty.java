@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputPhotoEmpty extends tl.TInputPhoto {
 
   
-  public InputPhotoEmpty(ByteBuffer buffer) {
+  public InputPhotoEmpty(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class InputPhotoEmpty extends tl.TInputPhoto {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x1cd7bf0d);
@@ -25,7 +25,7 @@ public class InputPhotoEmpty extends tl.TInputPhoto {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

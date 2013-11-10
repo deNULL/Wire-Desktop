@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ContactFound extends tl.TContactFound {
 
   
-  public ContactFound(ByteBuffer buffer) {
+  public ContactFound(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class ContactFound extends tl.TContactFound {
     this.user_id = user_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xea879f95);
@@ -25,7 +25,7 @@ public class ContactFound extends tl.TContactFound {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

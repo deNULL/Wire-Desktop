@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputPeerNotifyEventsAll extends tl.TInputPeerNotifyEvents {
 
   
-  public InputPeerNotifyEventsAll(ByteBuffer buffer) {
+  public InputPeerNotifyEventsAll(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class InputPeerNotifyEventsAll extends tl.TInputPeerNotifyEvents {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe86a2c74);
@@ -25,7 +25,7 @@ public class InputPeerNotifyEventsAll extends tl.TInputPeerNotifyEvents {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

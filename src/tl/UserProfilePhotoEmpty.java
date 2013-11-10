@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UserProfilePhotoEmpty extends tl.TUserProfilePhoto {
 
   
-  public UserProfilePhotoEmpty(ByteBuffer buffer) {
+  public UserProfilePhotoEmpty(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class UserProfilePhotoEmpty extends tl.TUserProfilePhoto {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x4f11bae1);
@@ -25,7 +25,7 @@ public class UserProfilePhotoEmpty extends tl.TUserProfilePhoto {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

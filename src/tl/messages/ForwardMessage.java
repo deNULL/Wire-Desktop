@@ -8,7 +8,7 @@ public class ForwardMessage extends tl.TLFunction {
   public int id;
   public long random_id;
   
-  public ForwardMessage(ByteBuffer buffer) {
+  public ForwardMessage(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputPeer) TL.read(buffer);
     id = buffer.getInt();
     random_id = buffer.getLong();
@@ -20,7 +20,7 @@ public class ForwardMessage extends tl.TLFunction {
     this.random_id = random_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3f3f4f2);
@@ -34,7 +34,7 @@ public class ForwardMessage extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + peer.length();
   }
   

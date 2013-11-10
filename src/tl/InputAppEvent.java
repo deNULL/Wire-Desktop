@@ -5,11 +5,11 @@ import java.nio.ByteBuffer;
 public class InputAppEvent extends tl.TInputAppEvent {
 
   
-  public InputAppEvent(ByteBuffer buffer) {
+  public InputAppEvent(ByteBuffer buffer) throws Exception {
     time = buffer.getDouble();
-    try {  type = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    type = new String(TL.readString(buffer), "UTF8");
     peer = buffer.getLong();
-    try {  data = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    data = new String(TL.readString(buffer), "UTF8");
   }
   
   public InputAppEvent(double time, String type, long peer, String data) {
@@ -19,23 +19,23 @@ public class InputAppEvent extends tl.TInputAppEvent {
     this.data = data;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x770656a8);
     }
     buffer.putDouble(time);
-    try { TL.writeString(buffer, type.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, type.getBytes("UTF8"), false);
     buffer.putLong(peer);
-    try { TL.writeString(buffer, data.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, data.getBytes("UTF8"), false);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at InputAppEvent: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }
   	return buffer;
   }
   
-  public int length() {
-    return 16 + TL.length(type.getBytes()) + TL.length(data.getBytes());
+  public int length() throws Exception {
+    return 16 + TL.length(type.getBytes("UTF8")) + TL.length(data.getBytes("UTF8"));
   }
   
   public String toString() {

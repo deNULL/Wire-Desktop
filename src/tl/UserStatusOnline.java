@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UserStatusOnline extends tl.TUserStatus {
 
   
-  public UserStatusOnline(ByteBuffer buffer) {
+  public UserStatusOnline(ByteBuffer buffer) throws Exception {
     expires = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class UserStatusOnline extends tl.TUserStatus {
     this.expires = expires;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xedb93949);
@@ -25,7 +25,7 @@ public class UserStatusOnline extends tl.TUserStatus {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

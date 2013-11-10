@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ChatParticipant extends tl.TChatParticipant {
 
   
-  public ChatParticipant(ByteBuffer buffer) {
+  public ChatParticipant(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
     inviter_id = buffer.getInt();
     date = buffer.getInt();
@@ -17,7 +17,7 @@ public class ChatParticipant extends tl.TChatParticipant {
     this.date = date;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc8d7493e);
@@ -31,7 +31,7 @@ public class ChatParticipant extends tl.TChatParticipant {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12;
   }
   

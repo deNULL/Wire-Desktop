@@ -5,12 +5,12 @@ import java.nio.ByteBuffer;
 public class GeoChat extends tl.TChat {
 
   
-  public GeoChat(ByteBuffer buffer) {
+  public GeoChat(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
     access_hash = buffer.getLong();
-    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
-    try {  address = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
-    try {  venue = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    title = new String(TL.readString(buffer), "UTF8");
+    address = new String(TL.readString(buffer), "UTF8");
+    venue = new String(TL.readString(buffer), "UTF8");
     geo = (tl.TGeoPoint) TL.read(buffer);
     photo = (tl.TChatPhoto) TL.read(buffer);
     participants_count = buffer.getInt();
@@ -33,16 +33,16 @@ public class GeoChat extends tl.TChat {
     this.version = version;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x75eaea5a);
     }
     buffer.putInt(id);
     buffer.putLong(access_hash);
-    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
-    try { TL.writeString(buffer, address.getBytes("UTF8"), false); } catch (Exception e) { };
-    try { TL.writeString(buffer, venue.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, title.getBytes("UTF8"), false);
+    TL.writeString(buffer, address.getBytes("UTF8"), false);
+    TL.writeString(buffer, venue.getBytes("UTF8"), false);
     geo.writeTo(buffer, true);
     photo.writeTo(buffer, true);
     buffer.putInt(participants_count);
@@ -55,8 +55,8 @@ public class GeoChat extends tl.TChat {
   	return buffer;
   }
   
-  public int length() {
-    return 36 + TL.length(title.getBytes()) + TL.length(address.getBytes()) + TL.length(venue.getBytes()) + geo.length() + photo.length();
+  public int length() throws Exception {
+    return 36 + TL.length(title.getBytes("UTF8")) + TL.length(address.getBytes("UTF8")) + TL.length(venue.getBytes("UTF8")) + geo.length() + photo.length();
   }
   
   public String toString() {

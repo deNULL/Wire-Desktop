@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class SentEncryptedFile extends tl.messages.TSentEncryptedMessage {
 
   
-  public SentEncryptedFile(ByteBuffer buffer) {
+  public SentEncryptedFile(ByteBuffer buffer) throws Exception {
     date = buffer.getInt();
     file = (tl.TEncryptedFile) TL.read(buffer);
   }
@@ -16,7 +16,7 @@ public class SentEncryptedFile extends tl.messages.TSentEncryptedMessage {
     this.file = file;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9493ff32);
@@ -29,7 +29,7 @@ public class SentEncryptedFile extends tl.messages.TSentEncryptedMessage {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + file.length();
   }
   

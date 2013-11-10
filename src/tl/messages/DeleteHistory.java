@@ -7,7 +7,7 @@ public class DeleteHistory extends tl.TLFunction {
   public tl.TInputPeer peer;
   public int offset;
   
-  public DeleteHistory(ByteBuffer buffer) {
+  public DeleteHistory(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputPeer) TL.read(buffer);
     offset = buffer.getInt();
   }
@@ -17,7 +17,7 @@ public class DeleteHistory extends tl.TLFunction {
     this.offset = offset;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf4f8fb61);
@@ -30,7 +30,7 @@ public class DeleteHistory extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + peer.length();
   }
   

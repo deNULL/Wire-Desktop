@@ -6,9 +6,9 @@ import java.nio.ByteBuffer;
 public class SentCode extends tl.auth.TSentCode {
 
   
-  public SentCode(ByteBuffer buffer) {
+  public SentCode(ByteBuffer buffer) throws Exception {
     phone_registered = (buffer.getInt() == 0x997275b5);
-    try {  phone_code_hash = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    phone_code_hash = new String(TL.readString(buffer), "UTF8");
   }
   
   public SentCode(boolean phone_registered, String phone_code_hash) {
@@ -16,21 +16,21 @@ public class SentCode extends tl.auth.TSentCode {
     this.phone_code_hash = phone_code_hash;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x2215bcbd);
     }
     buffer.putInt(phone_registered ? 0x997275b5 : 0xbc799737);
-    try { TL.writeString(buffer, phone_code_hash.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, phone_code_hash.getBytes("UTF8"), false);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at SentCode: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }
   	return buffer;
   }
   
-  public int length() {
-    return 4 + TL.length(phone_code_hash.getBytes());
+  public int length() throws Exception {
+    return 4 + TL.length(phone_code_hash.getBytes("UTF8"));
   }
   
   public String toString() {

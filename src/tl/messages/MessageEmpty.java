@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class MessageEmpty extends tl.messages.TMessage {
 
   
-  public MessageEmpty(ByteBuffer buffer) {
+  public MessageEmpty(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -14,7 +14,7 @@ public class MessageEmpty extends tl.messages.TMessage {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3f4e0648);
@@ -26,7 +26,7 @@ public class MessageEmpty extends tl.messages.TMessage {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

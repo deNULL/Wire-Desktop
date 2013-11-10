@@ -51,7 +51,11 @@ public class UserManager {
 	public void store(TUser user) {
 		ContentValues values = new ContentValues();
 		values.put(_ID, user.id);
-		values.put(COLUMN_NAME_BODY, user.writeToByteArray());
+		try {
+      values.put(COLUMN_NAME_BODY, user.writeToByteArray());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 		db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 		
 		loaded.put(user.id, user);
@@ -60,8 +64,12 @@ public class UserManager {
 	public void store(TUserFull userFull) {
 	  ContentValues values = new ContentValues();
     values.put(_ID, ((UserFull) userFull).user.id);
-    values.put(COLUMN_NAME_BODY, ((UserFull) userFull).user.writeToByteArray());
-    values.put(COLUMN_NAME_BODY_FULL, userFull.writeToByteArray());
+    try {
+      values.put(COLUMN_NAME_BODY, ((UserFull) userFull).user.writeToByteArray());
+      values.put(COLUMN_NAME_BODY_FULL, userFull.writeToByteArray());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     
     full.put(((UserFull) userFull).user.id, (UserFull) userFull);
@@ -73,7 +81,11 @@ public class UserManager {
 			Cursor cursor = db.query(TABLE_NAME, new String[]{ COLUMN_NAME_BODY }, "_id = ? AND body NOT NULL", new String[]{ id + "" }, null, null, null, "1");
 			if (cursor.getCount() > 0) {
 				cursor.moveToFirst();
-				result = (TUser) TL.read(cursor.getBlob(0));
+				try {
+          result = (TUser) TL.read(cursor.getBlob(0));
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
 				
 				loaded.put(result.id, result);
 			}
@@ -89,7 +101,11 @@ public class UserManager {
       Cursor cursor = db.query(TABLE_NAME, new String[]{ COLUMN_NAME_BODY_FULL }, "_id = ? AND body_full NOT NULL", new String[]{ id + "" }, null, null, null, "1");
       if (cursor.getCount() > 0) {
         cursor.moveToFirst();
-        result = (UserFull) TL.read(cursor.getBlob(0));
+        try {
+          result = (UserFull) TL.read(cursor.getBlob(0));
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
         
         full.put(id, result);
       }

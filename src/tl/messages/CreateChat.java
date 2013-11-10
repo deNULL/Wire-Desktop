@@ -7,9 +7,9 @@ public class CreateChat extends tl.TLFunction {
   public tl.TInputUser[] users;
   public String title;
   
-  public CreateChat(ByteBuffer buffer) {
+  public CreateChat(ByteBuffer buffer) throws Exception {
     users = TL.readVector(buffer, true, new tl.TInputUser[0]);
-    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    title = new String(TL.readString(buffer), "UTF8");
   }
   
   public CreateChat(tl.TInputUser[] users, String title) {
@@ -17,21 +17,21 @@ public class CreateChat extends tl.TLFunction {
     this.title = title;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x419d9aee);
     }
     TL.writeVector(buffer, users, true, true);
-    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, title.getBytes("UTF8"), false);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at CreateChat: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }
   	return buffer;
   }
   
-  public int length() {
-    return 8 + TL.length(users) + TL.length(title.getBytes());
+  public int length() throws Exception {
+    return 8 + TL.length(users) + TL.length(title.getBytes("UTF8"));
   }
   
   public String toString() {

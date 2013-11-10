@@ -8,7 +8,7 @@ public class AcceptEncryption extends tl.TLFunction {
   public byte[] g_b;
   public long key_fingerprint;
   
-  public AcceptEncryption(ByteBuffer buffer) {
+  public AcceptEncryption(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputEncryptedChat) TL.read(buffer);
     g_b = TL.readString(buffer);
     key_fingerprint = buffer.getLong();
@@ -20,7 +20,7 @@ public class AcceptEncryption extends tl.TLFunction {
     this.key_fingerprint = key_fingerprint;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3dbc0415);
@@ -34,7 +34,7 @@ public class AcceptEncryption extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + peer.length() + TL.length(g_b);
   }
   

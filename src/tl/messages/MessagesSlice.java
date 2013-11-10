@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class MessagesSlice extends tl.messages.TMessages {
 
   
-  public MessagesSlice(ByteBuffer buffer) {
+  public MessagesSlice(ByteBuffer buffer) throws Exception {
     count = buffer.getInt();
     messages = TL.readVector(buffer, true, new tl.TMessage[0]);
     chats = TL.readVector(buffer, true, new tl.TChat[0]);
@@ -20,7 +20,7 @@ public class MessagesSlice extends tl.messages.TMessages {
     this.users = users;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb446ae3);
@@ -35,7 +35,7 @@ public class MessagesSlice extends tl.messages.TMessages {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 28 + TL.length(messages) + TL.length(chats) + TL.length(users);
   }
   

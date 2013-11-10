@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class ForeignLinkRequested extends tl.contacts.TForeignLink {
 
   
-  public ForeignLinkRequested(ByteBuffer buffer) {
+  public ForeignLinkRequested(ByteBuffer buffer) throws Exception {
     has_phone = (buffer.getInt() == 0x997275b5);
   }
   
@@ -14,7 +14,7 @@ public class ForeignLinkRequested extends tl.contacts.TForeignLink {
     this.has_phone = has_phone;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa7801f47);
@@ -26,7 +26,7 @@ public class ForeignLinkRequested extends tl.contacts.TForeignLink {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

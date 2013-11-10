@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateEncryptedMessagesRead extends tl.TUpdate {
 
   
-  public UpdateEncryptedMessagesRead(ByteBuffer buffer) {
+  public UpdateEncryptedMessagesRead(ByteBuffer buffer) throws Exception {
     chat_id = buffer.getInt();
     max_date = buffer.getInt();
     date = buffer.getInt();
@@ -17,7 +17,7 @@ public class UpdateEncryptedMessagesRead extends tl.TUpdate {
     this.date = date;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x38fe25b7);
@@ -31,7 +31,7 @@ public class UpdateEncryptedMessagesRead extends tl.TUpdate {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12;
   }
   

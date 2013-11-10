@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class LogOut extends tl.TLFunction {
 
   
-  public LogOut(ByteBuffer buffer) {
+  public LogOut(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -14,7 +14,7 @@ public class LogOut extends tl.TLFunction {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5717da40);
@@ -26,7 +26,7 @@ public class LogOut extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

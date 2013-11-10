@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class PQInnerData extends tl.TPQInnerData {
 
   
-  public PQInnerData(ByteBuffer buffer) {
+  public PQInnerData(ByteBuffer buffer) throws Exception {
     pq = new java.math.BigInteger(1, TL.readString(buffer));
     p = new java.math.BigInteger(1, TL.readString(buffer));
     q = new java.math.BigInteger(1, TL.readString(buffer));
@@ -23,7 +23,7 @@ public class PQInnerData extends tl.TPQInnerData {
     this.new_nonce = new_nonce;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x83c95aec);
@@ -40,7 +40,7 @@ public class PQInnerData extends tl.TPQInnerData {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 64 + TL.length(pq.toByteArray()) + TL.length(p.toByteArray()) + TL.length(q.toByteArray());
   }
   

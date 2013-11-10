@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ServerDHInnerData extends tl.TServerDHInnerData {
 
   
-  public ServerDHInnerData(ByteBuffer buffer) {
+  public ServerDHInnerData(ByteBuffer buffer) throws Exception {
     nonce = TL.readInt128(buffer);
     server_nonce = TL.readInt128(buffer);
     g = buffer.getInt();
@@ -23,7 +23,7 @@ public class ServerDHInnerData extends tl.TServerDHInnerData {
     this.server_time = server_time;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb5890dba);
@@ -40,7 +40,7 @@ public class ServerDHInnerData extends tl.TServerDHInnerData {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 40 + TL.length(dh_prime.toByteArray()) + TL.length(g_a.toByteArray());
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class DestroySessionNone extends tl.TDestroySessionRes {
 
   
-  public DestroySessionNone(ByteBuffer buffer) {
+  public DestroySessionNone(ByteBuffer buffer) throws Exception {
     session_id = buffer.getLong();
   }
   
@@ -13,7 +13,7 @@ public class DestroySessionNone extends tl.TDestroySessionRes {
     this.session_id = session_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x62d350c9);
@@ -25,7 +25,7 @@ public class DestroySessionNone extends tl.TDestroySessionRes {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

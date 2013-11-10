@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateUserTyping extends tl.TUpdate {
 
   
-  public UpdateUserTyping(ByteBuffer buffer) {
+  public UpdateUserTyping(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class UpdateUserTyping extends tl.TUpdate {
     this.user_id = user_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6baa8508);
@@ -25,7 +25,7 @@ public class UpdateUserTyping extends tl.TUpdate {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ChatPhotoEmpty extends tl.TChatPhoto {
 
   
-  public ChatPhotoEmpty(ByteBuffer buffer) {
+  public ChatPhotoEmpty(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class ChatPhotoEmpty extends tl.TChatPhoto {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x37c1011c);
@@ -25,7 +25,7 @@ public class ChatPhotoEmpty extends tl.TChatPhoto {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

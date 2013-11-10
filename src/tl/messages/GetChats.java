@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class GetChats extends tl.TLFunction {
   public int[] id;
   
-  public GetChats(ByteBuffer buffer) {
+  public GetChats(ByteBuffer buffer) throws Exception {
     id = TL.readVectorInt(buffer, true);
   }
   
@@ -14,7 +14,7 @@ public class GetChats extends tl.TLFunction {
     this.id = id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3c6aa187);
@@ -26,7 +26,7 @@ public class GetChats extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + id.length * 4;
   }
   

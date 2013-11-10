@@ -5,11 +5,11 @@ import java.nio.ByteBuffer;
 public class UpdateShortChatMessage extends tl.TUpdates {
 
   
-  public UpdateShortChatMessage(ByteBuffer buffer) {
+  public UpdateShortChatMessage(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
     from_id = buffer.getInt();
     chat_id = buffer.getInt();
-    try {  message = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    message = new String(TL.readString(buffer), "UTF8");
     pts = buffer.getInt();
     date = buffer.getInt();
     seq = buffer.getInt();
@@ -25,7 +25,7 @@ public class UpdateShortChatMessage extends tl.TUpdates {
     this.seq = seq;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x2b2fbd4e);
@@ -33,7 +33,7 @@ public class UpdateShortChatMessage extends tl.TUpdates {
     buffer.putInt(id);
     buffer.putInt(from_id);
     buffer.putInt(chat_id);
-    try { TL.writeString(buffer, message.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, message.getBytes("UTF8"), false);
     buffer.putInt(pts);
     buffer.putInt(date);
     buffer.putInt(seq);
@@ -43,8 +43,8 @@ public class UpdateShortChatMessage extends tl.TUpdates {
   	return buffer;
   }
   
-  public int length() {
-    return 24 + TL.length(message.getBytes());
+  public int length() throws Exception {
+    return 24 + TL.length(message.getBytes("UTF8"));
   }
   
   public String toString() {

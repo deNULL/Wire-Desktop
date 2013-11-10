@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ChatFull extends tl.TChatFull {
 
   
-  public ChatFull(ByteBuffer buffer) {
+  public ChatFull(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
     participants = (tl.TChatParticipants) TL.read(buffer);
     chat_photo = (tl.TPhoto) TL.read(buffer);
@@ -19,7 +19,7 @@ public class ChatFull extends tl.TChatFull {
     this.notify_settings = notify_settings;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x630e61be);
@@ -34,7 +34,7 @@ public class ChatFull extends tl.TChatFull {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + participants.length() + chat_photo.length() + notify_settings.length();
   }
   

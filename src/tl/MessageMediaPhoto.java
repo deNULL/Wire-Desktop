@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 public class MessageMediaPhoto extends tl.TMessageMedia {
   public Image cached;
   
-  public MessageMediaPhoto(ByteBuffer buffer) {
+  public MessageMediaPhoto(ByteBuffer buffer) throws Exception {
     photo = (tl.TPhoto) TL.read(buffer);
   }
   
@@ -19,7 +19,7 @@ public class MessageMediaPhoto extends tl.TMessageMedia {
     this.photo = photo;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc8c45a2a);
@@ -31,7 +31,7 @@ public class MessageMediaPhoto extends tl.TMessageMedia {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4 + photo.length();
   }
   

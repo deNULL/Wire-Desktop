@@ -368,7 +368,7 @@ public class Main {
   		return ".toByteArray()";
   	}
   	
-  	return ".getBytes()";
+  	return ".getBytes(\"UTF8\")";
   }
   static String getSize(String tlType, String var, String note) {
     if (tlType.toLowerCase().startsWith("vector ") || tlType.toLowerCase().startsWith("vector<")) {
@@ -445,7 +445,7 @@ public class Main {
   		if (note.equals("num") || note.equals("unum")) {
   			return var + " = new java.math.BigInteger(" + (note.equals("unum") ? "1, " : "") + "TL.readString(buffer))";
   		} else {
-  			return var + " = new String(TL.readString(buffer))";
+  			return var + " = new String(TL.readString(buffer), \"UTF8\")";
   		}
   	} else
   	if (tlType.equals("Bool")) {

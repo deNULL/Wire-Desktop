@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class SentMessageLink extends tl.messages.TSentMessage {
 
   
-  public SentMessageLink(ByteBuffer buffer) {
+  public SentMessageLink(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
     date = buffer.getInt();
     pts = buffer.getInt();
@@ -22,7 +22,7 @@ public class SentMessageLink extends tl.messages.TSentMessage {
     this.links = links;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xe9db4a3f);
@@ -38,7 +38,7 @@ public class SentMessageLink extends tl.messages.TSentMessage {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 24 + TL.length(links);
   }
   

@@ -9,7 +9,7 @@ public class GetUserPhotos extends tl.TLFunction {
   public int max_id;
   public int limit;
   
-  public GetUserPhotos(ByteBuffer buffer) {
+  public GetUserPhotos(ByteBuffer buffer) throws Exception {
     user_id = (tl.TInputUser) TL.read(buffer);
     offset = buffer.getInt();
     max_id = buffer.getInt();
@@ -23,7 +23,7 @@ public class GetUserPhotos extends tl.TLFunction {
     this.limit = limit;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb7ee553c);
@@ -38,7 +38,7 @@ public class GetUserPhotos extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + user_id.length();
   }
   

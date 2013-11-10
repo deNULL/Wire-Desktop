@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class DhConfigNotModified extends tl.messages.TDhConfig {
 
   
-  public DhConfigNotModified(ByteBuffer buffer) {
+  public DhConfigNotModified(ByteBuffer buffer) throws Exception {
     random = TL.readString(buffer);
   }
   
@@ -14,7 +14,7 @@ public class DhConfigNotModified extends tl.messages.TDhConfig {
     this.random = random;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xc0e24635);
@@ -26,7 +26,7 @@ public class DhConfigNotModified extends tl.messages.TDhConfig {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return TL.length(random);
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UserStatusEmpty extends tl.TUserStatus {
 
   
-  public UserStatusEmpty(ByteBuffer buffer) {
+  public UserStatusEmpty(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class UserStatusEmpty extends tl.TUserStatus {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x9d05049);
@@ -25,7 +25,7 @@ public class UserStatusEmpty extends tl.TUserStatus {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateUserStatus extends tl.TUpdate {
 
   
-  public UpdateUserStatus(ByteBuffer buffer) {
+  public UpdateUserStatus(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
     status = (tl.TUserStatus) TL.read(buffer);
   }
@@ -15,7 +15,7 @@ public class UpdateUserStatus extends tl.TUpdate {
     this.status = status;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x1bfbd823);
@@ -28,7 +28,7 @@ public class UpdateUserStatus extends tl.TUpdate {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + status.length();
   }
   

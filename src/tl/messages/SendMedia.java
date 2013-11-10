@@ -8,7 +8,7 @@ public class SendMedia extends tl.TLFunction {
   public tl.TInputMedia media;
   public long random_id;
   
-  public SendMedia(ByteBuffer buffer) {
+  public SendMedia(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputPeer) TL.read(buffer);
     media = (tl.TInputMedia) TL.read(buffer);
     random_id = buffer.getLong();
@@ -20,7 +20,7 @@ public class SendMedia extends tl.TLFunction {
     this.random_id = random_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xa3c85d76);
@@ -34,7 +34,7 @@ public class SendMedia extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + peer.length() + media.length();
   }
   

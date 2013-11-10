@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class AffectedHistory extends tl.messages.TAffectedHistory {
 
   
-  public AffectedHistory(ByteBuffer buffer) {
+  public AffectedHistory(ByteBuffer buffer) throws Exception {
     pts = buffer.getInt();
     seq = buffer.getInt();
     offset = buffer.getInt();
@@ -18,7 +18,7 @@ public class AffectedHistory extends tl.messages.TAffectedHistory {
     this.offset = offset;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb7de36f2);
@@ -32,7 +32,7 @@ public class AffectedHistory extends tl.messages.TAffectedHistory {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12;
   }
   

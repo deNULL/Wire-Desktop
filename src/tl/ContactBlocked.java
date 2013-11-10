@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ContactBlocked extends tl.TContactBlocked {
 
   
-  public ContactBlocked(ByteBuffer buffer) {
+  public ContactBlocked(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
     date = buffer.getInt();
   }
@@ -15,7 +15,7 @@ public class ContactBlocked extends tl.TContactBlocked {
     this.date = date;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x561bc879);
@@ -28,7 +28,7 @@ public class ContactBlocked extends tl.TContactBlocked {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

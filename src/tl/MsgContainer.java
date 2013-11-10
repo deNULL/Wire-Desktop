@@ -5,15 +5,15 @@ import java.nio.ByteBuffer;
 public class MsgContainer extends tl.TMessageContainer {
 
   
-  public MsgContainer(ByteBuffer buffer) {
-    messages = TL.readVectorMessage(buffer, false);
+  public MsgContainer(ByteBuffer buffer) throws Exception {
+    messages = TL.readVectorMessage(buffer, false);;
   }
   
   public MsgContainer(tl.TTransportMessage[] messages) {
     this.messages = messages;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x73f1f8dc);
@@ -25,7 +25,7 @@ public class MsgContainer extends tl.TMessageContainer {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4 + TL.length(messages);
   }
   

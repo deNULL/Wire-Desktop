@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class FileMp3 extends tl.storage.TFileType {
 
   
-  public FileMp3(ByteBuffer buffer) {
+  public FileMp3(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -14,7 +14,7 @@ public class FileMp3 extends tl.storage.TFileType {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x528a0677);
@@ -26,7 +26,7 @@ public class FileMp3 extends tl.storage.TFileType {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

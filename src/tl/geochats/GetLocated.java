@@ -8,7 +8,7 @@ public class GetLocated extends tl.TLFunction {
   public int radius;
   public int limit;
   
-  public GetLocated(ByteBuffer buffer) {
+  public GetLocated(ByteBuffer buffer) throws Exception {
     geo_point = (tl.TInputGeoPoint) TL.read(buffer);
     radius = buffer.getInt();
     limit = buffer.getInt();
@@ -20,7 +20,7 @@ public class GetLocated extends tl.TLFunction {
     this.limit = limit;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x7f192d8f);
@@ -34,7 +34,7 @@ public class GetLocated extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + geo_point.length();
   }
   

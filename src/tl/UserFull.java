@@ -5,14 +5,14 @@ import java.nio.ByteBuffer;
 public class UserFull extends tl.TUserFull {
 
   
-  public UserFull(ByteBuffer buffer) {
+  public UserFull(ByteBuffer buffer) throws Exception {
     user = (tl.TUser) TL.read(buffer);
     link = (tl.contacts.TLink) TL.read(buffer);
     profile_photo = (tl.TPhoto) TL.read(buffer);
     notify_settings = (tl.TPeerNotifySettings) TL.read(buffer);
     blocked = (buffer.getInt() == 0x997275b5);
-    try {  real_first_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
-    try {  real_last_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    real_first_name = new String(TL.readString(buffer), "UTF8");
+    real_last_name = new String(TL.readString(buffer), "UTF8");
   }
   
   public UserFull(tl.TUser user, tl.contacts.TLink link, tl.TPhoto profile_photo, tl.TPeerNotifySettings notify_settings, boolean blocked, String real_first_name, String real_last_name) {
@@ -25,7 +25,7 @@ public class UserFull extends tl.TUserFull {
     this.real_last_name = real_last_name;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x771095da);
@@ -35,16 +35,16 @@ public class UserFull extends tl.TUserFull {
     profile_photo.writeTo(buffer, true);
     notify_settings.writeTo(buffer, true);
     buffer.putInt(blocked ? 0x997275b5 : 0xbc799737);
-    try { TL.writeString(buffer, real_first_name.getBytes("UTF8"), false); } catch (Exception e) { };
-    try { TL.writeString(buffer, real_last_name.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, real_first_name.getBytes("UTF8"), false);
+    TL.writeString(buffer, real_last_name.getBytes("UTF8"), false);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at UserFull: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
     }
   	return buffer;
   }
   
-  public int length() {
-    return 20 + user.length() + link.length() + profile_photo.length() + notify_settings.length() + TL.length(real_first_name.getBytes()) + TL.length(real_last_name.getBytes());
+  public int length() throws Exception {
+    return 20 + user.length() + link.length() + profile_photo.length() + notify_settings.length() + TL.length(real_first_name.getBytes("UTF8")) + TL.length(real_last_name.getBytes("UTF8"));
   }
   
   public String toString() {

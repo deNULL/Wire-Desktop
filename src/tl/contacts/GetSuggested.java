@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class GetSuggested extends tl.TLFunction {
   public int limit;
   
-  public GetSuggested(ByteBuffer buffer) {
+  public GetSuggested(ByteBuffer buffer) throws Exception {
     limit = buffer.getInt();
   }
   
@@ -14,7 +14,7 @@ public class GetSuggested extends tl.TLFunction {
     this.limit = limit;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xcd773428);
@@ -26,7 +26,7 @@ public class GetSuggested extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

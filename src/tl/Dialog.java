@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class Dialog extends tl.TDialog {
 
   
-  public Dialog(ByteBuffer buffer) {
+  public Dialog(ByteBuffer buffer) throws Exception {
     peer = (tl.TPeer) TL.read(buffer);
     top_message = buffer.getInt();
     unread_count = buffer.getInt();
@@ -17,7 +17,7 @@ public class Dialog extends tl.TDialog {
     this.unread_count = unread_count;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x214a8cdf);
@@ -31,7 +31,7 @@ public class Dialog extends tl.TDialog {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + peer.length();
   }
   

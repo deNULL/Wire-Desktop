@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputGeoChat extends tl.TInputGeoChat {
 
   
-  public InputGeoChat(ByteBuffer buffer) {
+  public InputGeoChat(ByteBuffer buffer) throws Exception {
     chat_id = buffer.getInt();
     access_hash = buffer.getLong();
   }
@@ -15,7 +15,7 @@ public class InputGeoChat extends tl.TInputGeoChat {
     this.access_hash = access_hash;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x74d456fa);
@@ -28,7 +28,7 @@ public class InputGeoChat extends tl.TInputGeoChat {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12;
   }
   

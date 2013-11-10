@@ -7,7 +7,7 @@ public class GetDhConfig extends tl.TLFunction {
   public int version;
   public int random_length;
   
-  public GetDhConfig(ByteBuffer buffer) {
+  public GetDhConfig(ByteBuffer buffer) throws Exception {
     version = buffer.getInt();
     random_length = buffer.getInt();
   }
@@ -17,7 +17,7 @@ public class GetDhConfig extends tl.TLFunction {
     this.random_length = random_length;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x26cf8950);
@@ -30,7 +30,7 @@ public class GetDhConfig extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

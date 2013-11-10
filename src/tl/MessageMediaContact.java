@@ -5,10 +5,10 @@ import java.nio.ByteBuffer;
 public class MessageMediaContact extends tl.TMessageMedia {
 
   
-  public MessageMediaContact(ByteBuffer buffer) {
-    try {  phone_number = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
-    try {  first_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
-    try {  last_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+  public MessageMediaContact(ByteBuffer buffer) throws Exception {
+    phone_number = new String(TL.readString(buffer), "UTF8");
+    first_name = new String(TL.readString(buffer), "UTF8");
+    last_name = new String(TL.readString(buffer), "UTF8");
     user_id = buffer.getInt();
   }
   
@@ -19,14 +19,14 @@ public class MessageMediaContact extends tl.TMessageMedia {
     this.user_id = user_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5e7d2f39);
     }
-    try { TL.writeString(buffer, phone_number.getBytes("UTF8"), false); } catch (Exception e) { };
-    try { TL.writeString(buffer, first_name.getBytes("UTF8"), false); } catch (Exception e) { };
-    try { TL.writeString(buffer, last_name.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, phone_number.getBytes("UTF8"), false);
+    TL.writeString(buffer, first_name.getBytes("UTF8"), false);
+    TL.writeString(buffer, last_name.getBytes("UTF8"), false);
     buffer.putInt(user_id);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
       System.err.println("Invalid length at MessageMediaContact: expected " + (length() + (boxed ? 4 : 0)) + " bytes, got " + (buffer.position() - oldPos));
@@ -34,8 +34,8 @@ public class MessageMediaContact extends tl.TMessageMedia {
   	return buffer;
   }
   
-  public int length() {
-    return 4 + TL.length(phone_number.getBytes()) + TL.length(first_name.getBytes()) + TL.length(last_name.getBytes());
+  public int length() throws Exception {
+    return 4 + TL.length(phone_number.getBytes("UTF8")) + TL.length(first_name.getBytes("UTF8")) + TL.length(last_name.getBytes("UTF8"));
   }
   
   public String toString() {

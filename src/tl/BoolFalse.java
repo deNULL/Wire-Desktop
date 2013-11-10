@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class BoolFalse extends tl.TBool {
 
   
-  public BoolFalse(ByteBuffer buffer) {
+  public BoolFalse(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class BoolFalse extends tl.TBool {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xbc799737);
@@ -25,7 +25,7 @@ public class BoolFalse extends tl.TBool {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

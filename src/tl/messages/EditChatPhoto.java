@@ -7,7 +7,7 @@ public class EditChatPhoto extends tl.TLFunction {
   public int chat_id;
   public tl.TInputChatPhoto photo;
   
-  public EditChatPhoto(ByteBuffer buffer) {
+  public EditChatPhoto(ByteBuffer buffer) throws Exception {
     chat_id = buffer.getInt();
     photo = (tl.TInputChatPhoto) TL.read(buffer);
   }
@@ -17,7 +17,7 @@ public class EditChatPhoto extends tl.TLFunction {
     this.photo = photo;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd881821d);
@@ -30,7 +30,7 @@ public class EditChatPhoto extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + photo.length();
   }
   

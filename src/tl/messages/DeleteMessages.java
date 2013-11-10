@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class DeleteMessages extends tl.TLFunction {
   public int[] id;
   
-  public DeleteMessages(ByteBuffer buffer) {
+  public DeleteMessages(ByteBuffer buffer) throws Exception {
     id = TL.readVectorInt(buffer, true);
   }
   
@@ -14,7 +14,7 @@ public class DeleteMessages extends tl.TLFunction {
     this.id = id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x14f2dd0a);
@@ -26,7 +26,7 @@ public class DeleteMessages extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + id.length * 4;
   }
   

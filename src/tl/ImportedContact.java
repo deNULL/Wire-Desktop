@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ImportedContact extends tl.TImportedContact {
 
   
-  public ImportedContact(ByteBuffer buffer) {
+  public ImportedContact(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
     client_id = buffer.getLong();
   }
@@ -15,7 +15,7 @@ public class ImportedContact extends tl.TImportedContact {
     this.client_id = client_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd0028438);
@@ -28,7 +28,7 @@ public class ImportedContact extends tl.TImportedContact {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12;
   }
   

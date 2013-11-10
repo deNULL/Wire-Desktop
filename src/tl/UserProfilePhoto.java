@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UserProfilePhoto extends tl.TUserProfilePhoto {
 
   
-  public UserProfilePhoto(ByteBuffer buffer) {
+  public UserProfilePhoto(ByteBuffer buffer) throws Exception {
     photo_id = buffer.getLong();
     photo_small = (tl.TFileLocation) TL.read(buffer);
     photo_big = (tl.TFileLocation) TL.read(buffer);
@@ -17,7 +17,7 @@ public class UserProfilePhoto extends tl.TUserProfilePhoto {
     this.photo_big = photo_big;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xd559d8c8);
@@ -31,7 +31,7 @@ public class UserProfilePhoto extends tl.TUserProfilePhoto {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + photo_small.length() + photo_big.length();
   }
   

@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class Found extends tl.contacts.TFound {
 
   
-  public Found(ByteBuffer buffer) {
+  public Found(ByteBuffer buffer) throws Exception {
     results = TL.readVector(buffer, true, new tl.TContactFound[0]);
     users = TL.readVector(buffer, true, new tl.TUser[0]);
   }
@@ -16,7 +16,7 @@ public class Found extends tl.contacts.TFound {
     this.users = users;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x566000e);
@@ -29,7 +29,7 @@ public class Found extends tl.contacts.TFound {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16 + TL.length(results) + TL.length(users);
   }
   

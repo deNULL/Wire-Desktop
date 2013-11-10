@@ -8,7 +8,7 @@ public class AddChatUser extends tl.TLFunction {
   public tl.TInputUser user_id;
   public int fwd_limit;
   
-  public AddChatUser(ByteBuffer buffer) {
+  public AddChatUser(ByteBuffer buffer) throws Exception {
     chat_id = buffer.getInt();
     user_id = (tl.TInputUser) TL.read(buffer);
     fwd_limit = buffer.getInt();
@@ -20,7 +20,7 @@ public class AddChatUser extends tl.TLFunction {
     this.fwd_limit = fwd_limit;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x2ee9ee9e);
@@ -34,7 +34,7 @@ public class AddChatUser extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + user_id.length();
   }
   

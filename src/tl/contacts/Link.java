@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class Link extends tl.contacts.TLink {
 
   
-  public Link(ByteBuffer buffer) {
+  public Link(ByteBuffer buffer) throws Exception {
     my_link = (tl.contacts.TMyLink) TL.read(buffer);
     foreign_link = (tl.contacts.TForeignLink) TL.read(buffer);
     user = (tl.TUser) TL.read(buffer);
@@ -18,7 +18,7 @@ public class Link extends tl.contacts.TLink {
     this.user = user;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xeccea3f5);
@@ -32,7 +32,7 @@ public class Link extends tl.contacts.TLink {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + my_link.length() + foreign_link.length() + user.length();
   }
   

@@ -13,9 +13,9 @@ public class Search extends tl.TLFunction {
   public int max_id;
   public int limit;
   
-  public Search(ByteBuffer buffer) {
+  public Search(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputGeoChat) TL.read(buffer);
-    try {  q = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    q = new String(TL.readString(buffer), "UTF8");
     filter = (tl.TMessagesFilter) TL.read(buffer);
     min_date = buffer.getInt();
     max_date = buffer.getInt();
@@ -35,13 +35,13 @@ public class Search extends tl.TLFunction {
     this.limit = limit;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xcfcdc44d);
     }
     peer.writeTo(buffer, true);
-    try { TL.writeString(buffer, q.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, q.getBytes("UTF8"), false);
     filter.writeTo(buffer, true);
     buffer.putInt(min_date);
     buffer.putInt(max_date);
@@ -54,8 +54,8 @@ public class Search extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
-    return 28 + peer.length() + TL.length(q.getBytes()) + filter.length();
+  public int length() throws Exception {
+    return 28 + peer.length() + TL.length(q.getBytes("UTF8")) + filter.length();
   }
   
   public String toString() {

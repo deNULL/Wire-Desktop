@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class Authorization extends tl.auth.TAuthorization {
 
   
-  public Authorization(ByteBuffer buffer) {
+  public Authorization(ByteBuffer buffer) throws Exception {
     expires = buffer.getInt();
     user = (tl.TUser) TL.read(buffer);
   }
@@ -16,7 +16,7 @@ public class Authorization extends tl.auth.TAuthorization {
     this.user = user;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf6b673a4);
@@ -29,7 +29,7 @@ public class Authorization extends tl.auth.TAuthorization {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + user.length();
   }
   

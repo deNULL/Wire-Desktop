@@ -5,9 +5,9 @@ import java.nio.ByteBuffer;
 public class WallPaper extends tl.TWallPaper {
 
   
-  public WallPaper(ByteBuffer buffer) {
+  public WallPaper(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
-    try {  title = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    title = new String(TL.readString(buffer), "UTF8");
     sizes = TL.readVector(buffer, true, new tl.TPhotoSize[0]);
     color = buffer.getInt();
   }
@@ -19,13 +19,13 @@ public class WallPaper extends tl.TWallPaper {
     this.color = color;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xccb03657);
     }
     buffer.putInt(id);
-    try { TL.writeString(buffer, title.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, title.getBytes("UTF8"), false);
     TL.writeVector(buffer, sizes, true, true);
     buffer.putInt(color);
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
@@ -34,8 +34,8 @@ public class WallPaper extends tl.TWallPaper {
   	return buffer;
   }
   
-  public int length() {
-    return 16 + TL.length(title.getBytes()) + TL.length(sizes);
+  public int length() throws Exception {
+    return 16 + TL.length(title.getBytes("UTF8")) + TL.length(sizes);
   }
   
   public String toString() {

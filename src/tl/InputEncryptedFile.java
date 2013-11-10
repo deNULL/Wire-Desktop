@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputEncryptedFile extends tl.TInputEncryptedFile {
 
   
-  public InputEncryptedFile(ByteBuffer buffer) {
+  public InputEncryptedFile(ByteBuffer buffer) throws Exception {
     id = buffer.getLong();
     access_hash = buffer.getLong();
   }
@@ -15,7 +15,7 @@ public class InputEncryptedFile extends tl.TInputEncryptedFile {
     this.access_hash = access_hash;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5a17b5e5);
@@ -28,7 +28,7 @@ public class InputEncryptedFile extends tl.TInputEncryptedFile {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16;
   }
   

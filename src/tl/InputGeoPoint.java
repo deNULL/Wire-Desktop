@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputGeoPoint extends tl.TInputGeoPoint {
 
   
-  public InputGeoPoint(ByteBuffer buffer) {
+  public InputGeoPoint(ByteBuffer buffer) throws Exception {
     lat = buffer.getDouble();
     lng = buffer.getDouble();
   }
@@ -15,7 +15,7 @@ public class InputGeoPoint extends tl.TInputGeoPoint {
     this.lng = lng;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf3b7acc9);
@@ -28,7 +28,7 @@ public class InputGeoPoint extends tl.TInputGeoPoint {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 16;
   }
   

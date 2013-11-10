@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateNewGeoChatMessage extends tl.TUpdate {
   public tl.TMessage message;
   
-  public UpdateNewGeoChatMessage(ByteBuffer buffer) {
+  public UpdateNewGeoChatMessage(ByteBuffer buffer) throws Exception {
     message = (tl.TMessage) TL.read(buffer);
   }
   
@@ -13,7 +13,7 @@ public class UpdateNewGeoChatMessage extends tl.TUpdate {
     this.message = message;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x5a68e3f7);
@@ -25,7 +25,7 @@ public class UpdateNewGeoChatMessage extends tl.TUpdate {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4 + message.length();
   }
   

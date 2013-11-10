@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class /**constructor**/ extends /**type**/ {
 /**fields**/
   
-  public /**constructor**/(ByteBuffer buffer) {
+  public /**constructor**/(ByteBuffer buffer) throws Exception {
 /**parse_body**/
   }
   
@@ -13,7 +13,7 @@ public class /**constructor**/ extends /**type**/ {
 /**init_body**/
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
 /**write_body**/
     if (oldPos + length() + (boxed ? 4 : 0) != buffer.position()) {
@@ -22,7 +22,7 @@ public class /**constructor**/ extends /**type**/ {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return /**length**/;
   }
   

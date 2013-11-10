@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ContactSuggested extends tl.TContactSuggested {
 
   
-  public ContactSuggested(ByteBuffer buffer) {
+  public ContactSuggested(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
     mutual_contacts = buffer.getInt();
   }
@@ -15,7 +15,7 @@ public class ContactSuggested extends tl.TContactSuggested {
     this.mutual_contacts = mutual_contacts;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3de191a1);
@@ -28,7 +28,7 @@ public class ContactSuggested extends tl.TContactSuggested {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

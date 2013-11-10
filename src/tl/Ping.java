@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class Ping extends tl.TPong {
 
   
-  public Ping(ByteBuffer buffer) {
+  public Ping(ByteBuffer buffer) throws Exception {
     ping_id = buffer.getLong();
   }
   
@@ -13,7 +13,7 @@ public class Ping extends tl.TPong {
     this.ping_id = ping_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x7abe77ec);
@@ -25,7 +25,7 @@ public class Ping extends tl.TPong {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

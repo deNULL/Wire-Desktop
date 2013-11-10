@@ -17,7 +17,7 @@ public class TL {
   private static int lastNum = 0, prevNum = 0;
   
 	// Read method (boxed)
-	public static TLObject read(ByteBuffer buffer) {
+	public static TLObject read(ByteBuffer buffer) throws Exception {
 		int number = buffer.getInt();
 		prevNum = lastNum;
 		lastNum = number;
@@ -65,7 +65,6 @@ public class TL {
 			case 0xae500895: return new tl.FutureSalts(buffer);
 			case 0x7abe77ec: return new tl.Ping(buffer);
 			case 0x347773c5: return new tl.Pong(buffer);
-			case 0xe7512126: return new tl.DestroySession(buffer);
 			case 0xe22045fc: return new tl.DestroySessionOk(buffer);
 			case 0x62d350c9: return new tl.DestroySessionNone(buffer);
 			case 0x9ec20908: return new tl.NewSessionCreated(buffer);
@@ -314,6 +313,9 @@ public class TL {
 			case 0x2c221edd: return new tl.messages.DhConfig(buffer);
 			case 0x560f8935: return new tl.messages.SentEncryptedMessage(buffer);
 			case 0x9493ff32: return new tl.messages.SentEncryptedFile(buffer);
+			case 0xfa4f0bb5: return new tl.InputFileBig(buffer);
+			case 0x2dc173c8: return new tl.InputEncryptedFileBigUploaded(buffer);
+			case 0xe7512126: return new tl.DestroySession(buffer);
 			case 0xcb9f372d: return new tl.InvokeAfterMsg(buffer);
 			case 0x3dc4b4f0: return new tl.InvokeAfterMsgs(buffer);
 			case 0x53835315: return new tl.InvokeWithLayer1(buffer);
@@ -410,7 +412,9 @@ public class TL {
 			case 0x32d439a4: return new tl.messages.SendEncryptedService(buffer);
 			case 0x55a5bb66: return new tl.messages.ReceivedQueue(buffer);
 			case 0xe9abd9fd: return new tl.InvokeWithLayer8(buffer);
-
+			case 0xde7b673d: return new tl.upload.SaveBigFilePart(buffer);
+			case 0x69796de9: return new tl.InitConnection(buffer);
+			case 0x76715a63: return new tl.InvokeWithLayer9(buffer);
 		}
 		
 		
@@ -419,13 +423,13 @@ public class TL {
 		return null;
 	}
 	
-	public static TLObject read(byte[] buffer) {
+	public static TLObject read(byte[] buffer) throws Exception {
 	  ByteBuffer buf = ByteBuffer.wrap(buffer);
 	  buf.order(ByteOrder.LITTLE_ENDIAN);
 	  return read(buf);
 	}
 	
-	public static TLObject read(String base64) {
+	public static TLObject read(String base64) throws Exception {
 	  return read(Base64.decodeFast(base64));
 	}
 	
@@ -467,7 +471,7 @@ public class TL {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends TLObject> T[] readVector(ByteBuffer buffer, boolean boxed, T[] a) {
+	public static <T extends TLObject> T[] readVector(ByteBuffer buffer, boolean boxed, T[] a) throws Exception {
 		if (boxed) {
 			buffer.getInt();
 		}
@@ -481,7 +485,7 @@ public class TL {
 	}
 	
 	//TODO: remove this single exception (now only TransportMessage can be inner unboxed type)
-	public static TransportMessage[] readVectorMessage(ByteBuffer buffer, boolean boxed) {
+	public static TransportMessage[] readVectorMessage(ByteBuffer buffer, boolean boxed) throws Exception {
 		if (boxed) {
 			buffer.getInt();
 		}
@@ -550,7 +554,7 @@ public class TL {
   	}
 	}
 
-	public static void writeVector(ByteBuffer buffer, TLObject[] value, boolean outerBoxed, boolean innerBoxed) {
+	public static void writeVector(ByteBuffer buffer, TLObject[] value, boolean outerBoxed, boolean innerBoxed) throws Exception {
 		if (outerBoxed) {
 			//buffer.putInt(0xa351ae8e);
 		  buffer.putInt(0x1cb5c415);
@@ -612,7 +616,7 @@ public class TL {
 		return len;
 	}
 	
-	public static int length(TLObject[] value, boolean boxed) {
+	public static int length(TLObject[] value, boolean boxed) throws Exception {
 		int len = 0;
 		for (TLObject object : value) {
 			len += object.length() + (boxed ? 4 : 0);
@@ -620,7 +624,7 @@ public class TL {
 		return len;
 	}	
 	
-	public static int length(TLObject[] value) {
+	public static int length(TLObject[] value) throws Exception {
 	  return length(value, false);
   } 
 

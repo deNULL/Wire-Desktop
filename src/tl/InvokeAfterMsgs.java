@@ -6,7 +6,7 @@ public class InvokeAfterMsgs extends tl.TLFunction {
   public long[] msg_ids;
   public tl.TLObject query;
   
-  public InvokeAfterMsgs(ByteBuffer buffer) {
+  public InvokeAfterMsgs(ByteBuffer buffer) throws Exception {
     msg_ids = TL.readVectorLong(buffer, true);
     query = (tl.TLObject) TL.read(buffer);
   }
@@ -16,7 +16,7 @@ public class InvokeAfterMsgs extends tl.TLFunction {
     this.query = query;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3dc4b4f0);
@@ -29,7 +29,7 @@ public class InvokeAfterMsgs extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 12 + msg_ids.length * 8 + query.length();
   }
   

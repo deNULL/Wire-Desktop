@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UserStatusOffline extends tl.TUserStatus {
 
   
-  public UserStatusOffline(ByteBuffer buffer) {
+  public UserStatusOffline(ByteBuffer buffer) throws Exception {
     was_online = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class UserStatusOffline extends tl.TUserStatus {
     this.was_online = was_online;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x8c703f);
@@ -25,7 +25,7 @@ public class UserStatusOffline extends tl.TUserStatus {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

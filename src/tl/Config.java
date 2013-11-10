@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class Config extends tl.TConfig {
 
   
-  public Config(ByteBuffer buffer) {
+  public Config(ByteBuffer buffer) throws Exception {
     date = buffer.getInt();
     test_mode = (buffer.getInt() == 0x997275b5);
     this_dc = buffer.getInt();
@@ -21,7 +21,7 @@ public class Config extends tl.TConfig {
     this.chat_size_max = chat_size_max;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x232d5905);
@@ -37,7 +37,7 @@ public class Config extends tl.TConfig {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 24 + TL.length(dc_options);
   }
   

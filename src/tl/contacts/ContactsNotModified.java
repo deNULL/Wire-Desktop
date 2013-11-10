@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class ContactsNotModified extends tl.contacts.TContacts {
 
   
-  public ContactsNotModified(ByteBuffer buffer) {
+  public ContactsNotModified(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -14,7 +14,7 @@ public class ContactsNotModified extends tl.contacts.TContacts {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xb74ba9d2);
@@ -26,7 +26,7 @@ public class ContactsNotModified extends tl.contacts.TContacts {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

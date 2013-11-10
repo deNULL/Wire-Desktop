@@ -7,7 +7,7 @@ public class UpdateNotifySettings extends tl.TLFunction {
   public tl.TInputNotifyPeer peer;
   public tl.TInputPeerNotifySettings settings;
   
-  public UpdateNotifySettings(ByteBuffer buffer) {
+  public UpdateNotifySettings(ByteBuffer buffer) throws Exception {
     peer = (tl.TInputNotifyPeer) TL.read(buffer);
     settings = (tl.TInputPeerNotifySettings) TL.read(buffer);
   }
@@ -17,7 +17,7 @@ public class UpdateNotifySettings extends tl.TLFunction {
     this.settings = settings;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x84be5b93);
@@ -30,7 +30,7 @@ public class UpdateNotifySettings extends tl.TLFunction {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + peer.length() + settings.length();
   }
   

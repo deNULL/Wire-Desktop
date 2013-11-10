@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputEncryptedFileEmpty extends tl.TInputEncryptedFile {
 
   
-  public InputEncryptedFileEmpty(ByteBuffer buffer) {
+  public InputEncryptedFileEmpty(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class InputEncryptedFileEmpty extends tl.TInputEncryptedFile {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x1837c364);
@@ -25,7 +25,7 @@ public class InputEncryptedFileEmpty extends tl.TInputEncryptedFile {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

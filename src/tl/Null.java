@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class Null extends tl.TNull {
 
   
-  public Null(ByteBuffer buffer) {
+  public Null(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class Null extends tl.TNull {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x56730bcc);
@@ -25,7 +25,7 @@ public class Null extends tl.TNull {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   

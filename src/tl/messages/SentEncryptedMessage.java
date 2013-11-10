@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class SentEncryptedMessage extends tl.messages.TSentEncryptedMessage {
 
   
-  public SentEncryptedMessage(ByteBuffer buffer) {
+  public SentEncryptedMessage(ByteBuffer buffer) throws Exception {
     date = buffer.getInt();
   }
   
@@ -14,7 +14,7 @@ public class SentEncryptedMessage extends tl.messages.TSentEncryptedMessage {
     this.date = date;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x560f8935);
@@ -26,7 +26,7 @@ public class SentEncryptedMessage extends tl.messages.TSentEncryptedMessage {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

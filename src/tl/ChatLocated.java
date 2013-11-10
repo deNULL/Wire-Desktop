@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ChatLocated extends tl.TChatLocated {
 
   
-  public ChatLocated(ByteBuffer buffer) {
+  public ChatLocated(ByteBuffer buffer) throws Exception {
     chat_id = buffer.getInt();
     distance = buffer.getInt();
   }
@@ -15,7 +15,7 @@ public class ChatLocated extends tl.TChatLocated {
     this.distance = distance;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x3631cf4c);
@@ -28,7 +28,7 @@ public class ChatLocated extends tl.TChatLocated {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

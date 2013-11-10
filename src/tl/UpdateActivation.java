@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class UpdateActivation extends tl.TUpdate {
 
   
-  public UpdateActivation(ByteBuffer buffer) {
+  public UpdateActivation(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
   }
   
@@ -13,7 +13,7 @@ public class UpdateActivation extends tl.TUpdate {
     this.user_id = user_id;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x6f690963);
@@ -25,7 +25,7 @@ public class UpdateActivation extends tl.TUpdate {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 4;
   }
   

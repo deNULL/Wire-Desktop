@@ -6,7 +6,7 @@ public class DecryptedMessageLayer extends tl.TLObject {
   public int layer;
   public tl.TLObject message;
   
-  public DecryptedMessageLayer(ByteBuffer buffer) {
+  public DecryptedMessageLayer(ByteBuffer buffer) throws Exception {
     layer = buffer.getInt();
     message = (tl.TLObject) TL.read(buffer);
   }
@@ -16,7 +16,7 @@ public class DecryptedMessageLayer extends tl.TLObject {
     this.message = message;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x99a438cf);
@@ -29,7 +29,7 @@ public class DecryptedMessageLayer extends tl.TLObject {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + message.length();
   }
   

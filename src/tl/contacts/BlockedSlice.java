@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class BlockedSlice extends tl.contacts.TBlocked {
 
   
-  public BlockedSlice(ByteBuffer buffer) {
+  public BlockedSlice(ByteBuffer buffer) throws Exception {
     count = buffer.getInt();
     blocked = TL.readVector(buffer, true, new tl.TContactBlocked[0]);
     users = TL.readVector(buffer, true, new tl.TUser[0]);
@@ -18,7 +18,7 @@ public class BlockedSlice extends tl.contacts.TBlocked {
     this.users = users;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x900802a1);
@@ -32,7 +32,7 @@ public class BlockedSlice extends tl.contacts.TBlocked {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 20 + TL.length(blocked) + TL.length(users);
   }
   

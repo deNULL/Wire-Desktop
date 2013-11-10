@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class File extends tl.upload.TFile {
 
   
-  public File(ByteBuffer buffer) {
+  public File(ByteBuffer buffer) throws Exception {
     type = (tl.storage.TFileType) TL.read(buffer);
     mtime = buffer.getInt();
     bytes = TL.readString(buffer);
@@ -18,7 +18,7 @@ public class File extends tl.upload.TFile {
     this.bytes = bytes;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x96a18d5);
@@ -32,7 +32,7 @@ public class File extends tl.upload.TFile {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8 + type.length() + TL.length(bytes);
   }
   

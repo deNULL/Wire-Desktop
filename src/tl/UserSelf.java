@@ -5,11 +5,11 @@ import java.nio.ByteBuffer;
 public class UserSelf extends tl.TUser {
 
   
-  public UserSelf(ByteBuffer buffer) {
+  public UserSelf(ByteBuffer buffer) throws Exception {
     id = buffer.getInt();
-    try {  first_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
-    try {  last_name = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
-    try {  phone = new String(TL.readString(buffer), "UTF8"); } catch (Exception e) { };
+    first_name = new String(TL.readString(buffer), "UTF8");
+    last_name = new String(TL.readString(buffer), "UTF8");
+    phone = new String(TL.readString(buffer), "UTF8");
     photo = (tl.TUserProfilePhoto) TL.read(buffer);
     status = (tl.TUserStatus) TL.read(buffer);
     inactive = (buffer.getInt() == 0x997275b5);
@@ -25,15 +25,15 @@ public class UserSelf extends tl.TUser {
     this.inactive = inactive;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0x720535ec);
     }
     buffer.putInt(id);
-    try { TL.writeString(buffer, first_name.getBytes("UTF8"), false); } catch (Exception e) { };
-    try { TL.writeString(buffer, last_name.getBytes("UTF8"), false); } catch (Exception e) { };
-    try { TL.writeString(buffer, phone.getBytes("UTF8"), false); } catch (Exception e) { };
+    TL.writeString(buffer, first_name.getBytes("UTF8"), false);
+    TL.writeString(buffer, last_name.getBytes("UTF8"), false);
+    TL.writeString(buffer, phone.getBytes("UTF8"), false);
     photo.writeTo(buffer, true);
     status.writeTo(buffer, true);
     buffer.putInt(inactive ? 0x997275b5 : 0xbc799737);
@@ -43,8 +43,8 @@ public class UserSelf extends tl.TUser {
   	return buffer;
   }
   
-  public int length() {
-    return 16 + TL.length(first_name.getBytes()) + TL.length(last_name.getBytes()) + TL.length(phone.getBytes()) + photo.length() + status.length();
+  public int length() throws Exception {
+    return 16 + TL.length(first_name.getBytes("UTF8")) + TL.length(last_name.getBytes("UTF8")) + TL.length(phone.getBytes("UTF8")) + photo.length() + status.length();
   }
   
   public String toString() {

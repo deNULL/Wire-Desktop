@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ContactStatus extends tl.TContactStatus {
 
   
-  public ContactStatus(ByteBuffer buffer) {
+  public ContactStatus(ByteBuffer buffer) throws Exception {
     user_id = buffer.getInt();
     expires = buffer.getInt();
   }
@@ -15,7 +15,7 @@ public class ContactStatus extends tl.TContactStatus {
     this.expires = expires;
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xaa77b873);
@@ -28,7 +28,7 @@ public class ContactStatus extends tl.TContactStatus {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 8;
   }
   

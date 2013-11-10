@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class InputUserSelf extends tl.TInputUser {
 
   
-  public InputUserSelf(ByteBuffer buffer) {
+  public InputUserSelf(ByteBuffer buffer) throws Exception {
 
   }
   
@@ -13,7 +13,7 @@ public class InputUserSelf extends tl.TInputUser {
 
   }
   
-  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) {
+  public ByteBuffer writeTo(ByteBuffer buffer, boolean boxed) throws Exception {
     int oldPos = buffer.position();
     if (boxed) {
       buffer.putInt(0xf7c1b13f);
@@ -25,7 +25,7 @@ public class InputUserSelf extends tl.TInputUser {
   	return buffer;
   }
   
-  public int length() {
+  public int length() throws Exception {
     return 0;
   }
   
