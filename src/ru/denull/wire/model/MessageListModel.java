@@ -56,7 +56,7 @@ public class MessageListModel extends AbstractListModel {
   }
 
   public Object getElementAt(int index) {
-    return (index < items.size()) ? items.get(index) : null;
+    return (peer == null) ? "Выберите диалог" : ((index < items.size()) ? items.get(index) : ((loading || loadingFromCache || initializing) ? "Загрузка..." : "Нет сообщений"));
   }
 
   public int getSize() {
@@ -116,7 +116,7 @@ public class MessageListModel extends AbstractListModel {
   }
   
   private void loadFromCache() {
-    if (!cachedData || loadingFromCache) return;
+    if (!cachedData || loadingFromCache || peer == null) return;
     
     loadingFromCache = true;
     //System.out.println("Loading history from cache up to id " + first_id);
@@ -144,7 +144,7 @@ public class MessageListModel extends AbstractListModel {
   
   private void load() {
     // TODO: check first two conditions
-    if (service.mainServer == null || !service.mainServer.transport.isConnected() || loading) return;
+    if (service.mainServer == null || !service.mainServer.transport.isConnected() || loading || peer == null) return;
     
     // prevent from loading two times at once
     loading = true;
@@ -283,8 +283,8 @@ public class MessageListModel extends AbstractListModel {
       public void run() {
         updatingScroll = true;
         int li = list.getLastVisibleIndex();
-        if (items.size() - oldSize - 1 >= 0) {
-          fireIntervalAdded(this, 0, items.size() - oldSize - 1);
+        if (getSize() - oldSize - 1 >= 0) {
+          fireIntervalAdded(this, 0, getSize() - oldSize - 1);
         }
         
         if (scrollToLast) {
@@ -332,5 +332,9 @@ public class MessageListModel extends AbstractListModel {
         }
       });
     }
+  }
+
+  public void updateContents() {
+    fireContentsChanged(this, 0, getSize() - 1);
   }
 }

@@ -33,8 +33,8 @@ public class MessageCellRenderer implements ListCellRenderer {
   public Component getListCellRendererComponent(JList list, Object item, int index, boolean selected, boolean focused) {
     GridBagConstraints constr;
     
-    if (item == null) {
-      JLabel label = new JLabel("Нет сообщений", SwingConstants.CENTER);
+    if (item instanceof String) {
+      JLabel label = new JLabel((String) item, SwingConstants.CENTER);
       label.setOpaque(true);
       label.setForeground(Color.decode("0x80879b"));
       label.setBackground(Color.decode("0xdfe8ef"));

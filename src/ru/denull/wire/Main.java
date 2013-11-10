@@ -1,8 +1,10 @@
 package ru.denull.wire;
 
 import java.awt.*;
+import java.awt.Cursor;
 import java.awt.Dialog;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JList;
 
@@ -11,8 +13,13 @@ import java.awt.BorderLayout;
 import javax.swing.*;
 
 import java.awt.FlowLayout;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
 import java.awt.event.*;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.Random;
 import java.util.prefs.BackingStoreException;
@@ -28,26 +35,14 @@ import javax.swing.AbstractListModel;
 //import com.apple.eawt.Application;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.DataService.OnUpdateListener;
 import ru.denull.mtproto.Server;
 import ru.denull.mtproto.Auth.AuthCallback;
 import ru.denull.mtproto.Server.RPCCallback;
 import ru.denull.wire.model.*;
+import ru.denull.wire.model.FileManager.FileUploadingProgressiveCallback;
+import sun.misc.IOUtils;
 import tl.*;
 import tl.Message;
 import tl.TChat;
@@ -74,6 +69,10 @@ public class Main implements OnUpdateListener {
   private JTextField messageField;
   private JToggleButton dialogsBtn;
   private JToggleButton contactsBtn;
+  
+  final JFileChooser fc = new JFileChooser();
+  FileDialog fd;
+  private JPanel sendPanel;
   
 
   /**
@@ -191,7 +190,21 @@ public class Main implements OnUpdateListener {
     frame.setBounds(200, 200, 820, 600);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.getContentPane().setLayout(new BorderLayout(0, 0));
-    frame.setTitle("Wire");    
+    frame.setTitle("Wire"); 
+    
+    fd = new FileDialog(frame, "Выберите изображения или видеозаписи для загрузки", FileDialog.LOAD);
+    /*try {
+      fd.getClass().getMethod("setMultipleMode", new Class[] { Boolean.class } ).invoke(fd, true);
+    } catch (Exception e1) {
+      e1.printStackTrace();
+    }*/
+    //fd.setMultipleMode(true);
+    fd.setFilenameFilter(new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        name = name.toLowerCase();
+        return name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png") || name.endsWith(".gif") || name.endsWith(".mov") || name.endsWith(".mp4") || name.endsWith(".webp") || name.endsWith(".mp3");
+      }
+    });
     
     JSplitPane splitPane = new JSplitPane();
     splitPane.setContinuousLayout(true);
@@ -278,6 +291,8 @@ public class Main implements OnUpdateListener {
     });
     panel_2.add(searchField);
     searchField.setColumns(10);
+    
+    panel_2.add(Box.createRigidArea(new Dimension(2, 0)));
     
     dialogList = new JList() {
       public boolean getScrollableTracksViewportWidth() {
@@ -367,16 +382,19 @@ public class Main implements OnUpdateListener {
         }
       }
     });
+    messageListModel = new MessageListModel(service, messageList, null);
+    messageList.setModel(messageListModel);
+    messageList.setCellRenderer(new MessageCellRenderer(service, null));
     panel_1.add(scrollPane, BorderLayout.CENTER);
     
-    JPanel sendPanel = new JPanel();
+    sendPanel = new JPanel();
     sendPanel.setLayout(new BoxLayout(sendPanel, BoxLayout.X_AXIS));
-    sendPanel.setBorder(new NinePatchBorder(Utils.getImage("input_border.png"), 10, 10, 10, 10, 10));
+    sendPanel.setBorder(new NinePatchBorder(Utils.getImage("input_border.png"), 10, 10, 10, 10, 8));
     sendPanel.setMinimumSize(new Dimension(0, 1));
     panel_1.add(sendPanel, BorderLayout.SOUTH);
     
     messageField = new JTextField("Новое сообщение...");
-    messageField.setBorder(new EmptyBorder(0, 0, 0, 0));
+    messageField.setBorder(new EmptyBorder(2, 2, 2, 2));
     messageField.setForeground(Color.LIGHT_GRAY);
     messageField.addFocusListener(new FocusListener() {
       public void focusLost(FocusEvent e) {
@@ -394,6 +412,30 @@ public class Main implements OnUpdateListener {
     });
     sendPanel.add(messageField);
     //textArea.setBorder(new JTextField().getBorder());
+    
+    JButton attachBtn = new JButton(new ImageIcon(Utils.getImage("attach_photo.png")));
+    attachBtn.setRolloverIcon(new ImageIcon(Utils.getImage("attach_photo_highlight.png")));
+    attachBtn.setBorderPainted(false);
+    attachBtn.setPreferredSize(new Dimension(22, 18));
+    attachBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    attachBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        /*int result = fc.showOpenDialog(frame);
+        
+        if (result == JFileChooser.APPROVE_OPTION) {
+          sendFiles(fc.getSelectedFiles());
+        }*/
+        
+        fd.setVisible(true);
+        String filename = fd.getFile();
+        if (filename != null) {
+          sendFiles(new File[]{ new File(filename) });
+        }
+      }
+    });
+    sendPanel.add(attachBtn);
+    
+    sendPanel.setVisible(false);
     
     messageField.addKeyListener(new KeyListener() {
       
@@ -419,20 +461,41 @@ public class Main implements OnUpdateListener {
     
     new DropTarget(messageList, new DropTargetListener() {
       public void dropActionChanged(DropTargetDragEvent dtde) {
+        if (currentPeer == null) return;
+        
+        dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
       }
       
       public void drop(DropTargetDropEvent dtde) {
+        if (currentPeer == null) return;
         
+        dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+        
+        Transferable t = dtde.getTransferable();
+        try {
+          java.util.List<File> fileList = (java.util.List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+          
+          sendFiles(fileList.toArray(new File[1]));
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        
+        dtde.dropComplete(true);
       }
       
       public void dragOver(DropTargetDragEvent dtde) {
+        if (currentPeer == null) return;
+        
+        dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
       }
       
       public void dragExit(DropTargetEvent dte) {
       }
       
       public void dragEnter(DropTargetDragEvent dtde) {
+        if (currentPeer == null) return;
         
+        dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);        
       }
     });
     
@@ -499,6 +562,8 @@ public class Main implements OnUpdateListener {
     
     messageList.setModel(messageListModel);
     messageList.setCellRenderer(new MessageCellRenderer(service, peer));
+    
+    sendPanel.setVisible(true);
     
     
  // TODO: check first two conditions
@@ -705,6 +770,109 @@ public class Main implements OnUpdateListener {
         }      
       }
       //dialogList.setSelectedIndex(-1);
+    }
+  }
+
+  private void sendFile(File file) {
+    if (currentPeer == null) return;
+    
+    final TInputPeer peer = currentPeer;
+    final int random_id = -(new Random()).nextInt(0x10000000);
+    
+    boolean isPhoto = false;
+    Image bitmap = null;
+    TPhotoSize size = null;
+    try {
+      bitmap = ImageIO.read(file);
+      isPhoto = bitmap != null;
+      if (isPhoto) {
+        size = new PhotoSize("x", new FileLocation(service.mainServerID, 0, 0, random_id), bitmap.getWidth(null), bitmap.getHeight(null), 0);
+      }
+    } catch (Exception e) {
+      // not image
+    }
+    
+    int peer_id = Utils.getPeerID(peer, service.me);
+    final TMessage futureMessage = new Message(
+        random_id,
+        service.me.id,
+        peer_id > 0 ? new PeerUser(peer_id) : new PeerChat(-peer_id),
+        true,
+        true,
+        (int) (System.currentTimeMillis() / 1000),
+        "",
+        isPhoto ?
+            new MessageMediaPhoto(new Photo(random_id, 0, service.me.id, (int) (System.currentTimeMillis() / 1000), "", new GeoPointEmpty(), new TPhotoSize[] { size })) :
+            new MessageMediaVideo(new Video(random_id, 0, service.me.id, (int) (System.currentTimeMillis() / 1000), "", 0, 0, size, service.mainServerID, 0, 0)));
+    
+    futureMessage.sending = true;
+    futureMessage.preview = isPhoto ? bitmap : null;
+    
+    service.messageManager.store(futureMessage);
+    service.dialogManager.addMessage(futureMessage);
+    messageListModel.addMessage(futureMessage);
+    restoreDialogSelection();
+    
+    // 2. start upload
+    //ByteArrayOutputStream output = new ByteArrayOutputStream();
+    //bitmap.compress(CompressFormat.JPEG, 85, output);
+    
+    try {
+      service.fileManager.upload(random_id, IOUtils.readFully(new FileInputStream(file), -1, true), file.getName(), new FileUploadingProgressiveCallback() {
+        public void fail() {
+          System.out.println("Unable to upload photo");
+          
+          futureMessage.failed = true;
+          if (currentPeer != null && Utils.getPeerID(currentPeer, service.me) == Utils.getPeerID(peer, service.me)) {
+            messageListModel.updateContents();
+          }
+        }
+        
+        public void progress(int loaded, int size, final float percent) {
+          /*if (futureMessage.row != null && futureMessage.row.get() != null) {
+            ProgressBar progress = ViewHolder.get(futureMessage.row.get(), R.id.progress);
+            progress.setProgress((int) (percent * 65535));
+          }*/
+        }
+        
+        public void complete(TInputFile file) {
+          // 3. send message with uploaded image to server
+          service.mainServer.call(new SendMedia(peer, new InputMediaUploadedPhoto(file), random_id), new RPCCallback<StatedMessage>() {
+            public void done(StatedMessage result) {
+              // 4. replace fake message with real one
+              futureMessage.id = result.message.id;
+              futureMessage.date = result.message.date;
+              futureMessage.sending = false;
+              futureMessage.media = result.message.media;
+              //futureMessage.preview = null;
+              service.messageManager.store(futureMessage);
+              
+              if (currentPeer != null && Utils.getPeerID(currentPeer, service.me) == Utils.getPeerID(peer, service.me)) {
+                messageListModel.updateContents();
+              }
+            }
+            public void error(int code, String message) {
+              futureMessage.failed = true;
+              if (currentPeer != null && Utils.getPeerID(currentPeer, service.me) == Utils.getPeerID(peer, service.me)) {
+                messageListModel.updateContents();
+              }
+            }
+          });
+        }
+      });
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+  
+  private void sendFiles(File[] files) {
+    if (currentPeer == null) return;
+    System.out.println("sending " + files.length + " files...");
+    
+    for (File file : files) {
+      sendFile(file);
     }
   }
 }

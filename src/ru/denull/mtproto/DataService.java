@@ -83,7 +83,7 @@ public class DataService {
   
   public DataService() {
     servers = new HashMap<String, Server>(10);
-    threadPool = new ThreadPoolExecutor(3, 10, 30, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(200));
+    threadPool = new ThreadPoolExecutor(7, 12, 30, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(200));
     scheduledPool = new ScheduledThreadPoolExecutor(1);
     
     final DataService self = this;
