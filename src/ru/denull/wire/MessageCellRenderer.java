@@ -17,8 +17,11 @@ import javax.swing.text.View;
 
 import ru.denull.mtproto.DataService;
 import ru.denull.wire.model.FileManager;
+import ru.denull.wire.model.MessageListModel;
+import ru.denull.wire.model.FileManager.FileLoadingCallback;
 import tl.*;
 import tl.Dialog;
+import tl.storage.TFileType;
 
 public class MessageCellRenderer implements ListCellRenderer {
   private DataService service;
@@ -30,8 +33,11 @@ public class MessageCellRenderer implements ListCellRenderer {
     this.peer = peer;
   }
   
-  public Component getListCellRendererComponent(JList list, Object item, int index, boolean selected, boolean focused) {
+  public Component getListCellRendererComponent(final JList list, Object item, final int index, boolean selected, boolean focused) {
     GridBagConstraints constr;
+    
+    final MessageListModel model = (MessageListModel) list.getModel();
+    final long modelState = model.getState();
     
     if (item instanceof String) {
       JLabel label = new JLabel((String) item, SwingConstants.CENTER);
@@ -193,7 +199,20 @@ public class MessageCellRenderer implements ListCellRenderer {
           progressBar = new JProgressBar();
           progressBar.setValue(0);
           //panel.add(progressBar, MessageLayout.ACTIONS);
-          service.fileManager.queryImage(location, thumbPanel);
+          service.fileManager.query(location, new FileLoadingCallback() {
+            public void fail() {
+              // nothing
+            }
+            public void complete(TFileType type, Object data) {
+              if (model.getState() == modelState) {
+                model.updateContents(index);
+                //list.repaint(list.getCellBounds(index, index));
+              } else {
+                model.updateContents();
+              }
+              
+            }
+          });
           break;
         case FileManager.STATE_QUEUED:
         case FileManager.STATE_IN_PROGRESS:

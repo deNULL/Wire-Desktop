@@ -409,9 +409,10 @@ public class Server implements ReadTaskCallback {
     call(request, callback, true);
   }
 	
-	private void processMessage(TLObject message) throws Exception {
+	private void processMessage(TLObject message, long msg_id) throws Exception {
 	  //Log.i(TAG, "<= " + message);
 		ArrayList<Long> confirm = new ArrayList<Long>();
+		time_diff = -1100000;
 		if (message instanceof MsgContainer) {
 			for (TLObject child : ((MsgContainer) message).messages) {
 				if ((((TransportMessage) child).seqno & 1) == 1) {
@@ -419,11 +420,26 @@ public class Server implements ReadTaskCallback {
 				}
 				
 				//Log.i(TAG, "<== " + Long.toString(((TransportMessage) child).msg_id, 16) + ": " + ((TransportMessage) child).body);
-				processMessage(((TransportMessage) child).body);
+				processMessage(((TransportMessage) child).body, ((TransportMessage) child).msg_id);
 			}
 		} else
 		if (message instanceof BadMsgNotification) {
 			Log.w(TAG, "Bad message: " + ((BadMsgNotification) message).error_code);
+			
+			if (((BadMsgNotification) message).error_code == 16 || ((BadMsgNotification) message).error_code == 17) {
+			  System.out.println("Invalid msg_id (was " + ((BadMsgNotification) message).bad_msg_id + ", received " + msg_id + "), old time_diff: " + time_diff);
+			  time_diff = (int) (((msg_id & ~3L) / 4294967.296 - System.currentTimeMillis()) / 1000);
+			  System.out.println("new time_diff: " + time_diff);
+			  
+			  for (RPCCall call : sentCalls) {
+	        if (call.message_id == ((BadMsgNotification) message).bad_msg_id) {
+	          sentCalls.remove(call);
+	          
+	          send(call.payload, call.encrypted, call.significant, call.callback);
+	          break;
+	        }
+	      }
+			}
 		} else
 		if (message instanceof BadServerSalt) {
 			//Log.w(TAG, "Bad server salt, updating");
@@ -523,7 +539,7 @@ public class Server implements ReadTaskCallback {
 				auth.generateKey(message.payload);
 			}
 			
-			processMessage(message.payload);
+			processMessage(message.payload, message.message_id);
 			
 			if (message instanceof EncryptedMessage) {
 				if ((((EncryptedMessage) message).seq_no & 1) == 1) {

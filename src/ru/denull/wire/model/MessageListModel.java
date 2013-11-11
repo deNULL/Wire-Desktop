@@ -309,6 +309,7 @@ public class MessageListModel extends AbstractListModel {
         starting = false;
       }
     });
+    state++;
     
     return merge;
   }
@@ -318,6 +319,7 @@ public class MessageListModel extends AbstractListModel {
       items.add(message.date);
     }
     items.add(message);
+    state++;
 
     fireIntervalAdded(this, items.size() - 1, items.size() - 1);
     if (scrollToLast) {
@@ -335,6 +337,16 @@ public class MessageListModel extends AbstractListModel {
   }
 
   public void updateContents() {
+    state++;
     fireContentsChanged(this, 0, getSize() - 1);
+  }
+  
+  public void updateContents(int index) {
+    fireContentsChanged(this, index, index);
+  }
+
+  private long state = 0;
+  public long getState() {
+    return state;
   }
 }
