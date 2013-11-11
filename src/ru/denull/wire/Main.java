@@ -219,7 +219,7 @@ public class Main implements OnUpdateListener {
     menuBar.add(menu);
   
     //a group of JMenuItems
-    JMenuItem menuItem = new JMenuItem("Сбросить авторизацию");
+    JMenuItem menuItem = new JMenuItem("Сбросить авторизацию и выйти");
     menuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Preferences pref = Preferences.userRoot().node("wire");

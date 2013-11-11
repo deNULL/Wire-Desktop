@@ -199,7 +199,7 @@ public class FileManager {
         }
       
         // write to disk
-        if (saveToDisk) {
+        /*if (saveToDisk) {
           try {
             cached = new File(manager.cacheDir, "file" + Long.toHexString(id) + ".dat");
             if (cached.createNewFile()) {
@@ -212,7 +212,7 @@ public class FileManager {
             Log.w(TAG, "Unable to save file #" + id + " to disk cache");
             e.printStackTrace();
           }
-        }
+        }*/
       } else {
         try {
           stream.close();
@@ -445,20 +445,20 @@ public class FileManager {
       }
     }
     
-    /*if (loaded.get(id) != null) {
+    if (loaded.isKeyInCache(id)) {
       return STATE_PROGRESS_MAX | STATE_COMPLETE | STATE_MEMORY_CACHE | STATE_FILE_CACHE | STATE_DOWNLOAD;
-    }*/
+    }
     
     Integer state = states.get(id);
     if (state != null) {
       return state;
     }
     
-    if (getFile(id).exists()) {
+    /*if (getFile(id).exists()) {
       state = STATE_PROGRESS_MAX | STATE_COMPLETE | STATE_FILE_CACHE | STATE_DOWNLOAD;
       states.put(id, state);
       return state;
-    }
+    }*/
     
     return 0;
   }
@@ -527,6 +527,9 @@ public class FileManager {
             //e.printStackTrace();
             // Sometimes fails with
             // Invalid JPEG file structure: two SOI markers
+            
+            loaded.remove(id); // Drop & retry
+            query(location, callback, view, size);
           }
         }
         return true;

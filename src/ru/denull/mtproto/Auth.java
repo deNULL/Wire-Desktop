@@ -108,12 +108,12 @@ public class Auth {
 	private void fail() {
 		reset(true);
 		state = AuthState.FAILED;
-		synchronized (callbacks) {
-  		for (AuthCallback callback : callbacks) {
-  		  callback.error();
-  		}
-  		callbacks.clear();
-		}
+		ArrayList<AuthCallback> cb = callbacks;
+    callbacks = new ArrayList<Auth.AuthCallback>();
+    
+    for (AuthCallback callback : cb) {
+      callback.error();
+    }
 	}
 	
 	private void complete() {
@@ -145,12 +145,11 @@ public class Auth {
       e.printStackTrace();
     }
 		
-
-    synchronized (callbacks) {
-      for (AuthCallback callback : callbacks) {
-        callback.done(server, auth_key);
-      }
-      callbacks.clear();
+		ArrayList<AuthCallback> cb = callbacks;
+		callbacks = new ArrayList<Auth.AuthCallback>();
+		
+    for (AuthCallback callback : cb) {
+      callback.done(server, auth_key);
     }
 	}
 	

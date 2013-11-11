@@ -63,7 +63,7 @@ public class MessageCellRenderer implements ListCellRenderer {
       
       return label;
     } else {
-      TMessage message = (TMessage) item;
+      final TMessage message = (TMessage) item;
       Component comp = cache.get(message.id);
       
       if (comp != null) {
@@ -143,7 +143,7 @@ public class MessageCellRenderer implements ListCellRenderer {
         bodyPanel.add(bodyLabel, BorderLayout.CENTER);
         //bodyLabel.setMinimumSize(new Dimension(32, 28));
         
-        layout.setHTMLBody(bodyLabel, 8, 25);
+        layout.setHTMLBody(bodyLabel, 8, 22);
         
         panel.add(bodyPanel, MessageLayout.BODY);
       } else
@@ -183,7 +183,6 @@ public class MessageCellRenderer implements ListCellRenderer {
           }
         }
         thumbPanel.setMaximumSize(new Dimension(maxw, maxh));
-        thumbPanel.setImage(thumbnail);
         
         TFileLocation location = media.getFullsize();
         int state = service.fileManager.getState(location);
@@ -199,11 +198,13 @@ public class MessageCellRenderer implements ListCellRenderer {
           progressBar = new JProgressBar();
           progressBar.setValue(0);
           //panel.add(progressBar, MessageLayout.ACTIONS);
+          thumbPanel.setImage(thumbnail);
           service.fileManager.query(location, new FileLoadingCallback() {
             public void fail() {
               // nothing
             }
             public void complete(TFileType type, Object data) {
+              cache.remove(message.id);
               if (model.getState() == modelState) {
                 model.updateContents(index);
                 //list.repaint(list.getCellBounds(index, index));
@@ -219,6 +220,7 @@ public class MessageCellRenderer implements ListCellRenderer {
           progressBar = new JProgressBar();
           progressBar.setValue(state & FileManager.STATE_PROGRESS_MASK);
           //panel.add(progressBar, MessageLayout.ACTIONS);
+          thumbPanel.setImage(thumbnail);
           break;
         case FileManager.STATE_COMPLETE:
           JButton openBtn = new JButton("Открыть");
@@ -392,17 +394,17 @@ public class MessageCellRenderer implements ListCellRenderer {
   
   private Dimension getOptimalSize(int w, int h) {
     // Try to set fixed area first (100 kilopixels), so all pictures look roughly same size
-    int optw = (int) Math.sqrt(100000f * w / h);
-    int opth = (int) Math.sqrt(100000f * h / w);
+    int optw = (int) Math.sqrt(200000f * w / h);
+    int opth = (int) Math.sqrt(200000f * h / w);
     
     // We don't want to upscale images
     optw = Math.min(optw, w);
     opth = Math.min(opth, h);
     
     // We don't need to think about width - MessageLayout scales image as needed, but we want to limit height here
-    if (opth > 480) {
-      opth = 480;
-      optw = w * 480 / h;
+    if (opth > 500) {
+      opth = 500;
+      optw = w * 500 / h;
     }
     
     return new Dimension(17 + optw, 8 + opth);

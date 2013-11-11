@@ -412,7 +412,6 @@ public class Server implements ReadTaskCallback {
 	private void processMessage(TLObject message, long msg_id) throws Exception {
 	  //Log.i(TAG, "<= " + message);
 		ArrayList<Long> confirm = new ArrayList<Long>();
-		time_diff = -1100000;
 		if (message instanceof MsgContainer) {
 			for (TLObject child : ((MsgContainer) message).messages) {
 				if ((((TransportMessage) child).seqno & 1) == 1) {
