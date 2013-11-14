@@ -26,7 +26,7 @@ import tl.storage.TFileType;
 public class MessageCellRenderer implements ListCellRenderer {
   private DataService service;
   private TInputPeer peer;
-  private HashMap<Integer, Component> cache = new HashMap<Integer, Component>();
+  public HashMap<Integer, Component> cache = new HashMap<Integer, Component>();
   
   public MessageCellRenderer(DataService service, TInputPeer peer) {
     this.service = service;

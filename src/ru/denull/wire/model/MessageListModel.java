@@ -1,6 +1,7 @@
 package ru.denull.wire.model;
 
 import java.awt.Rectangle;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import javax.swing.AbstractListModel;
@@ -10,6 +11,7 @@ import javax.swing.SwingUtilities;
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.Server;
 import ru.denull.mtproto.Server.RPCCallback;
+import ru.denull.wire.MessageCellRenderer;
 import ru.denull.wire.Utils;
 import tl.TInputPeer;
 import tl.TLObject;
@@ -152,9 +154,11 @@ public class MessageListModel extends AbstractListModel {
     //System.out.println("Loading history up to id " + first_id);
     service.mainServer.call(new GetHistory(peer, 0, first_id, (first_id == 0) ? PRELOAD_COUNT : LOAD_COUNT), new RPCCallback<TMessages>() {
       public void done(final TMessages result) {
-        if (result.messages.length > 0 && result.messages[0].unread) {
+        if (result.messages.length > 0 && result.messages[0].unread && !result.messages[0].out) {
           for (TMessage message : result.messages) {
-            message.unread = false;
+            if (!message.out) {
+              message.unread = false;
+            }
           }
           service.dialogManager.resetUnread(peer);
           service.mainServer.call(new ReadHistory(peer, result.messages[0].id, 0), new Server.RPCCallback<TLObject>() {
@@ -327,7 +331,7 @@ public class MessageListModel extends AbstractListModel {
         public void run() {
           updatingScroll = true;
           //list.ensureIndexIsVisible(items.size() - 1);
-          list.scrollRectToVisible(list.getCellBounds(items.size() - 1, items.size() - 1));
+          list.scrollRectToVisible(list.getCellBounds(getSize() - 1, getSize() - 1));
           updatingScroll = false;
           scrollToLast = true;
           //System.out.println("scroll to last (addMessage)");
@@ -355,6 +359,7 @@ public class MessageListModel extends AbstractListModel {
       Object o = getElementAt(i);
       if (o instanceof TMessage && ((TMessage) o).id == id) {
         updateContents(i);
+        //System.out.println("upd " + i + ":" + id);
         return;
       }
     }
@@ -362,35 +367,18 @@ public class MessageListModel extends AbstractListModel {
 
   public void updateContentsID(int[] messages) {
     if (messages.length == 0) return;
-    int minID = -1, maxID = -1;
+    MessageCellRenderer renderer = (MessageCellRenderer) list.getCellRenderer();
+    HashSet<Integer> ids = new HashSet<Integer>();
     for (int id : messages) {
-      if (minID == -1 || minID > id) minID = id;
-      if (maxID == -1 || maxID < id) maxID = id;
+      ids.add(id);
+      renderer.cache.remove(id);
     }
-    
-    int st = 0, en = -1;
-    for (int i = getSize() - 1; i >= 0; i--) {
-      Object o = getElementAt(i);
-      if (o instanceof TMessage && ((TMessage) o).unread) {
-        if (en == -1) {
-          if (((TMessage) o).id <= maxID) {
-            en = i;
-            ((TMessage) o).unread = false;
-          }
-        } else {
-          if (((TMessage) o).id < minID) {
-            break;
-          } else {
-            st = i;
-            ((TMessage) o).unread = false;
-          }
-        }
+    //int st = -1, en = -1;
+    for (Object o : items) {
+      if (o instanceof TMessage && ids.contains(((TMessage) o).id)) {
+        ((TMessage) o).unread = false;
       }
     }
-    
-    //System.out.println("upd from ID " + minID + "-" + maxID + ", " + st + " to " + en);
-    if (en > -1 && en > st) {
-      fireContentsChanged(this, st, en);
-    }
+    fireContentsChanged(this, 0, getSize() - 1);
   }
 }
