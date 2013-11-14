@@ -460,7 +460,8 @@ public class Server implements ReadTaskCallback {
 			RpcResult result = ((RpcResult) message);
 			//Log.i(TAG, "<<< " + result.result);
 
-			for (final RPCCall call : sentCalls) {
+			ArrayList<RPCCall> sentCallsCopy = new ArrayList<RPCCall>(sentCalls);
+			for (final RPCCall call : sentCallsCopy) {
 				if (call.message_id == result.req_msg_id) {
 					if (result.result instanceof RpcError) {
 						RpcError error = ((RpcError) result.result);

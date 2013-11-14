@@ -35,7 +35,7 @@ public class TypingManager {
     if (peer == null) return;
     
     int peer_id = Utils.getPeerID(peer, service.me);
-    if (System.currentTimeMillis() / 1000 - typed.get(peer_id) < 4) {
+    if (typed.get(peer_id) != null && System.currentTimeMillis() / 1000 - typed.get(peer_id) < 4) {
       return;
     }
     

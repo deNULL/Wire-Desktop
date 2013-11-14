@@ -139,6 +139,10 @@ public class EmojiLabel extends JComponent {
         RenderingHints.KEY_TEXT_ANTIALIASING,
         RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
     
+    ((Graphics2D) g).setRenderingHint(
+        RenderingHints.KEY_TEXT_LCD_CONTRAST,
+        100);
+    
     text = text.trim() + "\n";
     char[] ch = text.toCharArray();
     

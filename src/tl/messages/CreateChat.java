@@ -31,7 +31,7 @@ public class CreateChat extends tl.TLFunction {
   }
   
   public int length() throws Exception {
-    return 8 + TL.length(users) + TL.length(title.getBytes("UTF8"));
+    return 8 + TL.length(users, true) + TL.length(title.getBytes("UTF8"));
   }
   
   public String toString() {

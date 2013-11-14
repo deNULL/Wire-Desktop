@@ -1,7 +1,6 @@
 package ru.denull.wire.model;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 
 import javax.swing.AbstractListModel;
 import javax.swing.JList;
@@ -32,6 +31,7 @@ public class ContactListModel extends AbstractListModel {
   ArrayList<Integer> items = new ArrayList<Integer>();
   ArrayList<Integer> filtered = null;
   String filterQuery = null;
+  String missingText = "<html>У вас нет ни одного контакта.<br/>Вы можете импортировать их в меню «Контакты».</html>";
   
   public ContactListModel(DataService service, JList list) {
     this.service = service;
@@ -40,13 +40,21 @@ public class ContactListModel extends AbstractListModel {
     //peer_id = Utils.getPeerID(peer, service.me);
     //reloadDialogs();
   }
+  
+  public void setMissingText(String text) {
+    missingText = text;
+  }
 
   public Object getElementAt(int index) {
-    return (filtered == null) ? items.get(index) : filtered.get(index);
+    return (filtered == null) ? (index < items.size() ? items.get(index) : missingText) : (index < filtered.size() ? filtered.get(index) : "Ничего не найдено");
   }
 
   public int getSize() {
-    return (filtered == null) ? items.size() : filtered.size();
+    return Math.max(1, (filtered == null) ? items.size() : filtered.size());
+  }
+  
+  public boolean isEmpty() {
+    return (filtered == null) ? items.isEmpty() : filtered.isEmpty();
   }
   
   public void filter(String query) {
@@ -86,6 +94,52 @@ public class ContactListModel extends AbstractListModel {
     fireContentsChanged(this, 0, getSize() - 1);
   }
   
+  public void updateContents(int user_id) {
+    if (isEmpty()) return;
+    for (int i = 0; i < getSize(); i++) {
+      if ((Integer) getElementAt(i) == user_id) {
+        fireContentsChanged(this, i, i);
+        return;
+      }
+    }
+  }
+  
+  public void add(int user_id, boolean unique) {
+    if (unique) {
+      for (Integer id : items) {
+        if (id == user_id) {
+          return;
+        }
+      }
+    }
+    
+    items.add(user_id);
+    sort();
+    filter(filterQuery, true);
+  }
+
+  public void add(TChatParticipant[] participants) {
+    if (participants == null) return;
+    
+    for (TChatParticipant part : participants) {
+      items.add(part.user_id);
+    }
+    sort();
+    filter(filterQuery, true);
+  }
+  
+  public void remove(int index) {
+    items.remove(index);
+    sort();
+    filter(filterQuery, true);
+  }
+  
+  public void removeUser(int user_id) {
+    items.remove((Integer) user_id);
+    sort();
+    filter(filterQuery, true);
+  }
+  
   public void reload() {
     boolean force = true;
     final boolean cachedData = false;
@@ -110,7 +164,7 @@ public class ContactListModel extends AbstractListModel {
           }
           service.userManager.store(((Contacts) result).users);
         }
-
+        sort();
         filter(filterQuery, true);
       }
       public void error(int code, String message) {
@@ -118,6 +172,16 @@ public class ContactListModel extends AbstractListModel {
       }
     });
    
+  }
+  
+  public void sort() {
+    Collections.sort(items, new Comparator<Integer>() {
+      public int compare(Integer a, Integer b) {
+        TUser userA = service.userManager.get(a);
+        TUser userB = service.userManager.get(b);
+        return (userA.last_name + " " + userA.first_name).compareTo(userB.last_name + " " + userB.first_name);
+      }
+    });
   }
   
 }

@@ -11,10 +11,7 @@ import javax.swing.event.DocumentListener;
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.Server.RPCCallback;
 import ru.denull.wire.model.Config;
-import tl.auth.Authorization;
-import tl.auth.SendCode;
-import tl.auth.SentCode;
-import tl.auth.SignIn;
+import tl.auth.*;
 
 public class AuthDialog extends JDialog {
 
@@ -55,10 +52,9 @@ public class AuthDialog extends JDialog {
     pagesPanel.setLayout(pages);
     getContentPane().add(pagesPanel, BorderLayout.CENTER);
     
-    
     final JPanel phoneContent = new JPanel();
     phoneContent.setLayout(new FlowLayout(FlowLayout.LEFT));
-    phoneContent.setBorder(new EmptyBorder(5, 5, 5, 5));
+    phoneContent.setBorder(new EmptyBorder(5, 0, 5, 5));
     pagesPanel.add(phoneContent, "phone");
     
     {     
@@ -104,7 +100,7 @@ public class AuthDialog extends JDialog {
     
     JPanel waitContent = new JPanel();
     waitContent.setLayout(new FlowLayout(FlowLayout.LEFT));
-    waitContent.setBorder(new EmptyBorder(5, 5, 5, 5));
+    waitContent.setBorder(new EmptyBorder(5, 0, 5, 5));
     pagesPanel.add(waitContent, "wait");
     
     {
@@ -114,13 +110,13 @@ public class AuthDialog extends JDialog {
       
       JProgressBar progressBar = new JProgressBar();
       progressBar.setIndeterminate(true);
-      progressBar.setPreferredSize(new Dimension(370, progressBar.getPreferredSize().height));
+      progressBar.setPreferredSize(new Dimension(350, progressBar.getPreferredSize().height));
       waitContent.add(progressBar);
     }
     
     final JPanel codeContent = new JPanel();
     codeContent.setLayout(new FlowLayout(FlowLayout.LEFT));
-    codeContent.setBorder(new EmptyBorder(5, 5, 5, 5));
+    codeContent.setBorder(new EmptyBorder(5, 0, 5, 5));
     pagesPanel.add(codeContent, "code");
     
     {
@@ -160,7 +156,7 @@ public class AuthDialog extends JDialog {
     
     final JPanel registerContent = new JPanel();
     registerContent.setLayout(new FlowLayout(FlowLayout.LEFT));
-    registerContent.setBorder(new EmptyBorder(5, 5, 5, 5));
+    registerContent.setBorder(new EmptyBorder(5, 0, 5, 5));
     pagesPanel.add(registerContent, "register");
     
     {
@@ -174,6 +170,17 @@ public class AuthDialog extends JDialog {
       
       firstNameField = new JTextField();
       firstNameField.setPreferredSize(new Dimension(290, firstNameField.getPreferredSize().height));
+      firstNameField.getDocument().addDocumentListener(new DocumentListener() {
+        public void removeUpdate(DocumentEvent e) {
+          doneBtn.setEnabled(!firstNameField.getText().isEmpty() && !lastNameField.getText().isEmpty());
+        }
+        public void insertUpdate(DocumentEvent e) {
+          doneBtn.setEnabled(!firstNameField.getText().isEmpty() && !lastNameField.getText().isEmpty());
+        }
+        public void changedUpdate(DocumentEvent e) {
+          doneBtn.setEnabled(!firstNameField.getText().isEmpty() && !lastNameField.getText().isEmpty());
+        }
+      });
       registerContent.add(firstNameField);
       
       JLabel lastNameLabel = new JLabel("Фамилия:", SwingConstants.LEFT);
@@ -182,6 +189,17 @@ public class AuthDialog extends JDialog {
       
       lastNameField = new JTextField();
       lastNameField.setPreferredSize(new Dimension(290, lastNameField.getPreferredSize().height));
+      lastNameField.getDocument().addDocumentListener(new DocumentListener() {
+        public void removeUpdate(DocumentEvent e) {
+          doneBtn.setEnabled(!firstNameField.getText().isEmpty() && !lastNameField.getText().isEmpty());
+        }
+        public void insertUpdate(DocumentEvent e) {
+          doneBtn.setEnabled(!firstNameField.getText().isEmpty() && !lastNameField.getText().isEmpty());
+        }
+        public void changedUpdate(DocumentEvent e) {
+          doneBtn.setEnabled(!firstNameField.getText().isEmpty() && !lastNameField.getText().isEmpty());
+        }
+      });
       registerContent.add(lastNameField);
     }
     
@@ -274,21 +292,38 @@ public class AuthDialog extends JDialog {
                   public void error(int errorCode, final String message) {
                     backBtn.setVisible(true);
                     doneBtn.setVisible(true);
-                    doneBtn.setText(code.phone_registered ? "Войти" : "Продолжить");
+                    doneBtn.setText("Войти");
                     doneBtn.setEnabled(false);
                     codeField.setText("");
                     pages.show(pagesPanel, "code");
                     codeField.requestFocusInWindow();
                   }
                 });
-              }
 
-              backBtn.setVisible(false);
-              doneBtn.setVisible(false);
-              pages.show(pagesPanel, "wait");
+                backBtn.setVisible(false);
+                doneBtn.setVisible(false);
+                pages.show(pagesPanel, "wait");
+              } else {
+                backBtn.setVisible(true);
+                doneBtn.setVisible(true);
+                doneBtn.setText("Войти");
+                doneBtn.setEnabled(false);
+                pages.show(pagesPanel, "register");
+                firstNameField.requestFocusInWindow();
+              }
             } else
             if (registerContent.isVisible()) { // REGISTER AND LOGIN
-
+              service.mainServer.call(new SignUp(phone, code.phone_code_hash, codeField.getText(), firstNameField.getText(), lastNameField.getText()), new RPCCallback<Authorization>() {
+                public void done(Authorization result) {
+                  setVisible(false);
+                  Main.window.authorized(result.user);
+                }
+  
+                public void error(int errorCode, final String message) {
+                  firstNameField.requestFocusInWindow();
+                }
+              });
+              
               backBtn.setVisible(false);
               doneBtn.setVisible(false);
               pages.show(pagesPanel, "wait");

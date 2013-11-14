@@ -87,8 +87,20 @@ public class MessageCellRenderer implements ListCellRenderer {
       
       JLabel timeLabel = new JLabel(Utils.toTime(message.date));
       timeLabel.setForeground(Color.decode("0x80879b"));
-      timeLabel.setFont(new Font(Utils.fontName, Font.PLAIN, 10));
+      timeLabel.setFont(new Font(Utils.fontName, Font.PLAIN, 11));
       panel.add(timeLabel, MessageLayout.DATE);
+      
+      if (message.out) {
+        if (message.failed) {
+          timeLabel.setIcon(new ImageIcon(Utils.getImage("msg_warning.png")));
+        } else if (message.sending) {
+          timeLabel.setIcon(new ImageIcon(Utils.getImage("msg_clock.png")));
+        } else if (message.unread) {
+          timeLabel.setIcon(new ImageIcon(Utils.getImage("msg_check.png")));
+        } else {
+          timeLabel.setIcon(new ImageIcon(Utils.getImage("msg_dblcheck.png")));
+        }
+      }
       
       if (!message.out) {
         if (peer instanceof InputPeerChat) {
@@ -166,10 +178,7 @@ public class MessageCellRenderer implements ListCellRenderer {
         if (message.preview != null) { // uploading photo
           thumbnail = message.preview;
           
-          thumbPanel.setPreferredSize(new Dimension(
-            Math.min(maxw, (int) (19 + Math.sqrt(50000f * thumbnail.getWidth(null) / thumbnail.getHeight(null)))),
-            Math.min(maxh, (int) (10 + Math.sqrt(50000f * thumbnail.getHeight(null) / thumbnail.getWidth(null))))
-          ));
+          thumbPanel.setPreferredSize(getOptimalSize(thumbnail.getWidth(null), thumbnail.getHeight(null)));
         } else {        
           thumbnail = media.getThumbnail();
           for (TPhotoSize size : ((Photo) media.photo).sizes) {

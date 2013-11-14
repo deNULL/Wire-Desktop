@@ -39,11 +39,15 @@ public class DialogListModel extends AbstractListModel {
   }
 
   public Object getElementAt(int index) {
-    return (filtered == null) ? service.dialogManager.loaded.get(index) : filtered.get(index);
+    return (filtered == null) ? (index < service.dialogManager.loaded.size() ? service.dialogManager.loaded.get(index) : "У вас ещё нет диалогов") : (index < filtered.size() ? filtered.get(index) : "Ничего не найдено");
   }
 
   public int getSize() {
-    return (filtered == null) ? service.dialogManager.loaded.size() : filtered.size();
+    return Math.max(1, (filtered == null) ? service.dialogManager.loaded.size() : filtered.size());
+  }
+  
+  public boolean isEmpty() {
+    return (filtered == null) ? service.dialogManager.loaded.isEmpty() : filtered.isEmpty();
   }
 
   public void filter(String query) {

@@ -349,4 +349,48 @@ public class MessageListModel extends AbstractListModel {
   public long getState() {
     return state;
   }
+
+  public void updateContentsID(int id) {
+    for (int i = getSize() - 1; i >= 0; i--) {
+      Object o = getElementAt(i);
+      if (o instanceof TMessage && ((TMessage) o).id == id) {
+        updateContents(i);
+        return;
+      }
+    }
+  }
+
+  public void updateContentsID(int[] messages) {
+    if (messages.length == 0) return;
+    int minID = -1, maxID = -1;
+    for (int id : messages) {
+      if (minID == -1 || minID > id) minID = id;
+      if (maxID == -1 || maxID < id) maxID = id;
+    }
+    
+    int st = 0, en = -1;
+    for (int i = getSize() - 1; i >= 0; i--) {
+      Object o = getElementAt(i);
+      if (o instanceof TMessage && ((TMessage) o).unread) {
+        if (en == -1) {
+          if (((TMessage) o).id <= maxID) {
+            en = i;
+            ((TMessage) o).unread = false;
+          }
+        } else {
+          if (((TMessage) o).id < minID) {
+            break;
+          } else {
+            st = i;
+            ((TMessage) o).unread = false;
+          }
+        }
+      }
+    }
+    
+    //System.out.println("upd from ID " + minID + "-" + maxID + ", " + st + " to " + en);
+    if (en > -1 && en > st) {
+      fireContentsChanged(this, st, en);
+    }
+  }
 }

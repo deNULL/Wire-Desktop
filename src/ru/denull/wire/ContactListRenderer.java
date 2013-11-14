@@ -3,6 +3,7 @@ package ru.denull.wire;
 import java.awt.*;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import ru.denull.mtproto.DataService;
@@ -20,11 +21,21 @@ public class ContactListRenderer implements ListCellRenderer {
   
   private int times = 0;
   public Component getListCellRendererComponent(JList list, Object item, int index, boolean selected, boolean focused) {
+    if (item instanceof String) {
+      JLabel label = new JLabel((String) item, SwingConstants.CENTER);
+      label.setOpaque(true);
+      label.setForeground(Color.decode("0x808080"));
+      label.setBackground(Color.WHITE);
+      label.setFont(new Font(Utils.fontName, Font.PLAIN, 16));
+      label.setBorder(new EmptyBorder(30, 4, 30, 4));    
+      return label;
+    }
+    
     TUser user = service.userManager.get((Integer) item);
     
     JPanel panel = new JPanel(new GridBagLayout());
     panel.setOpaque(true);
-    panel.setBackground(Color.decode("0xf9f9f9"));
+    panel.setBackground(Color.WHITE);
     GridBagConstraints constraints;
     
     ImagePanel iconLabel = new ImagePanel();
@@ -38,11 +49,11 @@ public class ContactListRenderer implements ListCellRenderer {
     service.userManager.getUserpic(user.id, iconLabel, false);
       
     JLabel titleLabel = new JLabel((user.first_name + " " + user.last_name).trim());
-    titleLabel.setFont(new Font(Utils.fontName, Font.BOLD, 12));
+    titleLabel.setFont(new Font(Utils.fontName, Font.PLAIN, 14));
     titleLabel.setForeground(selected ? Color.WHITE : Color.BLACK);
     //titleLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
     constraints = Utils.GBConstraints(1, 0, 1, 1);
-    constraints.insets = new Insets(4, 7, 2, 0);
+    constraints.insets = new Insets(2, 7, 2, 0);
     constraints.weightx = 1;
     constraints.anchor = GridBagConstraints.LINE_START;
     panel.add(titleLabel, constraints);

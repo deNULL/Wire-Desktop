@@ -1,6 +1,8 @@
 package ru.denull.wire;
 
 import java.awt.*;
+import java.awt.geom.Area;
+import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.JPanel;
 
@@ -14,9 +16,10 @@ public class ImagePanel extends JPanel {
   public static final int SCALE_INSIDE = 5; // Keeps preferred width&height and image ratio, scales to touch inside
   public static final int SCALE_OUTSIDE = 6; // Keeps preferred width&height and image ratio, scales to touch outside
   
-  private Image image;
+  private Image image, scaled;
   private long id;
   private int scale = SCALE_OUTSIDE;
+  private int scaledW, scaledH;
   
   public ImagePanel() {
     super();
@@ -27,11 +30,26 @@ public class ImagePanel extends JPanel {
     super.paint(g);
     Insets insets = getInsets();
     int x = insets.left, y = insets.top, width = getWidth() - insets.right - insets.left, height = getHeight() - insets.bottom - insets.top;
-    g.drawImage(image, x, y, width, height, null); // SCALE_STRETCH
+    ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+        RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+    Area clip = new Area(g.getClip());
+    clip.intersect(new Area(new RoundRectangle2D.Float(x, y, width, height, 3, 3)));
+    g.setClip(clip);
+    
+    if (scaled == null || scaledW != width || scaledH != height) {
+      try {
+        scaled = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        scaledW = width;
+        scaledH = height;
+      } catch (Exception e) {
+      }
+    }
+    g.drawImage(scaled == null ? image : scaled, x, y, width, height, null); // SCALE_STRETCH
   }
   
   public void setImage(Image image) {
     this.image = image;
+    scaled = null;
     repaint();
   }
   

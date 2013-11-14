@@ -840,4 +840,37 @@ public class Utils {
     constr.gridheight = gridheight;
     return constr;
   }
+
+  public static String num(int n, String[] cs, boolean append) {
+    n = n % 100;
+    if ((n % 10 == 0) || (n % 10 > 4) || (n > 4 && n < 21)) {
+      return (append ? n : "") + cs[2];
+    } else
+    if (n % 10 == 1) {
+      return (append ? n : "") + cs[0];
+    } else {
+      return (append ? n : "") + cs[1];
+    }
+  }
+
+  public static int getChatOnline(DataService service, ChatFull chat) {
+    int count = 0;
+    if (chat.participants instanceof ChatParticipants) {
+      for (TChatParticipant participant : ((ChatParticipants) chat.participants).participants) {
+        TUser user = service.userManager.get(((ChatParticipant) participant).user_id);
+        if (user.status instanceof UserStatusOnline) {
+          count++;
+        }
+      }
+    }
+    return count;
+  }
+
+  public static TInputUser getInputUser(TUser user) {
+    if (user instanceof UserForeign || user instanceof UserRequest) {
+      return new InputUserForeign(user.id, user.access_hash);
+    } else {
+      return new InputUserContact(user.id);
+    }
+  }
 }
