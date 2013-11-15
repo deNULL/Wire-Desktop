@@ -513,7 +513,7 @@ public class Main {
   		return "(" + var + " ? \"true\" : \"false\")";
   	} else
   	if (tlType.toLowerCase().equals("string")) {
-  		return "\"" + var + "\"";
+  		return var;
   	} else {
       return var;
     }

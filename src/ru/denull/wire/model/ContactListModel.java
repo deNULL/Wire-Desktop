@@ -44,7 +44,7 @@ public class ContactListModel extends AbstractListModel {
   }
 
   public Object getElementAt(int index) {
-    return (filtered == null) ? (index < items.size() ? items.get(index) : missingText) : (index < filtered.size() ? filtered.get(index) : "Ничего не найдено");
+    return (filtered == null) ? (index < items.size() ? items.get(index) : missingText) : (index < filtered.size() ? filtered.get(index) : "Никого не найдено");
   }
 
   public int getSize() {
@@ -116,6 +116,15 @@ public class ContactListModel extends AbstractListModel {
     sort();
     filter(filterQuery, true);
   }
+  
+  public boolean contains(int user_id) {
+    for (Integer id : items) {
+      if (id == user_id) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   public void add(TChatParticipant[] participants) {
     if (participants == null) return;
@@ -131,8 +140,17 @@ public class ContactListModel extends AbstractListModel {
   public void add(ImportedContacts result) {
     service.userManager.store(result.users);
     for (TImportedContact contact : result.imported) {
-      items.add(contact.user_id);
-      service.contactManager.store(contact.user_id, -contact.user_id, false);
+      boolean unique = true;
+      for (Integer id : items) {
+        if (id == contact.user_id) {
+          unique = false;
+          break;
+        }
+      }
+      if (unique) {
+        items.add(contact.user_id);
+        service.contactManager.store(contact.user_id, -contact.user_id, false);
+      }
     }
     sort();
     filter(filterQuery, true);

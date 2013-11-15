@@ -149,9 +149,12 @@ public class DataService {
       e.printStackTrace();
     }
     defaultServer = pref.get("server", DEBUG_SERVERS ? "173.240.5.253:443" : "173.240.5.1:443");// "95.142.192.65:80"
-    updates_pts = pref.getInt("updates_pts", -1);
+    /*updates_pts = pref.getInt("updates_pts", -1);
     updates_date = pref.getInt("updates_date", -1);
-    updates_seq = pref.getInt("updates_seq", -1);
+    updates_seq = pref.getInt("updates_seq", -1);*/
+    updates_pts = -1;
+    updates_date = -1;
+    updates_seq = -1;
   }
   
   public void dropDatabases() {
@@ -213,6 +216,7 @@ public class DataService {
     if (updates_pts < 0 || updates_date < 0) { // invalid (not initialized) state
       mainServer.call(new GetState(), new Server.RPCCallback<tl.updates.State>() {
         public void done(State result) {
+          System.out.println("reset state");
           updates_pts = Math.max(updates_pts, result.pts);
           updates_date = Math.max(updates_date, result.date);
           updates_seq = Math.max(updates_seq, result.seq);
@@ -231,10 +235,12 @@ public class DataService {
         public void done(TDifference result) {
           checkingState = false;
           if (result instanceof DifferenceEmpty) {
+            //System.out.println("no updates");
             updates_date = Math.max(updates_date, ((DifferenceEmpty) result).date);
             updates_seq = Math.max(updates_seq, ((DifferenceEmpty) result).seq);
           } else
           if (result instanceof DifferenceSlice) {
+            //System.out.println("diff slice");
             DifferenceSlice diff = (DifferenceSlice) result;
             
             chatManager.store(diff.chats);
@@ -255,6 +261,7 @@ public class DataService {
             checkUpdates(); // request next updates
           } else
           if (result instanceof Difference) {
+            //System.out.println("diff");
             Difference diff = (Difference) result;
             
             chatManager.store(diff.chats);

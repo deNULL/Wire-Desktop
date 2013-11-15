@@ -355,6 +355,7 @@ public class MessageListModel extends AbstractListModel {
   }
 
   public void updateContentsID(int id) {
+    //System.out.println("upd " + id);
     for (int i = getSize() - 1; i >= 0; i--) {
       Object o = getElementAt(i);
       if (o instanceof TMessage && ((TMessage) o).id == id) {

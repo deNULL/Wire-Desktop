@@ -59,6 +59,6 @@ public class Search extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(messages.search peer:" + peer + " q:" + "q" + " filter:" + filter + " min_date:" + min_date + " max_date:" + max_date + " offset:" + offset + " max_id:" + max_id + " limit:" + limit + ")";
+    return "(messages.search peer:" + peer + " q:\"" + q + "\" filter:" + filter + " min_date:" + min_date + " max_date:" + max_date + " offset:" + offset + " max_id:" + max_id + " limit:" + limit + ")";
   }
 }

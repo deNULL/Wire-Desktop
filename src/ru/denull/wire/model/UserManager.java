@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import ru.denull.mtproto.DataService;
 import ru.denull.wire.ImagePanel;
 import ru.denull.wire.Utils;
+import ru.denull.wire.model.FileManager.FileLoadingCallback;
 import tl.*;
 
 public class UserManager {
@@ -122,19 +123,28 @@ public class UserManager {
 	public void getUserpic(int id, ImagePanel view, boolean big) {
 	  TUser user = get(id);
 	  if (user != null && user.photo != null && user.photo instanceof UserProfilePhoto) {
-	    if (big) {
-	      if (!service.fileManager.queryImage(((UserProfilePhoto) user.photo).photo_big, view)) {
-	        view.setImage(getPlaceholder(id));
-	      }
-	    } else {
-	      if (!service.fileManager.queryImage(((UserProfilePhoto) user.photo).photo_small, view)) {
-	        view.setImage(getPlaceholder(id));
-	      }
-	    }
+	    TFileLocation loc = big ? ((UserProfilePhoto) user.photo).photo_big : ((UserProfilePhoto) user.photo).photo_small;
+	    if (!service.fileManager.queryImage(loc, view)) {
+        view.setImage(getPlaceholder(id));
+      }
 	  } else {
 	    view.setImage(getPlaceholder(id));
 	  }
 	}
+	public void getUserpic(int id, ImagePanel view, boolean big, FileLoadingCallback callback) {
+    TUser user = get(id);
+    if (user != null && user.photo != null && user.photo instanceof UserProfilePhoto) {
+      TFileLocation loc = big ? ((UserProfilePhoto) user.photo).photo_big : ((UserProfilePhoto) user.photo).photo_small;
+      if ((service.fileManager.getState(loc) & FileManager.STATE_LOADING_MASK) != FileManager.STATE_COMPLETE) {
+        view.setImage(getPlaceholder(id));
+        service.fileManager.query(loc, callback);
+      } else {
+        service.fileManager.queryImage(loc, view);
+      }
+    } else {
+      view.setImage(getPlaceholder(id));
+    }
+  }
 	
 	public Image getPlaceholder(int id) {
 	  int index = id % 8;

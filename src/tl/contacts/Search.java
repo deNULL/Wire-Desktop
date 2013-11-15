@@ -35,6 +35,6 @@ public class Search extends tl.TLFunction {
   }
   
   public String toString() {
-    return "(contacts.search q:" + "q" + " limit:" + limit + ")";
+    return "(contacts.search q:\"" + q + "\" limit:" + limit + ")";
   }
 }

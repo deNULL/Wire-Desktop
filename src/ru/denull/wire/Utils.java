@@ -596,6 +596,35 @@ public class Utils {
     return "не в сети";
   }
   
+  public static String formatPhone(String phone) {
+    phone = phone.replaceAll("/\\D+/", "");
+    int len = phone.length();
+    for (String[] pair : countryCodes) {
+      if (pair[1].length() > 0 && phone.startsWith(pair[1])) {
+        String result = "+" + pair[1] + " ";
+        int code_len = pair[1].length();
+        if (len > code_len) {
+          result += phone.substring(code_len, Math.min(code_len + 3, len)) + " ";
+          
+          if (len > code_len + 3) {
+            result += phone.substring(code_len + 3, Math.min(code_len + 6, len)) + " ";
+            
+            if (len > code_len + 6) {
+              result += phone.substring(code_len + 6, Math.min(code_len + 8, len)) + " ";
+              
+              if (len > code_len + 8) {
+                result += phone.substring(code_len + 8);
+              }
+            }
+          }
+        }
+        
+        return result;
+      }
+    }
+    return "+" + phone;
+  }
+  
   public static void fixEmoji(JLabel label) {
     View v = (View) label.getClientProperty("html");
     if (v == null || !(v.getDocument() instanceof StyledDocument)) {

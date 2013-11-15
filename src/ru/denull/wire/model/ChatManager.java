@@ -9,6 +9,7 @@ import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.Server.RPCCallback;
 import ru.denull.wire.ImagePanel;
 import ru.denull.wire.Utils;
+import ru.denull.wire.model.FileManager.FileLoadingCallback;
 import tl.*;
 
 public class ChatManager {
@@ -142,6 +143,21 @@ public class ChatManager {
         if (!service.fileManager.queryImage(((ChatPhoto) ((Chat) chat).photo).photo_small, view)) {
           view.setImage(getPlaceholder(id));
         }
+      }
+    } else {
+      view.setImage(getPlaceholder(id));
+    }
+  }
+
+  public void getImage(int id, ImagePanel view, boolean big, FileLoadingCallback callback) {
+    TChat chat = get(id);
+    if (chat != null && chat instanceof Chat && ((Chat) chat).photo instanceof ChatPhoto) {
+      TFileLocation loc = big ? ((ChatPhoto) ((Chat) chat).photo).photo_big : ((ChatPhoto) ((Chat) chat).photo).photo_small;
+      if ((service.fileManager.getState(loc) & FileManager.STATE_LOADING_MASK) != FileManager.STATE_COMPLETE) {
+        view.setImage(getPlaceholder(id));
+        service.fileManager.query(loc, callback);
+      } else {
+        service.fileManager.queryImage(loc, view);
       }
     } else {
       view.setImage(getPlaceholder(id));

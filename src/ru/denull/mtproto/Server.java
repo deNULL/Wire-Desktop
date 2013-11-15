@@ -188,7 +188,7 @@ public class Server implements ReadTaskCallback {
 		public void error(int code, String message);
 	}
 	
-	public void sendQueued() throws Exception {
+	synchronized public void sendQueued() throws Exception {
 		if (queuedCalls.size() == 0) {
 			return;
 		}
@@ -397,6 +397,7 @@ public class Server implements ReadTaskCallback {
 		try {
 		  if (latestLayer && !initPerformed) {
 		    send(new InvokeWithLayer9(new InitConnection(Config.api_id, Config.getDeviceModel(), Config.getSystemVersion(), Config.app_version, "ru", request)), true, true, callback);
+		    initPerformed = true;
 		  } else {
 		    send(request, true, true, callback);
 		  }			
@@ -412,6 +413,7 @@ public class Server implements ReadTaskCallback {
 	
 	private void processMessage(TLObject message, long msg_id) throws Exception {
 	  //Log.i(TAG, "<= " + message);
+	  //System.out.println("<= " + msg_id);
 		ArrayList<Long> confirm = new ArrayList<Long>();
 		if (message instanceof MsgContainer) {
 			for (TLObject child : ((MsgContainer) message).messages) {

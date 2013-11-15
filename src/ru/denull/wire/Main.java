@@ -19,9 +19,7 @@ import java.awt.dnd.*;
 import java.awt.event.*;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Random;
+import java.util.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -34,6 +32,9 @@ import javax.swing.AbstractListModel;
 
 
 import javax.swing.JButton;
+
+
+
 
 
 
@@ -92,7 +93,7 @@ public class Main implements OnUpdateListener, TypingCallback {
   private JToggleButton contactsBtn;
   
   final JFileChooser fc = new JFileChooser();
-  FileDialog fd;
+  FileDialog fd, importDialog;
   public static FileDialog saveDialog;
   private JPanel sendPanel;
   public static int currentMods = 0;
@@ -222,6 +223,7 @@ public class Main implements OnUpdateListener, TypingCallback {
     frame.setTitle("Wire"); 
     
     fd = new FileDialog(frame, "Выберите изображения или видеозаписи для загрузки", FileDialog.LOAD);
+    importDialog = new FileDialog(frame, "Выберите список контактов для импорта", FileDialog.LOAD);
     saveDialog = new FileDialog(frame, "Сохранить как...", FileDialog.SAVE);
     /*try {
       fd.getClass().getMethod("setMultipleMode", new Class[] { Boolean.class } ).invoke(fd, true);
@@ -233,6 +235,12 @@ public class Main implements OnUpdateListener, TypingCallback {
       public boolean accept(File dir, String name) {
         name = name.toLowerCase();
         return name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png") || name.endsWith(".gif") || name.endsWith(".mov") || name.endsWith(".mp4") || name.endsWith(".webp") || name.endsWith(".mp3");
+      }
+    });
+    importDialog.setFilenameFilter(new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        name = name.toLowerCase();
+        return name.endsWith(".csv") || name.endsWith(".vcf");
       }
     });
     
@@ -389,7 +397,7 @@ public class Main implements OnUpdateListener, TypingCallback {
     
     searchPanel.add(Box.createRigidArea(new Dimension(6, 0)));
     
-    dialogList = new JList() {
+    dialogList = new InteractiveList() {
       public boolean getScrollableTracksViewportWidth() {
         return true;
       }
@@ -403,13 +411,13 @@ public class Main implements OnUpdateListener, TypingCallback {
     dialogList.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         if (dialogList.getSelectedIndex() > -1) {
-          if (chatPanel.isVisible()) {
+          /*if (chatPanel.isVisible()) {
             if (contactListModel.isEmpty()) return;
             
             chatMemberModel.add((Integer) contactListModel.getElementAt(dialogList.getSelectedIndex()), true);
             chatActionBtn.setEnabled(!chatTitleField.getForeground().equals(Color.LIGHT_GRAY) && !chatTitleField.getText().isEmpty() && !chatMemberModel.isEmpty());
             //dialogList.clearSelection();
-          } else
+          } else*/
           if (dialogsBtn.isSelected()) {
             if (dialogListModel.isEmpty()) return;
             
@@ -499,7 +507,7 @@ public class Main implements OnUpdateListener, TypingCallback {
     constraints.weightx = 1;
     constraints.fill = GridBagConstraints.HORIZONTAL;
     titleStatus.setForeground(Color.decode("0x808080"));
-    titlePanel.add(titleStatus, constraints);
+    titlePanel.add(titleStatus, constraints);    
     
     titleInfoBtn = new JButton();
     titleInfoBtn.setFocusable(false);
@@ -512,38 +520,21 @@ public class Main implements OnUpdateListener, TypingCallback {
         if (currentPeer != null) {
           if (currentPeer instanceof InputPeerChat) {
             if (titleInfoBtn.isSelected()) {
-              contactsState = contactsBtn.isSelected();
-              contactsBtn.doClick();
+              editChat();
               
-              searchField.setText("");
-              chatPanel.setVisible(true);
-              dialogsBtn.setVisible(false);
-              contactsBtn.setVisible(false);
-              actionBtn.setText("Отмена");
-              chatActionBtn.setEnabled(false);
-              chatActionBtn.setText("Применить");
-              
-              chatMemberModel = new ContactListModel(service, chatMemberList);
-              chatMemberModel.setMissingText("Выберите участников из списка слева");
-              if (currentChat != null) {
-                chatMemberModel.add(currentChat.participants.participants);
-              }
-              chatMemberList.setModel(chatMemberModel);
-              
-              TChat chat = service.chatManager.get(currentPeer.chat_id);
-              setHintedFieldText(chatTitleField, chat.title);
-              
-              //chatTitleField.requestFocusInWindow();
             } else {
               cancelCreateChat();
             }
           } else {
-            
+            toggleTitlePanel(titleInfoBtn.isSelected());
           }
         }
       }
     });
-    titlePanel.add(titleInfoBtn, Utils.GBConstraints(2, 0, 1, 2));
+    constraints = Utils.GBConstraints(2, 0, 1, 2);
+    constraints.anchor = GridBagConstraints.PAGE_START;
+    constraints.insets = new Insets(6, 0, 0, 0);
+    titlePanel.add(titleInfoBtn, constraints);
     
     titlePanel.add(Box.createRigidArea(new Dimension(6, 40)), Utils.GBConstraints(3, 0, 1, 2));
     
@@ -603,7 +594,10 @@ public class Main implements OnUpdateListener, TypingCallback {
         }
       }
     });
-    titlePanel.add(titleActionBtn, Utils.GBConstraints(4, 0, 1, 2));
+    constraints = Utils.GBConstraints(4, 0, 1, 2);
+    constraints.anchor = GridBagConstraints.PAGE_START;
+    constraints.insets = new Insets(6, 0, 0, 0);
+    titlePanel.add(titleActionBtn, constraints);
     
     titlePanel.add(Box.createRigidArea(new Dimension(6, 40)), Utils.GBConstraints(5, 0, 1, 2));
     
@@ -725,16 +719,16 @@ public class Main implements OnUpdateListener, TypingCallback {
     addHint(chatTitleField, "Название чата");
     chatTitlePanel.add(Box.createRigidArea(new Dimension(4, 40)));
     
-    chatMemberList = new JList() {
+    chatMemberList = new InteractiveList() {
       public boolean getScrollableTracksViewportWidth() {
         return true;
       }
     };
     chatMemberList.setBackground(Color.WHITE);
-    //dialogList.setBorder(UIManager.getBorder("List.sourceListBackgroundPainter"));
-    chatMemberList.setCellRenderer(contactListRenderer);
+    memberListRenderer = new ContactListRenderer(service);
+    chatMemberList.setCellRenderer(memberListRenderer);
     chatMemberList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    chatMemberList.addListSelectionListener(new ListSelectionListener() {
+    /*chatMemberList.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         if (chatMemberList.getSelectedIndex() > -1 && !chatMemberModel.isEmpty()) {
           chatMemberModel.remove(chatMemberList.getSelectedIndex());
@@ -742,7 +736,7 @@ public class Main implements OnUpdateListener, TypingCallback {
           chatActionBtn.setEnabled(!chatTitleField.getForeground().equals(Color.LIGHT_GRAY) && !chatTitleField.getText().isEmpty() && !chatMemberModel.isEmpty());
         }
       }
-    });
+    });*/
     
     scrollPane = new JScrollPane(chatMemberList);
     scrollPane.setBackground(Color.decode("0xf9f9f9"));
@@ -862,6 +856,152 @@ public class Main implements OnUpdateListener, TypingCallback {
     }
   }
   
+  protected void toggleTitlePanel(boolean visible) {
+    titlePanel.setMinimumSize(new Dimension(0, visible ? 100 : 40));
+    titlePanel.setPreferredSize(new Dimension(0, visible ? 100 : 40));
+    titleIcon.setMinimumSize(new Dimension(visible ? 100 : 40, visible ? 100 : 40));
+    titleIcon.setPreferredSize(new Dimension(visible ? 100 : 40, visible ? 100 : 40));
+    titleIcon.setBorder(new EmptyBorder(visible ? 6 : 4, visible ? 6 : 4, visible ? 6 : 4, visible ? 6 : 4));
+    
+    int user_id = currentPeer.user_id;
+    TUser user = service.userManager.get(user_id);
+    String title = (user.first_name + " " + user.last_name).trim();
+    
+    titleLabel.setBorder(new EmptyBorder(visible ? 8 : 3, 0, 0, 0));
+    titleLabel.setText(visible ? "<html>" + title + "<br/><br/>" + Utils.formatPhone(user.phone) + "</html>" : title);
+  }
+
+  protected void editChat() {
+    contactsState = contactsBtn.isSelected();
+    contactsBtn.doClick();
+    
+    searchField.setText("");
+    chatPanel.setVisible(true);
+    dialogsBtn.setVisible(false);
+    contactsBtn.setVisible(false);
+    actionBtn.setText("Отмена");
+    chatActionBtn.setEnabled(false);
+    chatActionBtn.setText("Применить");
+    
+    chatMemberModel = new ContactListModel(service, chatMemberList);
+    chatMemberModel.setMissingText("Выберите участников из списка слева");
+    if (currentChat != null) {
+      chatMemberModel.add(currentChat.participants.participants);
+    }
+    memberListRenderer.buttonText = "исключить";
+    memberListRenderer.dropCache();
+    contactListRenderer.buttonText = "пригласить";
+    contactListRenderer.dropCache();
+    memberListRenderer.actionListener = new ContactListRenderer.ContactActionListener() {
+      public void onContactSelected(final int user_id, int index) {
+        if (JOptionPane.showOptionDialog(frame, "Вы уверены, что хотите исключить участника из чата?", "Подтвердите действие", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new String[] { "Отмена", "Исключить из чата" }, "Отмена") == 1) {
+          chatMemberModel.remove(index);
+          
+          TUser user = service.userManager.get(user_id);
+          service.mainServer.call(new tl.messages.DeleteChatUser(currentPeer.chat_id, user instanceof UserContact ? new InputUserContact(user_id) : new InputUserForeign(user_id, user.access_hash)), new RPCCallback<StatedMessage>() {
+            public void done(StatedMessage result) {
+              service.chatManager.store(result.chats);
+              service.userManager.store(result.users);
+              service.messageManager.store(result.message);
+              service.dialogManager.addMessage(result.message);
+              messageListModel.addMessage(result.message);
+              contactListRenderer.dropCache(user_id);
+              contactListModel.updateContents(user_id);
+              dialogListModel.updateContents();
+              restoreDialogSelection();
+              
+              service.mainServer.call(new GetFullChat(currentPeer.chat_id), new Server.RPCCallback<tl.messages.ChatFull>() {
+                public void done(tl.messages.ChatFull result) {
+                  if (result.full_chat.id == currentPeer.chat_id) {
+                    service.userManager.store(result.users);
+                    service.chatManager.store(result.chats);
+                    currentChat = (ChatFull) result.full_chat;
+                    updateStatus();
+                  }
+                }
+                public void error(int code, String message) {
+                  
+                }
+              });
+            }
+            public void error(int code, String message) {
+            }
+          });
+        }
+      }
+      public boolean isVisible(int user_id, int index) {
+        if (currentChat == null || currentChat.participants == null) return false;
+        
+        if (currentChat.participants.admin_id == service.me.id || user_id == service.me.id) {
+          return true;
+        }
+        
+        for (TChatParticipant part : currentChat.participants.participants) {
+          if (part.user_id == user_id && part.inviter_id == service.me.id) {
+            return true;
+          }
+        }
+        
+        return false;
+      }
+    };
+    contactListRenderer.actionListener = new ContactListRenderer.ContactActionListener() {
+      public void onContactSelected(final int user_id, int index) {
+        chatMemberModel.add(user_id, true);
+          
+        TUser user = service.userManager.get(user_id);
+        service.mainServer.call(new tl.messages.AddChatUser(currentPeer.chat_id, user instanceof UserContact ? new InputUserContact(user_id) : new InputUserForeign(user_id, user.access_hash), 10), new RPCCallback<StatedMessage>() {
+          public void done(StatedMessage result) {
+            service.chatManager.store(result.chats);
+            service.userManager.store(result.users);
+            service.messageManager.store(result.message);
+            service.dialogManager.addMessage(result.message);
+            messageListModel.addMessage(result.message);
+            contactListRenderer.dropCache(user_id);
+            contactListModel.updateContents(user_id);
+            dialogListModel.updateContents();
+            restoreDialogSelection();
+            
+            service.mainServer.call(new GetFullChat(currentPeer.chat_id), new Server.RPCCallback<tl.messages.ChatFull>() {
+              public void done(tl.messages.ChatFull result) {
+                if (result.full_chat.id == currentPeer.chat_id) {
+                  service.userManager.store(result.users);
+                  service.chatManager.store(result.chats);
+                  currentChat = (ChatFull) result.full_chat;
+                  updateStatus();
+                }
+              }
+              public void error(int code, String message) {
+                
+              }
+            });
+          }
+          public void error(int code, String message) {
+          }
+        });
+      }
+
+      @Override
+      public boolean isVisible(int user_id, int index) {
+        if (currentChat == null || currentChat.participants == null) return false;
+        
+        for (TChatParticipant part : currentChat.participants.participants) {
+          if (part.user_id == user_id) {
+            return false;
+          }
+        }
+        
+        return true;
+      }
+    };
+    chatMemberList.setModel(chatMemberModel);
+    
+    TChat chat = service.chatManager.get(currentPeer.chat_id);
+    setHintedFieldText(chatTitleField, chat.title);
+    
+    //chatTitleField.requestFocusInWindow();
+  }
+
   protected void saveChat() {
     if (currentPeer == null || !(currentPeer instanceof InputPeerChat)) return;
     
@@ -901,6 +1041,11 @@ public class Main implements OnUpdateListener, TypingCallback {
     chatPanel.setVisible(false);
     dialogsBtn.setVisible(true);
     contactsBtn.setVisible(true);
+    
+    memberListRenderer.buttonText = null;
+    memberListRenderer.dropCache();
+    contactListRenderer.buttonText = null;
+    contactListRenderer.dropCache();
     
     if (contactsState) {
       contactsBtn.doClick();
@@ -958,12 +1103,119 @@ public class Main implements OnUpdateListener, TypingCallback {
     
     chatMemberModel = new ContactListModel(service, chatMemberList);
     chatMemberModel.setMissingText("Выберите участников из списка слева");
+    
+    memberListRenderer.buttonText = "удалить";
+    memberListRenderer.dropCache();
+    contactListRenderer.buttonText = "добавить";
+    contactListRenderer.dropCache();
+    memberListRenderer.actionListener = new ContactListRenderer.ContactActionListener() {
+      public void onContactSelected(final int user_id, int index) {
+        chatMemberModel.remove(index);
+        contactListRenderer.dropCache(user_id);
+        contactListModel.updateContents(user_id);
+      }
+      public boolean isVisible(int user_id, int index) {
+        return true;
+      }
+    };
+    contactListRenderer.actionListener = new ContactListRenderer.ContactActionListener() {
+      public void onContactSelected(final int user_id, int index) {
+        chatMemberModel.add(user_id, true);
+        contactListRenderer.dropCache(user_id);
+        contactListModel.updateContents(user_id);
+      }
+
+      public boolean isVisible(int user_id, int index) {
+        return !chatMemberModel.contains(user_id);
+      }
+    };
+    
     chatMemberList.setModel(chatMemberModel);
     
     chatTitleField.requestFocusInWindow();
   }
 
   protected void importContacts() {
+    importDialog.setVisible(true);
+    String filename = importDialog.getFile();
+    
+    ArrayList<String[]> contacts = new ArrayList<String[]>();
+    try {
+      BufferedReader cin = new BufferedReader(new FileReader(importDialog.getDirectory() + System.getProperty("file.separator") + importDialog.getFile()));
+      String line = cin.readLine();
+      
+      if (line != null) {
+        boolean vcf = line.trim().equals("BEGIN:VCARD") || filename.endsWith(".vcf");
+        
+        if (vcf) {
+          String phone = null;
+          String fname = "";
+          String lname = "";
+          while (true) {
+            line = cin.readLine();
+            if (line == null) break;
+            
+            if (line.trim().equals("END:VCARD")) {
+              if (phone != null) {
+                contacts.add(new String[] { phone, fname, lname });
+              }
+              phone = null;
+              fname = "";
+              lname = "";
+            } else
+            if (line.startsWith("N:")) {
+              
+              String[] comp = line.split(":", -1)[1].split(";", -1);
+              lname = comp[0];
+              fname = comp[1];
+            } else
+            if (line.startsWith("TEL:") || line.startsWith("TEL;")) {
+              String[] comp = line.split(":", -1);
+              phone = comp[1];
+            }
+          }
+        } else {
+          String[] comp = line.split(",", -1);
+          int phoneIndex = -1;
+          int fnameIndex = -1;
+          int lnameIndex = -1;
+          for (int i = 0; i < comp.length; i++) {
+            String head = comp[i].trim().toLowerCase();
+            if (head.equals("first name") || head.equals("given name")) {
+              fnameIndex = i;
+            } else
+            if (head.equals("last name") || head.equals("family name")) {
+              lnameIndex = i;
+            } else
+            if (head.equals("primary phone")) {
+              phoneIndex = i;
+            }
+          }
+          
+          if (phoneIndex > -1) {
+            while (true) {
+              line = cin.readLine();
+              if (line == null) break;
+              comp = line.split(",", -1);
+              String[] cont = new String[] { phoneIndex > -1 ? comp[phoneIndex] : "", fnameIndex > -1 ? comp[fnameIndex] : "", lnameIndex > -1 ? comp[lnameIndex] : "" };
+              
+              if (!cont[0].isEmpty()) {
+                contacts.add(cont);
+              }
+            }
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    /*for (String[] ss : contacts) {
+      System.out.println("phone: " + ss[0] + ", fn: " + ss[1] + ", ln: " + ss[2]);
+    }*/
+    if (contacts.size() > 0) {
+      importContacts(contacts);
+    }
   }
 
   protected void addContact() {
@@ -1006,6 +1258,7 @@ public class Main implements OnUpdateListener, TypingCallback {
   }
 
   private boolean preventHintUpdates = false; // Hack
+  private ContactListRenderer memberListRenderer;
   private void addHint(final JTextField field, final String hint) {
     field.setForeground(Color.LIGHT_GRAY);
     field.setText(hint);
@@ -1316,6 +1569,8 @@ public class Main implements OnUpdateListener, TypingCallback {
   @Override
   public void onUserStatus(int user_id, TUserStatus status, boolean fresh) {
     // TODO Auto-generated method stub
+    contactListRenderer.dropCache(user_id);
+    memberListRenderer.dropCache(user_id);
     contactListModel.updateContents(user_id);
     updateStatus();
   }
@@ -1323,23 +1578,23 @@ public class Main implements OnUpdateListener, TypingCallback {
   @Override
   public void onUserName(int user_id, String first_name, String last_name,
       boolean fresh) {
-    // TODO Auto-generated method stub
-    
+    contactListRenderer.dropCache(user_id);
+    memberListRenderer.dropCache(user_id);
+    contactListModel.updateContents(user_id);
   }
 
   @Override
   public void onUserPhoto(int user_id, TUserProfilePhoto photo, boolean fresh) {
-    // TODO Auto-generated method stub
-    
+    contactListRenderer.dropCache(user_id);
+    memberListRenderer.dropCache(user_id);
+    contactListModel.updateContents(user_id);
   }
 
   @Override
   public void onContactRegistered(int user_id, int date, boolean fresh) {
-    // TODO Auto-generated method stub
-    
+    contactListModel.add(user_id, true);
   }
 
-  @Override
   public void onContactLink(int user_id, TMyLink my_link,
       TForeignLink foreign_link, boolean fresh) {
     // TODO Auto-generated method stub

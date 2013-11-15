@@ -45,6 +45,6 @@ public class PQInnerData extends tl.TPQInnerData {
   }
   
   public String toString() {
-    return "(p_q_inner_data pq:" + "pq" + " p:" + "p" + " q:" + "q" + " nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " new_nonce:" + new java.math.BigInteger(new_nonce) + ")";
+    return "(p_q_inner_data pq:" + "pq" + " p:\"" + p + "\" q:\"" + q + "\" nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " new_nonce:" + new java.math.BigInteger(new_nonce) + ")";
   }
 }

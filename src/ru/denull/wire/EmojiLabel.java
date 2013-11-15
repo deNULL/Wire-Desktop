@@ -3,7 +3,13 @@ package ru.denull.wire;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
+import java.awt.font.TextAttribute;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -19,6 +25,20 @@ public class EmojiLabel extends JComponent {
   private String intro;
   private Color introColor;
   public boolean center = true;
+  public ArrayList<Link> links = new ArrayList<Link>();
+  
+  // TODO: write own regexp
+  //public static final Pattern linkRegexp = Pattern.compile("((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www\\.|[-;:&=\\+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:\\/[\\+~%\\/.\\w-_]*)?\\??(?:[-\\+=&;%@.\\w_]*)#?(?:[\\w]*))?)");
+  //public static final Pattern linkRegexp = Pattern.compile("(https:[/][/]|http:[/][/]|www.)[a-zA-Z0-9\\-\\.]+\\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\\-._?,'/\\\\+&%$#\\=~])*$");
+  
+  public class Link {
+    int st, en;
+    Rectangle bounds = null;
+    public Link(int st, int en) {
+      this.st = st;
+      this.en = en;
+    }
+  }
   
   public EmojiLabel(String text) {
     super();
@@ -30,6 +50,7 @@ public class EmojiLabel extends JComponent {
     this.text = text;
     this.author = author;
     this.authorColor = authorColor;
+    parseLinks();
   }
   
   public EmojiLabel(String text, String author, Color authorColor, String intro, Color introColor) {
@@ -39,6 +60,7 @@ public class EmojiLabel extends JComponent {
     this.authorColor = authorColor;
     this.intro = intro;
     this.introColor = introColor;
+    parseLinks();
   }
   
   public String getText() {
@@ -47,8 +69,19 @@ public class EmojiLabel extends JComponent {
   
   public void setText(String text) {
     this.text = text;
+    parseLinks();
     revalidate();
     repaint();
+  }
+  
+  private void parseLinks() {
+    /*links.clear();
+
+    text = text.trim() + "\n";
+    Matcher m = linkRegexp.matcher(text);
+    while (m.find()) {
+      links.add(new Link(m.start(), m.end() - 1));
+    }*/
   }
   
   public String getAuthor() {
@@ -131,7 +164,13 @@ public class EmojiLabel extends JComponent {
     int max = 0;
     
     Font font = getFont();
-    g.setFont(font);
+    Color fcolor = g.getColor();
+    Color lcolor = Color.decode("0x006fc8");
+    Map<TextAttribute, Object> map =
+        new Hashtable<TextAttribute, Object>();
+    map.put(TextAttribute.UNDERLINE,
+        TextAttribute.UNDERLINE_ON);
+    Font lfont = font.deriveFont(map);
     
     FontRenderContext frc = ((Graphics2D) g).getFontRenderContext();
     
@@ -142,14 +181,23 @@ public class EmojiLabel extends JComponent {
     ((Graphics2D) g).setRenderingHint(
         RenderingHints.KEY_TEXT_LCD_CONTRAST,
         100);
-    
+
     text = text.trim() + "\n";
     char[] ch = text.toCharArray();
     
     int len = ch.length;
     int lastWord = 0;
+    int linkIndex = 0;
+    boolean wasLink = false;
     for (int i = 0; i < len; i++) {
       long code = ch[i];
+      
+      while (linkIndex < links.size() && links.get(linkIndex).en < i) { // Move pointer forward
+        linkIndex++;
+      }
+      boolean withinLink = (linkIndex < links.size() && links.get(linkIndex).st <= i && links.get(linkIndex).en >= i);
+      if (i == 0) wasLink = withinLink;
+      //boolean nextLink = (linkIndex < links.size() && links.get(linkIndex).st == i + 1);
       
       Icon icon = null;
       int skip = 0;
@@ -174,8 +222,8 @@ public class EmojiLabel extends JComponent {
         skip = (i + 1 < len && ch[i + 1] == 65039) ? 1 : 0;
       }
       
-      boolean nonLetter = Character.isLetterOrDigit(ch[i]);
-      if (icon != null || !nonLetter) { // end of word
+      boolean nonLetter = Character.isLetterOrDigit(ch[i]) || withinLink;
+      if (icon != null || !nonLetter || wasLink != withinLink) { // end of word
         boolean whitespace = (icon == null) && Character.isWhitespace(ch[i]);
         boolean newLine = (icon == null) && (ch[i] == '\n');
         
@@ -197,6 +245,14 @@ public class EmojiLabel extends JComponent {
         }
         
         if (!fake && (icon == null || i > lastWord)) {
+          if (wasLink) {
+            g.setColor(lcolor);
+            //g.setFont(lfont);
+            g.drawLine(x, y + 1, x + (int) font.getStringBounds(ch, lastWord, i, frc).getWidth(), y + 1);
+          } else {
+            g.setColor(fcolor);
+            //g.setFont(font);
+          }
           g.drawChars(ch, lastWord, i - lastWord + (icon == null ? 1 : 0), x, y);
         }
         
@@ -224,6 +280,7 @@ public class EmojiLabel extends JComponent {
         
         i += skip;
       }
+      wasLink = withinLink;
     }
     
     return new Point(maxWidth == Integer.MAX_VALUE ? max : x, y);

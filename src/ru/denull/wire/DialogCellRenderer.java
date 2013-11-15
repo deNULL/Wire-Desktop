@@ -8,8 +8,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import ru.denull.mtproto.DataService;
 import ru.denull.wire.Utils;
+import ru.denull.wire.model.DialogListModel;
+import ru.denull.wire.model.MessageListModel;
+import ru.denull.wire.model.FileManager.FileLoadingCallback;
 import tl.*;
 import tl.Dialog;
+import tl.storage.TFileType;
 
 public class DialogCellRenderer implements ListCellRenderer {
   private static final long serialVersionUID = 5645361179616977L;
@@ -21,7 +25,7 @@ public class DialogCellRenderer implements ListCellRenderer {
   }
   
   private int times = 0;
-  public Component getListCellRendererComponent(JList list, Object item, int index, boolean selected, boolean focused) {
+  public Component getListCellRendererComponent(JList list, Object item, final int index, boolean selected, boolean focused) {
     if (item instanceof String) {
       JLabel label = new JLabel((String) item, SwingConstants.CENTER);
       label.setOpaque(true);
@@ -31,13 +35,14 @@ public class DialogCellRenderer implements ListCellRenderer {
       label.setBorder(new EmptyBorder(30, 4, 30, 4));    
       return label;
     }
+    final DialogListModel model = (DialogListModel) list.getModel();
     
     JPanel panel = new JPanel(new GridBagLayout());
     panel.setOpaque(true);
     //panel.setBackground(Color.decode("0xf9f9f9"));
     panel.setBackground(Color.WHITE);
     GridBagConstraints constraints;
-    Dialog dialog = (Dialog) item;
+    final Dialog dialog = (Dialog) item;
     TMessage message = service.messageManager.get(dialog.top_message);
     
     //panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -99,7 +104,18 @@ public class DialogCellRenderer implements ListCellRenderer {
       }
       
       //setupItem(convertView, tchat, user, message, activity, query);
-      service.chatManager.getImage(chat.id, iconLabel, false);
+      service.chatManager.getImage(chat.id, iconLabel, false, new FileLoadingCallback() {
+        public void fail() { }
+        public void complete(TFileType type, Object data) {
+          //cache.remove(message.id);
+          Object o = model.getSize() > index ? model.getElementAt(index) : null;
+          if (o != null && o instanceof Dialog && ((Dialog) o).peer.chat_id == dialog.peer.chat_id) {
+            model.updateContents(index);
+          } else {
+            model.updateContents();
+          }
+        }
+      });
       
       /*if (query == null) {
         title.setText(chat.title);
@@ -159,7 +175,18 @@ public class DialogCellRenderer implements ListCellRenderer {
       int user_id = dialog.peer.user_id;
       TUser user = service.userManager.get(user_id);
 
-      service.userManager.getUserpic(user_id, iconLabel, false);
+      service.userManager.getUserpic(user_id, iconLabel, false, new FileLoadingCallback() {
+        public void fail() { }
+        public void complete(TFileType type, Object data) {
+          //cache.remove(message.id);
+          Object o = model.getSize() > index ? model.getElementAt(index) : null;
+          if (o != null && o instanceof Dialog && ((Dialog) o).peer.user_id == dialog.peer.user_id) {
+            model.updateContents(index);
+          } else {
+            model.updateContents();
+          }
+        }
+      });
       
       JLabel titleLabel = new JLabel((user instanceof UserEmpty) ? "" : (user.first_name + " " + user.last_name).trim());
       titleLabel.setFont(new Font(Utils.fontName, Font.PLAIN, 14));

@@ -112,7 +112,18 @@ public class MessageCellRenderer implements ListCellRenderer {
           
           panel.add(photoPanel, MessageLayout.PHOTO);
           
-          service.userManager.getUserpic(message.from_id, photoPanel, false);
+          service.userManager.getUserpic(message.from_id, photoPanel, false, new FileLoadingCallback() {
+            public void fail() { }
+            public void complete(TFileType type, Object data) {
+              cache.remove(message.id);
+              Object o = model.getSize() > index ? model.getElementAt(index) : null;
+              if (o != null && o instanceof TMessage && ((TMessage) o).id == message.id) {
+                model.updateContents(index);
+              } else {
+                model.updateContents();
+              }
+            }
+          });
         }
       }
       if (message.media instanceof MessageMediaEmpty) {
@@ -149,6 +160,7 @@ public class MessageCellRenderer implements ListCellRenderer {
           forwName = "Пересланное сообщение\n" + forw.first_name + " " + forw.last_name;
         }
         EmojiLabel bodyLabel = new EmojiLabel(message.message, fromName, fromColor, forwName, forwColor);
+        bodyLabel.setForeground(Color.DARK_GRAY);
         
         JPanel bodyPanel = new JPanel(new BorderLayout());
         bodyPanel.setOpaque(false);

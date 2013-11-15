@@ -24,6 +24,7 @@ public class Message {
 	}
 	
 	public ByteBuffer encrypt(byte[] auth_key) throws Exception {
+    //System.out.println("sending raw " + payload);
 		if (error != 0) {
 			return ByteBuffer.allocateDirect(4).putInt(-error);
 		}

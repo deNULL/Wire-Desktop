@@ -45,6 +45,6 @@ public class ReqDHParams extends tl.TServerDHParams {
   }
   
   public String toString() {
-    return "(req_DH_params nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " p:" + "p" + " q:" + "q" + " public_key_fingerprint:" + String.format("0x%016x", public_key_fingerprint) + " encrypted_data:" + TL.toString(encrypted_data) + ")";
+    return "(req_DH_params nonce:" + new java.math.BigInteger(nonce) + " server_nonce:" + new java.math.BigInteger(server_nonce) + " p:\"" + p + "\" q:\"" + q + "\" public_key_fingerprint:" + String.format("0x%016x", public_key_fingerprint) + " encrypted_data:" + TL.toString(encrypted_data) + ")";
   }
 }

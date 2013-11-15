@@ -91,6 +91,10 @@ public class DialogListModel extends AbstractListModel {
   public void updateContents() {
     fireContentsChanged(this, 0, getSize() - 1);
   }
+
+  public void updateContents(int index) {
+    fireContentsChanged(this, index, index);
+  }
   
   public void reloadDialogs() {
     boolean force = true;

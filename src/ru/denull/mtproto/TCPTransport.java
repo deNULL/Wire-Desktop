@@ -16,7 +16,7 @@ public class TCPTransport extends Transport {
 		packetIndex = 0;
 	}
 
-	public void send(ByteBuffer packet) throws Exception {
+	synchronized public void send(ByteBuffer packet) throws Exception {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(packet.capacity() + 12);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
     
