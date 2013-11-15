@@ -875,15 +875,15 @@ public class Utils {
     return constr;
   }
 
-  public static String num(int n, String[] cs, boolean append) {
-    n = n % 100;
+  public static String num(int num, String[] cs, boolean append) {
+    int n = num % 100;
     if ((n % 10 == 0) || (n % 10 > 4) || (n > 4 && n < 21)) {
-      return (append ? n : "") + cs[2];
+      return (append ? num : "") + cs[2];
     } else
     if (n % 10 == 1) {
-      return (append ? n : "") + cs[0];
+      return (append ? num : "") + cs[0];
     } else {
-      return (append ? n : "") + cs[1];
+      return (append ? num : "") + cs[1];
     }
   }
 

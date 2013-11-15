@@ -311,8 +311,8 @@ public class Main implements OnUpdateListener, TypingCallback {
     searchField.putClientProperty("JTextField.variant", "search");
     //searchField.putClientProperty("JTextField.Search.Prompt", "Найти...");
     searchField.setAlignmentY(Component.CENTER_ALIGNMENT);
-    searchField.setPreferredSize(new Dimension(0, 30));
-    searchField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+    searchField.setPreferredSize(new Dimension(0, 26));
+    searchField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 26));
     searchField.getDocument().addDocumentListener(new DocumentListener() {
       public void removeUpdate(DocumentEvent e) {
         String query = searchField.getForeground().equals(Color.LIGHT_GRAY) ? null : searchField.getText();
@@ -343,8 +343,9 @@ public class Main implements OnUpdateListener, TypingCallback {
     dialogsBtn.putClientProperty("JButton.segmentPosition", "first");
     dialogsBtn.setFocusable(false);
     dialogsBtn.setSelected(true);
-    dialogsBtn.setPreferredSize(new Dimension(32, 14));
-    dialogsBtn.setMinimumSize(new Dimension(32, 14));
+    dialogsBtn.setPreferredSize(new Dimension(32, 24));
+    dialogsBtn.setMinimumSize(new Dimension(32, 24));
+    dialogsBtn.setMaximumSize(new Dimension(32, 24));
     //dialogsBtn.setIcon(new ImageIcon(Utils.getImage("dialogs_up.png")));
     //dialogsBtn.setSelectedIcon(new ImageIcon(Utils.getImage("dialogs_down.png")));
     dialogsBtn.setIcon(new ImageIcon(Utils.getImage("chats.png")));
@@ -371,8 +372,9 @@ public class Main implements OnUpdateListener, TypingCallback {
     contactsBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
     contactsBtn.putClientProperty("JButton.segmentPosition", "last");
     contactsBtn.setFocusable(false);
-    contactsBtn.setPreferredSize(new Dimension(32, 14));
-    contactsBtn.setMinimumSize(new Dimension(32, 14));
+    contactsBtn.setPreferredSize(new Dimension(32, 24));
+    contactsBtn.setMinimumSize(new Dimension(32, 24));
+    contactsBtn.setMaximumSize(new Dimension(32, 24));
     //contactsBtn.setIcon(new ImageIcon(Utils.getImage("contacts_up.png")));
     //contactsBtn.setSelectedIcon(new ImageIcon(Utils.getImage("contacts_down.png")));
     contactsBtn.setIcon(new ImageIcon(Utils.getImage("contacts.png")));
@@ -411,13 +413,13 @@ public class Main implements OnUpdateListener, TypingCallback {
     dialogList.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         if (dialogList.getSelectedIndex() > -1) {
-          /*if (chatPanel.isVisible()) {
-            if (contactListModel.isEmpty()) return;
+          if (chatPanel.isVisible()) {
+            /*if (contactListModel.isEmpty()) return;
             
             chatMemberModel.add((Integer) contactListModel.getElementAt(dialogList.getSelectedIndex()), true);
             chatActionBtn.setEnabled(!chatTitleField.getForeground().equals(Color.LIGHT_GRAY) && !chatTitleField.getText().isEmpty() && !chatMemberModel.isEmpty());
-            //dialogList.clearSelection();
-          } else*/
+            //dialogList.clearSelection();*/
+          } else
           if (dialogsBtn.isSelected()) {
             if (dialogListModel.isEmpty()) return;
             
@@ -450,14 +452,14 @@ public class Main implements OnUpdateListener, TypingCallback {
     actionPanel.setBackground(Color.decode("0xf9f9f9"));
     actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.X_AXIS));
     listPanel.add(actionPanel, BorderLayout.SOUTH);
-    actionPanel.add(Box.createRigidArea(new Dimension(4, 40)));
+    actionPanel.add(Box.createRigidArea(new Dimension(6, 40)));
     
     actionBtn = new JButton("Групповой чат...");
-    actionBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
+    actionBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 28));
     actionBtn.setFocusable(false);
-    actionBtn.putClientProperty("JButton.buttonType", "gradient");
-    //actionBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
-    //actionBtn.putClientProperty("JButton.segmentPosition", "only");
+    //actionBtn.putClientProperty("JButton.buttonType", "roundRect");
+    actionBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
+    actionBtn.putClientProperty("JButton.segmentPosition", "only");
     actionBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (chatPanel.isVisible()) {
@@ -472,7 +474,7 @@ public class Main implements OnUpdateListener, TypingCallback {
       }
     });
     actionPanel.add(actionBtn);
-    actionPanel.add(Box.createRigidArea(new Dimension(4, 40)));
+    actionPanel.add(Box.createRigidArea(new Dimension(6, 40)));
     
     JLayeredPane layeredPane = new JLayeredPane();
     layeredPane.setLayout(new OverlayLayout(layeredPane));
@@ -610,7 +612,7 @@ public class Main implements OnUpdateListener, TypingCallback {
       public int getScrollableUnitIncrement(Rectangle visibleRect,
           int orientation, int direction) {
         //return super.getScrollableUnitIncrement(visibleRect, orientation, direction);
-        return 20;
+        return 30;
       }
 
       @Override
@@ -749,12 +751,12 @@ public class Main implements OnUpdateListener, TypingCallback {
     chatActionPanel.setBackground(Color.decode("0xf9f9f9"));
     chatActionPanel.setLayout(new BoxLayout(chatActionPanel, BoxLayout.X_AXIS));
     chatPanel.add(chatActionPanel, BorderLayout.SOUTH);
-    chatActionPanel.add(Box.createRigidArea(new Dimension(4, 40)));
+    chatActionPanel.add(Box.createRigidArea(new Dimension(6, 40)));
     
     chatActionBtn = new JButton("Создать чат");
-    chatActionBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
+    chatActionBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 28));
     chatActionBtn.setFocusable(false);
-    chatActionBtn.putClientProperty("JButton.buttonType", "gradient");
+    //chatActionBtn.putClientProperty("JButton.buttonType", "gradient");
     //actionBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
     //actionBtn.putClientProperty("JButton.segmentPosition", "only");
     chatActionBtn.addActionListener(new ActionListener() {
@@ -767,7 +769,7 @@ public class Main implements OnUpdateListener, TypingCallback {
       }
     });
     chatActionPanel.add(chatActionBtn);
-    chatActionPanel.add(Box.createRigidArea(new Dimension(4, 40)));
+    chatActionPanel.add(Box.createRigidArea(new Dimension(6, 40)));
     
     chatTitleField.getDocument().addDocumentListener(new DocumentListener() {
       public void removeUpdate(DocumentEvent e) {
@@ -796,7 +798,7 @@ public class Main implements OnUpdateListener, TypingCallback {
       public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
           String message = messageField.getText();
-          if (currentPeer != null && message.length() > 0) {
+          if (currentPeer != null && message.length() > 0 && !messageField.getForeground().equals(Color.LIGHT_GRAY)) {
             sendMessage(message, currentPeer);
             messageField.setText("");
           }

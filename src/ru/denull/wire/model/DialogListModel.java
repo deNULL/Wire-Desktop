@@ -109,7 +109,7 @@ public class DialogListModel extends AbstractListModel {
     if (!force && service.dialogManager.total > -1 && service.dialogManager.loaded.size() >= service.dialogManager.total) return;
     
     service.dialogManager.loading = true;
-    service.mainServer.call(new GetDialogs(cachedData ? 0 : service.dialogManager.loaded.size(), 0, 30), new RPCCallback<TDialogs>() {
+    service.mainServer.call(new GetDialogs(cachedData ? 0 : service.dialogManager.loaded.size(), 0, 100), new RPCCallback<TDialogs>() {
       public void done(TDialogs result) {
         if (result instanceof Dialogs) {
           Dialogs dialogs = (Dialogs) result;
