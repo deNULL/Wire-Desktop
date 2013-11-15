@@ -95,7 +95,7 @@ public class MessageLayout implements LayoutManager2 {
     
     if (actions != null) {
       actions.setSize(actions.getPreferredSize());
-      actions.setLocation(leftSide ? (pos - actionsMargin) : (size.width - pos - actionsMargin - actions.getWidth()), insets.top + (size.height - insets.top - insets.bottom - actions.getHeight()) / 2);
+      actions.setLocation(leftSide ? (pos + actionsMargin) : (size.width - pos - actionsMargin - actions.getWidth()), insets.top + (size.height - insets.top - insets.bottom - actions.getHeight()) / 2);
     }
     
     //container.setSize(size.width, insets.left + insets.right + getMaximumHeight(size.width));

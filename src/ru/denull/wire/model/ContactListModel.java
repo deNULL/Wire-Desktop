@@ -12,9 +12,7 @@ import ru.denull.mtproto.Server.RPCCallback;
 import ru.denull.wire.Utils;
 import tl.*;
 import tl.TMessage;
-import tl.contacts.Contacts;
-import tl.contacts.GetContacts;
-import tl.contacts.TContacts;
+import tl.contacts.*;
 import tl.messages.*;
 
 public class ContactListModel extends AbstractListModel {
@@ -31,7 +29,7 @@ public class ContactListModel extends AbstractListModel {
   ArrayList<Integer> items = new ArrayList<Integer>();
   ArrayList<Integer> filtered = null;
   String filterQuery = null;
-  String missingText = "<html>У вас нет ни одного контакта.<br/>Вы можете импортировать их в меню «Контакты».</html>";
+  String missingText = "<html><center>У вас нет ни одного контакта.<br/>Вы можете импортировать их в меню «Контакты».</center></html>";
   
   public ContactListModel(DataService service, JList list) {
     this.service = service;
@@ -112,6 +110,7 @@ public class ContactListModel extends AbstractListModel {
         }
       }
     }
+    service.contactManager.store(user_id, -user_id, false);
     
     items.add(user_id);
     sort();
@@ -123,6 +122,17 @@ public class ContactListModel extends AbstractListModel {
     
     for (TChatParticipant part : participants) {
       items.add(part.user_id);
+      service.contactManager.store(part.user_id, -part.user_id, false);
+    }
+    sort();
+    filter(filterQuery, true);
+  }
+
+  public void add(ImportedContacts result) {
+    service.userManager.store(result.users);
+    for (TImportedContact contact : result.imported) {
+      items.add(contact.user_id);
+      service.contactManager.store(contact.user_id, -contact.user_id, false);
     }
     sort();
     filter(filterQuery, true);

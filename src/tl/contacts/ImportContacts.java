@@ -31,7 +31,7 @@ public class ImportContacts extends tl.TLFunction {
   }
   
   public int length() throws Exception {
-    return 12 + TL.length(contacts);
+    return 12 + TL.length(contacts, true);
   }
   
   public String toString() {

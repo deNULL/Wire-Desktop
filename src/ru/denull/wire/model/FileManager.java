@@ -103,6 +103,7 @@ public class FileManager {
     public ArrayList<FileLoadingCallback> callbacks = new ArrayList<FileLoadingCallback>();
     public ArrayList<WeakReference<ImagePanel>> views = new ArrayList<WeakReference<ImagePanel>>();
     
+    public String filename;
     
     public FileLoadingJob(FileManager manager, long id, int dc_id, TInputFileLocation location) {
       this(manager, id, dc_id, location, false, 0);
@@ -114,22 +115,26 @@ public class FileManager {
       this(manager, id, dc_id, location, diskOnly, 0);
     }
     public FileLoadingJob(FileManager manager, long id, int dc_id, TInputFileLocation location, boolean diskOnly, int size) {
+      this(manager, id, dc_id, location, diskOnly, size, null);
+    }
+    public FileLoadingJob(FileManager manager, long id, int dc_id, TInputFileLocation location, boolean diskOnly, int size, String filename) {
       this.manager = manager;
       this.id = id;
       this.dc_id = dc_id;
       this.location = location;
       this.diskOnly = diskOnly;
       this.size = size;
+      this.filename = (filename == null) ? (cacheDir + System.getProperty("file.separator") + "file" + Long.toHexString(id) + ".dat") : filename;
     }
     public void start() {
       state = LOADING;
       manager.activeJobs++;
       
+      
       // check disk first
-      final String filename = "file" + Long.toHexString(id) + ".dat";
       service.threadPool.submit(new Runnable() {
         public void run() {
-          cached = new File(cacheDir, filename);
+          cached = new File(filename);
           if (cached.exists()) {
             try {
               byte[] data = null;
@@ -474,6 +479,13 @@ public class FileManager {
       setState(id, (state & ~mask) | bits);
     }
   }
+  
+  public boolean queryFile(Object location, String filename) {
+    return query(location, null, null, 0, filename);
+  }
+  public boolean queryFile(Object location, FileLoadingCallback callback, String filename) {
+    return query(location, callback, null, 0, filename);
+  }
 
   // objects can be fetched from 3 places: instantly from memory (loaded), quickly (but async) from file cache, slowly (async) from web
   // Object is either TFileLocation or TVideo
@@ -483,6 +495,9 @@ public class FileManager {
     return query(location, callback, null, 0);
   }
   public boolean query(Object location, FileLoadingCallback callback, ImagePanel view, int size) {
+    return query(location, callback, view, size, null);
+  }
+  public boolean query(Object location, FileLoadingCallback callback, ImagePanel view, int size, String filename) {
     long id = 0;
     int dc_id = 0;
     TInputFileLocation ilocation = null;
@@ -532,6 +547,16 @@ public class FileManager {
             query(location, callback, view, size);
           }
         }
+        
+        if (filename != null) {
+          try {
+            FileOutputStream fos = new FileOutputStream(new File(filename));
+            fos.write((byte[]) cached.getObjectValue());
+            fos.close();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
         return true;
       }
       
@@ -553,7 +578,7 @@ public class FileManager {
     // join existing job or start a new one
     FileLoadingJob job = progress.get(id);
     if (job == null) {
-      job = new FileLoadingJob(this, id, dc_id, ilocation, location instanceof Video, size);
+      job = new FileLoadingJob(this, id, dc_id, ilocation, (location instanceof Video) || (filename != null), size, filename);
       progress.put(id, job);
       queue.add(job);
     }

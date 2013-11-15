@@ -19,6 +19,7 @@ import java.awt.dnd.*;
 import java.awt.event.*;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Random;
 import java.util.prefs.BackingStoreException;
@@ -33,6 +34,17 @@ import javax.swing.AbstractListModel;
 
 
 import javax.swing.JButton;
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -56,8 +68,7 @@ import tl.ChatFull;
 import tl.Message;
 import tl.TChat;
 import tl.TMessage;
-import tl.contacts.TForeignLink;
-import tl.contacts.TMyLink;
+import tl.contacts.*;
 import tl.messages.*;
 
 public class Main implements OnUpdateListener, TypingCallback {
@@ -74,7 +85,7 @@ public class Main implements OnUpdateListener, TypingCallback {
   private MessageListModel messageListModel;
   private DialogListModel dialogListModel;
   private DialogCellRenderer dialogListRenderer;
-  private ContactListModel contactListModel;
+  static public ContactListModel contactListModel;
   private ContactListRenderer contactListRenderer;
   private JTextField messageField;
   private JToggleButton dialogsBtn;
@@ -82,6 +93,7 @@ public class Main implements OnUpdateListener, TypingCallback {
   
   final JFileChooser fc = new JFileChooser();
   FileDialog fd;
+  public static FileDialog saveDialog;
   private JPanel sendPanel;
   public static int currentMods = 0;
   private JButton actionBtn;
@@ -210,6 +222,7 @@ public class Main implements OnUpdateListener, TypingCallback {
     frame.setTitle("Wire"); 
     
     fd = new FileDialog(frame, "Выберите изображения или видеозаписи для загрузки", FileDialog.LOAD);
+    saveDialog = new FileDialog(frame, "Сохранить как...", FileDialog.SAVE);
     /*try {
       fd.getClass().getMethod("setMultipleMode", new Class[] { Boolean.class } ).invoke(fd, true);
     } catch (Exception e1) {
@@ -538,11 +551,63 @@ public class Main implements OnUpdateListener, TypingCallback {
     titleActionBtn.setFocusable(false);
     titleActionBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
     titleActionBtn.putClientProperty("JButton.segmentPosition", "only");
+    titleActionBtn.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (currentPeer != null) {
+          if (currentPeer instanceof InputPeerChat) {
+            TChat chat = service.chatManager.get(currentPeer.chat_id);
+            if (!(chat instanceof ChatForbidden) && chat.left) {
+              service.mainServer.call(new tl.messages.AddChatUser(currentPeer.chat_id, new InputUserSelf(), 20), new RPCCallback<StatedMessage>() {
+                public void done(StatedMessage result) {
+                  service.chatManager.store(result.chats);
+                  service.userManager.store(result.users);
+                  service.messageManager.store(result.message);
+                  service.dialogManager.addMessage(result.message);
+                  messageListModel.addMessage(result.message);
+                  dialogListModel.updateContents();
+                  restoreDialogSelection();
+                  
+                  titleInfoBtn.setVisible(true);
+                  titleActionBtn.setText("покинуть чат");
+                  sendPanel.setVisible(true);
+                }
+                public void error(int code, String message) {
+                }
+              });
+            } else
+            if (JOptionPane.showOptionDialog(frame, "Покинув чат, вы не сможете вернуться в него обратно.", "Подтвердите действие", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new String[] { "Отмена", "Выйти из чата" }, "Отмена") == 1) {
+              //System.out.println("leaving");
+              titleActionBtn.setVisible(false);
+              sendPanel.setVisible(false);
+              
+              service.mainServer.call(new tl.messages.DeleteChatUser(currentPeer.chat_id, new InputUserSelf()), new RPCCallback<StatedMessage>() {
+                public void done(StatedMessage result) {
+                  service.chatManager.store(result.chats);
+                  service.userManager.store(result.users);
+                  service.messageManager.store(result.message);
+                  service.dialogManager.addMessage(result.message);
+                  messageListModel.addMessage(result.message);
+                  dialogListModel.updateContents();
+                  restoreDialogSelection();
+                  
+                  titleActionBtn.setVisible(!(service.chatManager.get(currentPeer.chat_id) instanceof ChatForbidden));
+                  titleActionBtn.setText("вернуться в чат");
+                }
+                public void error(int code, String message) {
+                }
+              });
+            }
+          } else {
+            //
+          }
+        }
+      }
+    });
     titlePanel.add(titleActionBtn, Utils.GBConstraints(4, 0, 1, 2));
     
     titlePanel.add(Box.createRigidArea(new Dimension(6, 40)), Utils.GBConstraints(5, 0, 1, 2));
     
-    messageList = new JList() {
+    messageList = new InteractiveList() {
       public boolean getScrollableTracksViewportWidth() {
         return true;
       }
@@ -665,7 +730,7 @@ public class Main implements OnUpdateListener, TypingCallback {
         return true;
       }
     };
-    chatMemberList.setBackground(Color.decode("0xf9f9f9"));
+    chatMemberList.setBackground(Color.WHITE);
     //dialogList.setBorder(UIManager.getBorder("List.sourceListBackgroundPainter"));
     chatMemberList.setCellRenderer(contactListRenderer);
     chatMemberList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -700,7 +765,11 @@ public class Main implements OnUpdateListener, TypingCallback {
     //actionBtn.putClientProperty("JButton.segmentPosition", "only");
     chatActionBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        doCreateChat();
+        if (currentPeer != null && (currentPeer instanceof InputPeerChat) && titleInfoBtn.isSelected()) {
+          saveChat();
+        } else {
+          doCreateChat();
+        }
       }
     });
     chatActionPanel.add(chatActionBtn);
@@ -793,6 +862,32 @@ public class Main implements OnUpdateListener, TypingCallback {
     }
   }
   
+  protected void saveChat() {
+    if (currentPeer == null || !(currentPeer instanceof InputPeerChat)) return;
+    
+    final String title = chatTitleField.getText();
+    if (title.length() == 0) return;
+    chatActionBtn.setEnabled(false);
+    
+    service.mainServer.call(new tl.messages.EditChatTitle(currentPeer.chat_id, title), new RPCCallback<StatedMessage>() {
+
+      public void done(final StatedMessage result) {
+        service.chatManager.store(result.chats);
+        service.userManager.store(result.users);
+        service.messageManager.store(result.message);
+        service.dialogManager.addMessage(result.message);
+        messageListModel.addMessage(result.message);
+        dialogListModel.updateContents();
+        titleLabel.setText(title);
+        cancelCreateChat();
+      }
+
+      public void error(int code, String message) {
+        //
+      }
+    });
+  }
+
   private boolean contactsState;
   private JButton chatActionBtn;
   private JList chatMemberList;
@@ -872,6 +967,42 @@ public class Main implements OnUpdateListener, TypingCallback {
   }
 
   protected void addContact() {
+    JTextField phoneField = new JTextField(16);
+    phoneField.setText("+7");
+    phoneField.setCaretPosition(2);
+    JTextField firstField = new JTextField(16);
+    JTextField lastField = new JTextField(16);
+
+    JPanel myPanel = new JPanel();
+    GridBagConstraints constraints;
+    myPanel.setMaximumSize(new Dimension(200, Integer.MAX_VALUE));
+    myPanel.setLayout(new GridBagLayout());
+    JLabel label = new JLabel("<html>Укажите телефон и имя нового контакта. Если он уже зарегистрирован в Telegram, он будет добавлен в ваш список контактов.</html>");
+    label.setMaximumSize(new Dimension(320, Integer.MAX_VALUE));
+    label.setPreferredSize(new Dimension(320, 70));
+    myPanel.add(label, Utils.GBConstraints(0, 0, 2, 1));
+    constraints = Utils.GBConstraints(0, 1);
+    constraints.anchor = GridBagConstraints.LINE_END;
+    myPanel.add(new JLabel("Телефон:"), constraints);
+    myPanel.add(phoneField, Utils.GBConstraints(1, 1));
+    constraints = Utils.GBConstraints(0, 2);
+    constraints.anchor = GridBagConstraints.LINE_END;
+    myPanel.add(new JLabel("Имя:"), constraints);
+    myPanel.add(firstField, Utils.GBConstraints(1, 2));
+    constraints = Utils.GBConstraints(0, 3);
+    constraints.anchor = GridBagConstraints.LINE_END;
+    myPanel.add(new JLabel("Фамилия:"), constraints);
+    myPanel.add(lastField, Utils.GBConstraints(1, 3));
+
+    phoneField.addAncestorListener(new RequestFocusListener());
+    int result = JOptionPane.showConfirmDialog(frame, myPanel, 
+             "Добавление контакта", JOptionPane.OK_CANCEL_OPTION);
+    if (result == JOptionPane.OK_OPTION) {
+      ArrayList<String[]> list = new ArrayList<String[]>();
+      list.add(new String[] { phoneField.getText(), firstField.getText(), lastField.getText() });
+      importContacts(list);
+    }
+
   }
 
   private boolean preventHintUpdates = false; // Hack
@@ -988,7 +1119,7 @@ public class Main implements OnUpdateListener, TypingCallback {
         restoreDialogSelection();
         dialogList.repaint();
         messageListModel.updateContentsID(result.id);
-      }
+      } 
       public void error(int code, String message) {
         newmsg.failed = true;
       }
@@ -1022,11 +1153,11 @@ public class Main implements OnUpdateListener, TypingCallback {
     messageList.setModel(messageListModel);
     messageList.setCellRenderer(new MessageCellRenderer(service, peer));
     
-    sendPanel.setVisible(true);
     
     if (peer instanceof InputPeerChat) {
       int chat_id = peer.chat_id;
       TChat chat = service.chatManager.get(chat_id);
+      //System.out.println(chat);
       service.chatManager.getImage(chat_id, titleIcon, false);
       
       titleLabel.setText(chat.title.trim());
@@ -1046,7 +1177,11 @@ public class Main implements OnUpdateListener, TypingCallback {
       });
 
       titleInfoBtn.setText("управление...");
-      titleActionBtn.setText("покинуть чат");
+      titleActionBtn.setText(chat.left ? "вернуться в чат" : "покинуть чат");
+      titleActionBtn.setVisible(!(chat instanceof ChatForbidden));
+
+      sendPanel.setVisible(!(chat instanceof ChatForbidden) && !chat.left);
+      titleInfoBtn.setVisible(!(chat instanceof ChatForbidden) && !chat.left);
     } else {
       int user_id = peer.user_id;
       TUser user = service.userManager.get(user_id);
@@ -1055,7 +1190,11 @@ public class Main implements OnUpdateListener, TypingCallback {
       titleLabel.setText((user.first_name + " " + user.last_name).trim());
       
       titleInfoBtn.setText("информация...");
+      titleInfoBtn.setVisible(true);
       titleActionBtn.setText("поделиться контактом");
+      titleActionBtn.setVisible(true);
+
+      sendPanel.setVisible(true);
     }
     currentChat = null;
     updateStatus();
@@ -1364,5 +1503,23 @@ public class Main implements OnUpdateListener, TypingCallback {
         (!(currentPeer instanceof InputPeerChat) && currentPeer.chat_id == peer_id)) {
       updateStatus();
     }
+  }
+  
+  public void importContacts(ArrayList<String[]> contacts) {
+    TInputContact[] arr = new TInputContact[contacts.size()];
+    for (int i = 0; i < contacts.size(); i++) {
+      String[] contact = contacts.get(i);
+      arr[i] = new InputPhoneContact(i, contact[0], contact[1], contact[2]);
+    }
+    
+    service.mainServer.call(new tl.contacts.ImportContacts(arr, false), new Server.RPCCallback<ImportedContacts>() {
+      public void done(ImportedContacts result) {
+        contactListModel.add(result);
+      }
+
+      @Override
+      public void error(int code, String message) {
+      }
+    });
   }
 }

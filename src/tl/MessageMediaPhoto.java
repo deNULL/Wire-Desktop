@@ -79,6 +79,24 @@ public class MessageMediaPhoto extends tl.TMessageMedia {
   }
   
   public TFileLocation getFullsize() {
-    return getLocation("x"); // TODO: select appropriate resolution
+    TFileLocation x = getLocation("x");
+    if (x == null) x = getLocation("m");
+    if (x == null) x = getLocation("c");
+    if (x == null) x = getLocation("b");
+    if (x == null) x = getLocation("y");
+    if (x == null) x = getLocation("s");
+    return x;
+  }
+
+  public TFileLocation getMaxsize() {
+    TFileLocation loc = null;
+    int width = -1;
+    for (TPhotoSize size : ((Photo) photo).sizes) {
+      if (size.w > width) {
+        width = size.w;
+        loc = size.location;
+      }
+    }
+    return loc;
   }
 }

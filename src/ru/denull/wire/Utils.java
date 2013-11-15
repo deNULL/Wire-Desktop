@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -539,7 +540,11 @@ public class Utils {
     } else if (action instanceof MessageActionChatAddUser) {
       TUser mentioned = service.userManager.get(((MessageActionChatAddUser) action).user_id);
       boolean self = (user.id == mentioned.id);
-      actionDesc = "пригласил" + ending + " " + (mentioned instanceof UserSelf ? (self ? "себя" : "вас") : (self ? "себя" : (mentioned.first_name + " " + mentioned.last_name)));
+      if (self) {
+        actionDesc = (user instanceof UserSelf ? "вернулись" : "вернулся") + " в чат";
+      } else {
+        actionDesc = "пригласил" + ending + " " + (mentioned instanceof UserSelf ? (self ? "себя" : "вас") : (self ? "себя" : (mentioned.first_name + " " + mentioned.last_name)));
+      }
     } else if (action instanceof MessageActionChatDeleteUser) {
       TUser mentioned = service.userManager.get(((MessageActionChatDeleteUser) action).user_id);
       boolean self = (user.id == mentioned.id);
@@ -871,6 +876,17 @@ public class Utils {
       return new InputUserForeign(user.id, user.access_hash);
     } else {
       return new InputUserContact(user.id);
+    }
+  }
+  
+  public static void openWebpage(URI uri) {
+    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+      try {
+        desktop.browse(uri);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 }

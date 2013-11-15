@@ -3,10 +3,11 @@ package ru.denull.wire;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
@@ -16,11 +17,13 @@ import javax.swing.text.Document;
 import javax.swing.text.View;
 
 import ru.denull.mtproto.DataService;
+import ru.denull.mtproto.Server;
 import ru.denull.wire.model.FileManager;
 import ru.denull.wire.model.MessageListModel;
 import ru.denull.wire.model.FileManager.FileLoadingCallback;
 import tl.*;
 import tl.Dialog;
+import tl.contacts.ImportedContacts;
 import tl.storage.TFileType;
 
 public class MessageCellRenderer implements ListCellRenderer {
@@ -35,7 +38,6 @@ public class MessageCellRenderer implements ListCellRenderer {
   
   public Component getListCellRendererComponent(final JList list, Object item, final int index, boolean selected, boolean focused) {
     GridBagConstraints constr;
-    
     final MessageListModel model = (MessageListModel) list.getModel();
     final long modelState = model.getState();
     
@@ -67,6 +69,7 @@ public class MessageCellRenderer implements ListCellRenderer {
       Component comp = cache.get(message.id);
       
       if (comp != null) {
+        //System.out.println("returned " + message.id + ": " + comp);
         return comp;
       }
       
@@ -175,6 +178,8 @@ public class MessageCellRenderer implements ListCellRenderer {
           maxw = Math.max(maxw, size.w);
           maxh = Math.max(maxh, size.h);
         }
+        final int _maxw = maxw;
+        final int _maxh = maxh;
         if (message.preview != null) { // uploading photo
           thumbnail = message.preview;
           
@@ -193,7 +198,8 @@ public class MessageCellRenderer implements ListCellRenderer {
         }
         thumbPanel.setMaximumSize(new Dimension(maxw, maxh));
         
-        TFileLocation location = media.getFullsize();
+        final TFileLocation location = media.getFullsize();
+        final TFileLocation hires = media.getMaxsize();
         int state = service.fileManager.getState(location);
         JProgressBar progressBar;
         switch (state & FileManager.STATE_LOADING_MASK) {
@@ -232,11 +238,50 @@ public class MessageCellRenderer implements ListCellRenderer {
           thumbPanel.setImage(thumbnail);
           break;
         case FileManager.STATE_COMPLETE:
-          JButton openBtn = new JButton("Открыть");
-          service.fileManager.queryImage(location, thumbPanel);
-          //panel.add(openBtn, MessageLayout.ACTIONS);
+          service.fileManager.queryImage(location, thumbPanel);          
           break;
         }
+        
+        JPanel actionPanel = new JPanel();
+        actionPanel.setBackground(Color.decode("0xdfe8ef"));
+        actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.X_AXIS));
+        
+        JButton openBtn = new JButton("открыть");
+        //openBtn.setFont(new Font(Utils.fontName, Font.PLAIN, 11));
+        openBtn.setForeground(Color.DARK_GRAY);
+        openBtn.putClientProperty("JButton.buttonType", "roundRect");
+        openBtn.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            JFrame frame = new JFrame("Просмотр");
+            ImagePanel panel = new ImagePanel();
+            //panel.setPreferredSize(new Dimension(_maxw, _maxh));
+            service.fileManager.queryImage(hires, panel);
+            frame.getContentPane().add(panel, BorderLayout.CENTER);
+            frame.setSize(_maxw, _maxh);
+            frame.setVisible(true);
+          }
+        });
+        actionPanel.add(openBtn);
+        
+        actionPanel.add(Box.createRigidArea(new Dimension(2, 0)));
+        
+        JButton saveBtn = new JButton("сохранить...");
+        //openBtn.setFont(new Font(Utils.fontName, Font.PLAIN, 11));
+        saveBtn.setForeground(Color.DARK_GRAY);
+        saveBtn.putClientProperty("JButton.buttonType", "roundRect");
+        saveBtn.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            Main.saveDialog.setFile("photo.jpg");
+            Main.saveDialog.setVisible(true);
+            String filename = Main.saveDialog.getFile();
+            if (filename != null) {
+              service.fileManager.queryFile(hires, Main.saveDialog.getDirectory() + System.getProperty("file.separator") + Main.saveDialog.getFile());
+            }
+          }
+        });
+        actionPanel.add(saveBtn);
+        
+        panel.add(actionPanel, MessageLayout.ACTIONS);
         
         /*Button btnLoad = ViewHolder.get(convertView, R.id.btn_load);
         btnLoad.setTag(message);
@@ -274,11 +319,28 @@ public class MessageCellRenderer implements ListCellRenderer {
             new NinePatchBorder(Utils.getImage("msg_in.png"), 4, 13, 31, 4, 4, 13, 4, 4));
         panel.add(thumbPanel, MessageLayout.BODY);
         
-        Video video = (Video) media.video;
+        final Video video = (Video) media.video;
         thumbPanel.setImage(media.getThumbnail());
+        thumbPanel.setBackground(Color.BLACK);
         
         thumbPanel.setPreferredSize(getOptimalSize(video.w, video.h));
         thumbPanel.setMaximumSize(new Dimension(video.w, video.h));
+        
+        JButton saveBtn = new JButton("сохранить...");
+        //openBtn.setFont(new Font(Utils.fontName, Font.PLAIN, 11));
+        saveBtn.setForeground(Color.DARK_GRAY);
+        saveBtn.putClientProperty("JButton.buttonType", "roundRect");
+        saveBtn.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            Main.saveDialog.setFile("video.mov");
+            Main.saveDialog.setVisible(true);
+            String filename = Main.saveDialog.getFile();
+            if (filename != null) {
+              service.fileManager.queryFile(video, Main.saveDialog.getDirectory() + System.getProperty("file.separator") + Main.saveDialog.getFile());
+            }
+          }
+        });
+        panel.add(saveBtn, MessageLayout.ACTIONS);
         
         /*Button btnLoad = ViewHolder.get(convertView, R.id.btn_load);
         btnLoad.setTag(message);
@@ -335,6 +397,44 @@ public class MessageCellRenderer implements ListCellRenderer {
           e.printStackTrace();
         }
         
+        JPanel actionPanel = new JPanel();
+        actionPanel.setBackground(Color.decode("0xdfe8ef"));
+        actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.X_AXIS));
+        
+        JButton yandexBtn = new JButton("Яндекс");
+        //openBtn.setFont(new Font(Utils.fontName, Font.PLAIN, 11));
+        yandexBtn.setForeground(Color.DARK_GRAY);
+        yandexBtn.putClientProperty("JButton.buttonType", "roundRect");
+        yandexBtn.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            try {
+              Utils.openWebpage(new URI("http://maps.yandex.ru/?ll=" + message.media.geo.lng + "%2C" + message.media.geo.lat + "&z=16&l=map"));
+            } catch (URISyntaxException e1) {
+              e1.printStackTrace();
+            }
+          }
+        });
+        actionPanel.add(yandexBtn);
+        
+        actionPanel.add(Box.createRigidArea(new Dimension(2, 0)));
+        
+        JButton googleBtn = new JButton("Google");
+        //openBtn.setFont(new Font(Utils.fontName, Font.PLAIN, 11));
+        googleBtn.setForeground(Color.DARK_GRAY);
+        googleBtn.putClientProperty("JButton.buttonType", "roundRect");
+        googleBtn.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            try {
+              Utils.openWebpage(new URI("http://google.com/maps?q=" + message.media.geo.lat + "," + message.media.geo.lng));
+            } catch (URISyntaxException e1) {
+              e1.printStackTrace();
+            }
+          }
+        });
+        actionPanel.add(googleBtn);
+        
+        panel.add(actionPanel, MessageLayout.ACTIONS);
+        
         /*ImageButton thumb = ViewHolder.get(convertView, R.id.thumb);
         thumb.setImageBitmap(null);
         
@@ -368,6 +468,40 @@ public class MessageCellRenderer implements ListCellRenderer {
         layout.setHTMLBody(bodyLabel, 8, 25);
         
         panel.add(bodyPanel, MessageLayout.BODY);
+        
+        final MessageMediaContact contact = (MessageMediaContact) message.media;
+        
+        if (!service.contactManager.loaded.containsKey(-contact.user_id)) {
+          final JButton importBtn = new JButton("добавить");
+          //openBtn.setFont(new Font(Utils.fontName, Font.PLAIN, 11));
+          importBtn.setForeground(Color.DARK_GRAY);
+          importBtn.putClientProperty("JButton.buttonType", "roundRect");
+          importBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              service.mainServer.call(new tl.contacts.ImportContacts(
+                  new TInputContact[] { new InputPhoneContact(0, contact.phone_number, contact.first_name, contact.last_name) }, false),
+                  new Server.RPCCallback<ImportedContacts>() {
+                    public void done(ImportedContacts result) {
+                      if (result.imported.length > 0) {
+                        Main.contactListModel.add(result.imported[0].user_id, true);
+                        
+                      }
+                      if (model.getState() == modelState) {
+                        model.updateContents(index);
+                        //list.repaint(list.getCellBounds(index, index));
+                      } else {
+                        model.updateContents();
+                      }
+                    }
+  
+                    public void error(int code, String message) {
+                    }
+                  
+                  });
+            }
+          });
+          panel.add(importBtn, MessageLayout.ACTIONS);
+        }
       }
       
       if (message.out) {

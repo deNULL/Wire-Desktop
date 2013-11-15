@@ -193,14 +193,16 @@ public class Server implements ReadTaskCallback {
 			return;
 		}
 
+		ArrayList<RPCCall> _queuedCalls = new ArrayList<Server.RPCCall>(queuedCalls);
+		queuedCalls = new ArrayList<RPCCall>();
+		
 		long message_id = (long)((System.currentTimeMillis() + time_diff * 1000) * 4294967.296) & ~3L;
-		if (queuedCalls.size() == 1) {
+		if (_queuedCalls.size() == 1) {
 			// send single call, no need to pack it into container
-		  final RPCCall call = queuedCalls.get(0);
+		  final RPCCall call = _queuedCalls.get(0);
 		  if (call.encrypted) {
 		  	if (auth.state == AuthState.FAILED) {
 		  		call.callback.error(501, "auth_key missing");
-		  		queuedCalls = new ArrayList<RPCCall>();
 		  		return;
 		  	} else
 		  	if (auth.state != AuthState.COMPLETE){
@@ -247,14 +249,13 @@ public class Server implements ReadTaskCallback {
         call.message_id = message.message_id;
         sentCalls.add(call);
       }
-			queuedCalls = new ArrayList<RPCCall>();
 		} else {
 			// pack all queuedCalls into one container and send them
 			final ArrayList<TransportMessage> messages = new ArrayList<TransportMessage>(queuedCalls.size());
 			ArrayList<RPCCall> unprocessedCalls = new ArrayList<RPCCall>();
       final ArrayList<RPCCall> processedCalls = new ArrayList<RPCCall>();
-			for (int i = 0; i < queuedCalls.size(); i++) {
-			  RPCCall call = queuedCalls.get(i);
+			for (int i = 0; i < _queuedCalls.size(); i++) {
+			  RPCCall call = _queuedCalls.get(i);
 			  if (call.encrypted) {
 			  	if (auth.state == AuthState.FAILED) {
 			  		call.callback.error(501, "auth_key missing");
@@ -341,7 +342,7 @@ public class Server implements ReadTaskCallback {
 			  }
 			}
 
-			queuedCalls = unprocessedCalls;
+			queuedCalls.addAll(unprocessedCalls);
 		}
 		
 		if (queuedCalls.size() > 0 && !timer_running) {
