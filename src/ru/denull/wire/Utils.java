@@ -604,7 +604,7 @@ public class Utils {
         String result = "+" + pair[1] + " ";
         int code_len = pair[1].length();
         if (len > code_len) {
-          result += phone.substring(code_len, Math.min(code_len + 3, len)) + " ";
+          result += "(" + phone.substring(code_len, Math.min(code_len + 3, len)) + ") ";
           
           if (len > code_len + 3) {
             result += phone.substring(code_len + 3, Math.min(code_len + 6, len)) + " ";

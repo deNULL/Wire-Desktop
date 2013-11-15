@@ -757,8 +757,8 @@ public class Main implements OnUpdateListener, TypingCallback {
     chatActionBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 28));
     chatActionBtn.setFocusable(false);
     //chatActionBtn.putClientProperty("JButton.buttonType", "gradient");
-    //actionBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
-    //actionBtn.putClientProperty("JButton.segmentPosition", "only");
+    chatActionBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
+    chatActionBtn.putClientProperty("JButton.segmentPosition", "only");
     chatActionBtn.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (currentPeer != null && (currentPeer instanceof InputPeerChat) && titleInfoBtn.isSelected()) {
@@ -856,6 +856,13 @@ public class Main implements OnUpdateListener, TypingCallback {
     if (!System.getProperty("os.name").contains("Mac")) {
       addHint(searchField, "Найти...");
     }
+    
+    service.mainServer.call(new tl.account.UpdateStatus(false));
+    Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+      public void run() {
+        service.mainServer.call(new tl.account.UpdateStatus(true));
+      }
+    }));
   }
   
   protected void toggleTitlePanel(boolean visible) {
@@ -1212,9 +1219,9 @@ public class Main implements OnUpdateListener, TypingCallback {
       e.printStackTrace();
     }
     
-    /*for (String[] ss : contacts) {
+    for (String[] ss : contacts) {
       System.out.println("phone: " + ss[0] + ", fn: " + ss[1] + ", ln: " + ss[2]);
-    }*/
+    }
     if (contacts.size() > 0) {
       importContacts(contacts);
     }
@@ -1408,6 +1415,8 @@ public class Main implements OnUpdateListener, TypingCallback {
     messageList.setModel(messageListModel);
     messageList.setCellRenderer(new MessageCellRenderer(service, peer));
     
+    titleInfoBtn.setSelected(false);
+    toggleTitlePanel(false);
     
     if (peer instanceof InputPeerChat) {
       int chat_id = peer.chat_id;

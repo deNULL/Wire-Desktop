@@ -24,6 +24,7 @@ import ru.denull.mtproto.DataService.WriteTaskCallback;
 import ru.denull.mtproto.Server.RPCCallback;
 import ru.denull.wire.model.Config;
 import tl.*;
+import tl.account.UpdateStatus;
 import tl.help.GetConfig;
 import static ru.denull.mtproto.CryptoUtils.*;
 
@@ -45,7 +46,7 @@ public class Server implements ReadTaskCallback {
 	
 	private long minimal_message_id = 0; // used to prevent duplicate msg_ids when sending lots of requests simultaneously
 	
-	public int time_diff;
+	public long time_diff;
 	
 	public boolean timer_running = false;
 	public boolean resolving_problem = false;
@@ -411,6 +412,15 @@ public class Server implements ReadTaskCallback {
     call(request, callback, true);
   }
 	
+	public void call(TLFunction request) {
+	  call(request, new RPCCallback<TLObject>() {
+      public void done(TLObject result) {
+      }
+      public void error(int code, String message) {
+      }
+    }, true);
+	}
+	
 	private void processMessage(TLObject message, long msg_id) throws Exception {
 	  //Log.i(TAG, "<= " + message);
 	  //System.out.println("<= " + msg_id);
@@ -431,6 +441,7 @@ public class Server implements ReadTaskCallback {
 			if (((BadMsgNotification) message).error_code == 16 || ((BadMsgNotification) message).error_code == 17) {
 			  System.out.println("Invalid msg_id (was " + ((BadMsgNotification) message).bad_msg_id + ", received " + msg_id + "), old time_diff: " + time_diff);
 			  time_diff = (int) (((msg_id & ~3L) / 4294967.296 - System.currentTimeMillis()) / 1000);
+			  minimal_message_id = 0;
 			  System.out.println("new time_diff: " + time_diff);
 			  
 			  for (RPCCall call : sentCalls) {
