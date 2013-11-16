@@ -211,13 +211,22 @@ public class Main implements OnUpdateListener, TypingCallback {
   public Main() {
     initialize();
   }
+  
+  public void setMultipleMode() {
+    /*try {
+      fd.setMultipleMode(true);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }*/
+  }
 
   /**
    * Initialize the contents of the frame.
    */
   private void initialize() {
     frame = new JFrame();
-    frame.setBounds(200, 200, 1100, 660);
+    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+    frame.setBounds((dim.width - 1100) / 2, (dim.height - 660) / 2, 1100, 660);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.getContentPane().setLayout(new BorderLayout(0, 0));
     frame.setTitle("Wire"); 
@@ -230,7 +239,7 @@ public class Main implements OnUpdateListener, TypingCallback {
     } catch (Exception e1) {
       e1.printStackTrace();
     }*/
-    //fd.setMultipleMode(true);
+    setMultipleMode();
     fd.setFilenameFilter(new FilenameFilter() {
       public boolean accept(File dir, String name) {
         name = name.toLowerCase();
@@ -343,9 +352,9 @@ public class Main implements OnUpdateListener, TypingCallback {
     dialogsBtn.putClientProperty("JButton.segmentPosition", "first");
     dialogsBtn.setFocusable(false);
     dialogsBtn.setSelected(true);
-    dialogsBtn.setPreferredSize(new Dimension(32, 24));
-    dialogsBtn.setMinimumSize(new Dimension(32, 24));
-    dialogsBtn.setMaximumSize(new Dimension(32, 24));
+    dialogsBtn.setPreferredSize(new Dimension(32, 26));
+    dialogsBtn.setMinimumSize(new Dimension(32, 26));
+    dialogsBtn.setMaximumSize(new Dimension(32, 26));
     //dialogsBtn.setIcon(new ImageIcon(Utils.getImage("dialogs_up.png")));
     //dialogsBtn.setSelectedIcon(new ImageIcon(Utils.getImage("dialogs_down.png")));
     dialogsBtn.setIcon(new ImageIcon(Utils.getImage("chats.png")));
@@ -372,9 +381,9 @@ public class Main implements OnUpdateListener, TypingCallback {
     contactsBtn.putClientProperty("JButton.buttonType", "segmentedCapsule");
     contactsBtn.putClientProperty("JButton.segmentPosition", "last");
     contactsBtn.setFocusable(false);
-    contactsBtn.setPreferredSize(new Dimension(32, 24));
-    contactsBtn.setMinimumSize(new Dimension(32, 24));
-    contactsBtn.setMaximumSize(new Dimension(32, 24));
+    contactsBtn.setPreferredSize(new Dimension(32, 26));
+    contactsBtn.setMinimumSize(new Dimension(32, 26));
+    contactsBtn.setMaximumSize(new Dimension(32, 26));
     //contactsBtn.setIcon(new ImageIcon(Utils.getImage("contacts_up.png")));
     //contactsBtn.setSelectedIcon(new ImageIcon(Utils.getImage("contacts_down.png")));
     contactsBtn.setIcon(new ImageIcon(Utils.getImage("contacts.png")));
@@ -687,11 +696,18 @@ public class Main implements OnUpdateListener, TypingCallback {
           sendFiles(fc.getSelectedFiles());
         }*/
         
-        fd.setVisible(true);
-        String filename = fd.getFile();
-        if (filename != null) {
-          sendFiles(new File[]{ new File(fd.getDirectory() + System.getProperty("file.separator") + fd.getFile()) });
-        }
+        fd.setVisible(true); 
+        /*try {
+          File[] files = fd.getFiles();
+          if (files != null && files.length > 0) {
+            sendFiles(files);
+          }
+        } catch (Exception e1) {*/
+          String filename = fd.getFile();
+          if (filename != null) {
+            sendFiles(new File[]{ new File(fd.getDirectory() + System.getProperty("file.separator") + fd.getFile()) });
+          }
+        //}
       }
     });
     sendPanel.add(attachBtn);
@@ -1150,7 +1166,7 @@ public class Main implements OnUpdateListener, TypingCallback {
     
     ArrayList<String[]> contacts = new ArrayList<String[]>();
     try {
-      BufferedReader cin = new BufferedReader(new FileReader(importDialog.getDirectory() + System.getProperty("file.separator") + importDialog.getFile()));
+      BufferedReader cin = new BufferedReader(new InputStreamReader(new FileInputStream(importDialog.getDirectory() + System.getProperty("file.separator") + importDialog.getFile()), "UTF8"));
       String line = cin.readLine();
       
       if (line != null) {
