@@ -438,7 +438,7 @@ public class Main implements OnUpdateListener, TypingCallback {
           if (dialogsBtn.isSelected()) {
             if (service.dialogManager.isEmpty()) return;
             
-            tl.Dialog dialog = service.dialogManager.filtered.get(dialogList.getSelectedIndex());
+            tl.Dialog dialog = service.dialogManager.all.get(dialogList.getSelectedIndex());
             selectDialog(dialog);
           } else
           if (contactsBtn.isSelected()) {
@@ -1655,8 +1655,8 @@ public class Main implements OnUpdateListener, TypingCallback {
     if (dialogsBtn.isSelected()) {
       if (service.dialogManager.isEmpty()) return;
       
-      for (int i = 0; i < service.dialogManager.filtered.size(); i++) {
-        tl.Dialog d = service.dialogManager.filtered.get(i);
+      for (int i = 0; i < service.dialogManager.all.size(); i++) {
+        tl.Dialog d = service.dialogManager.all.get(i);
         if ((d.peer instanceof PeerChat && currentPeer instanceof InputPeerChat && d.peer.chat_id == currentPeer.chat_id) ||
             (!(d.peer instanceof PeerChat) && !(currentPeer instanceof InputPeerChat) && d.peer.user_id == currentPeer.user_id)) {
           dialogList.setSelectedIndex(i);
