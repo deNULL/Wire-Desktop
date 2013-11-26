@@ -67,7 +67,6 @@ public class DataService {
   public ContactManager			contactManager;
   public MessageManager			messageManager;
   public FileManager        fileManager;
-  public MediaManager       mediaManager;
   public TypingManager      typingManager;
   
   public CacheManager       cacheManager;
@@ -98,7 +97,6 @@ public class DataService {
 				messageManager = new MessageManager(self, db);
 				contactManager = new ContactManager(self, db);
 				fileManager = new FileManager(self);
-				mediaManager = new MediaManager(self, db);
 				typingManager = new TypingManager(self);
 				
 				// TODO: allow to setup listeners

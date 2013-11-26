@@ -287,6 +287,13 @@ public class Main implements OnUpdateListener, TypingCallback {
       }
     });
     menu.add(menuItem);
+    menuItem = new JMenuItem("Импорт с заменой...");
+    menuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        importContacts(true);
+      }
+    });
+    menu.add(menuItem);
     menuItem = new JMenuItem("Добавить контакт...");
     menuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -1160,7 +1167,11 @@ public class Main implements OnUpdateListener, TypingCallback {
     chatTitleField.requestFocusInWindow();
   }
 
+
   protected void importContacts() {
+    importContacts(false);
+  }
+  protected void importContacts(boolean replace) {
     importDialog.setVisible(true);
     String filename = importDialog.getFile();
     
@@ -1239,7 +1250,7 @@ public class Main implements OnUpdateListener, TypingCallback {
       System.out.println("phone: " + ss[0] + ", fn: " + ss[1] + ", ln: " + ss[2]);
     }
     if (contacts.size() > 0) {
-      importContacts(contacts);
+      importContacts(contacts, replace);
     }
   }
 
@@ -1788,13 +1799,16 @@ public class Main implements OnUpdateListener, TypingCallback {
   }
   
   public void importContacts(ArrayList<String[]> contacts) {
+    importContacts(contacts, false);
+  }
+  public void importContacts(ArrayList<String[]> contacts, boolean replace) {
     TInputContact[] arr = new TInputContact[contacts.size()];
     for (int i = 0; i < contacts.size(); i++) {
       String[] contact = contacts.get(i);
       arr[i] = new InputPhoneContact(i, contact[0], contact[1], contact[2]);
     }
     
-    service.mainServer.call(new tl.contacts.ImportContacts(arr, false), new Server.RPCCallback<ImportedContacts>() {
+    service.mainServer.call(new tl.contacts.ImportContacts(arr, replace), new Server.RPCCallback<ImportedContacts>() {
       public void done(ImportedContacts result) {
         contactListModel.add(result);
       }
