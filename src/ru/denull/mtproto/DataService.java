@@ -61,7 +61,7 @@ public class DataService {
   // All data will be stored here
   public UserSelf						me;
   public SQLiteDatabase			db;
-  public DialogManager			dialogManager;
+  public DialogManager	  dialogManager;
   public ChatManager				chatManager;
   public UserManager				userManager;
   public ContactManager			contactManager;
@@ -91,7 +91,7 @@ public class DataService {
 			public void run() {*/
 				db = (new CacheDbHelper()).getWritableDatabase();
 				cacheManager = new CacheManager(getClass().getClassLoader().getResourceAsStream("/ehcache.xml"));
-				dialogManager = new DialogManager(self, db);
+				dialogManager = new DialogManager(self);
 				chatManager = new ChatManager(self, db);
 				userManager = new UserManager(self, db);
 				messageManager = new MessageManager(self, db);
@@ -109,8 +109,7 @@ public class DataService {
 				}, true);*/
 				
 				// warm up cache
-				dialogManager.get(0);
-				for (Dialog dialog : dialogManager.loaded) {
+				for (Dialog dialog : dialogManager.all) {
 					if (dialog.peer instanceof PeerChat) {
 						chatManager.get(((PeerChat) dialog.peer).chat_id); 
 					} else {

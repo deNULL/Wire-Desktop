@@ -84,7 +84,6 @@ public class Main implements OnUpdateListener, TypingCallback {
   public static Main window;
   
   private MessageListModel messageListModel;
-  private DialogListModel dialogListModel;
   private DialogCellRenderer dialogListRenderer;
   static public ContactListModel contactListModel;
   private ContactListRenderer contactListRenderer;
@@ -181,7 +180,7 @@ public class Main implements OnUpdateListener, TypingCallback {
               //service.me = null;
               
               if (service.me != null) {
-                window.dialogListModel.reloadDialogs();
+                service.dialogManager.reloadDialogs();
                 window.contactListModel.reload();
               } else {
                 AuthDialog authDialog = new AuthDialog(window.frame, Dialog.ModalityType.DOCUMENT_MODAL);
@@ -332,19 +331,19 @@ public class Main implements OnUpdateListener, TypingCallback {
     searchField.getDocument().addDocumentListener(new DocumentListener() {
       public void removeUpdate(DocumentEvent e) {
         String query = searchField.getForeground().equals(Color.LIGHT_GRAY) ? null : searchField.getText();
-        dialogListModel.filter(query);
+        service.dialogManager.filter(query);
         contactListModel.filter(query);
         restoreDialogSelection();
       }
       public void insertUpdate(DocumentEvent e) {
         String query = searchField.getForeground().equals(Color.LIGHT_GRAY) ? null : searchField.getText();
-        dialogListModel.filter(query);
+        service.dialogManager.filter(query);
         contactListModel.filter(query);
         restoreDialogSelection();
       }
       public void changedUpdate(DocumentEvent e) {
         String query = searchField.getForeground().equals(Color.LIGHT_GRAY) ? null : searchField.getText();
-        dialogListModel.filter(query);
+        service.dialogManager.filter(query);
         contactListModel.filter(query);
         restoreDialogSelection();
       }
@@ -377,7 +376,7 @@ public class Main implements OnUpdateListener, TypingCallback {
         
         dialogList.setCellRenderer(null);
         dialogList.setFixedCellHeight(66);
-        dialogList.setModel(dialogListModel);
+        dialogList.setModel(service.dialogManager);
         dialogList.setCellRenderer(dialogListRenderer);
         restoreDialogSelection();
       }
@@ -437,9 +436,9 @@ public class Main implements OnUpdateListener, TypingCallback {
             //dialogList.clearSelection();*/
           } else
           if (dialogsBtn.isSelected()) {
-            if (dialogListModel.isEmpty()) return;
+            if (service.dialogManager.isEmpty()) return;
             
-            tl.Dialog dialog = service.dialogManager.get(dialogList.getSelectedIndex());
+            tl.Dialog dialog = service.dialogManager.filtered.get(dialogList.getSelectedIndex());
             selectDialog(dialog);
           } else
           if (contactsBtn.isSelected()) {
@@ -451,8 +450,7 @@ public class Main implements OnUpdateListener, TypingCallback {
         }
       }
     });
-    dialogListModel = new DialogListModel(service, dialogList);
-    dialogList.setModel(dialogListModel);
+    dialogList.setModel(service.dialogManager);
     JScrollPane scrollPane = new JScrollPane(dialogList);
     scrollPane.setBackground(Color.decode("0xf9f9f9"));
     scrollPane.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.decode("0xe0e0e0")));
@@ -573,7 +571,7 @@ public class Main implements OnUpdateListener, TypingCallback {
                   service.messageManager.store(result.message);
                   service.dialogManager.addMessage(result.message);
                   messageListModel.addMessage(result.message);
-                  dialogListModel.updateContents();
+                  service.dialogManager.updateContents();
                   restoreDialogSelection();
                   
                   titleInfoBtn.setVisible(true);
@@ -596,7 +594,7 @@ public class Main implements OnUpdateListener, TypingCallback {
                   service.messageManager.store(result.message);
                   service.dialogManager.addMessage(result.message);
                   messageListModel.addMessage(result.message);
-                  dialogListModel.updateContents();
+                  service.dialogManager.updateContents();
                   restoreDialogSelection();
                   
                   titleActionBtn.setVisible(!(service.chatManager.get(currentPeer.chat_id) instanceof ChatForbidden));
@@ -939,7 +937,7 @@ public class Main implements OnUpdateListener, TypingCallback {
               messageListModel.addMessage(result.message);
               contactListRenderer.dropCache(user_id);
               contactListModel.updateContents(user_id);
-              dialogListModel.updateContents();
+              service.dialogManager.updateContents();
               restoreDialogSelection();
               
               service.mainServer.call(new GetFullChat(currentPeer.chat_id), new Server.RPCCallback<tl.messages.ChatFull>() {
@@ -991,7 +989,7 @@ public class Main implements OnUpdateListener, TypingCallback {
             messageListModel.addMessage(result.message);
             contactListRenderer.dropCache(user_id);
             contactListModel.updateContents(user_id);
-            dialogListModel.updateContents();
+            service.dialogManager.updateContents();
             restoreDialogSelection();
             
             service.mainServer.call(new GetFullChat(currentPeer.chat_id), new Server.RPCCallback<tl.messages.ChatFull>() {
@@ -1049,7 +1047,7 @@ public class Main implements OnUpdateListener, TypingCallback {
         service.messageManager.store(result.message);
         service.dialogManager.addMessage(result.message);
         messageListModel.addMessage(result.message);
-        dialogListModel.updateContents();
+        service.dialogManager.updateContents();
         titleLabel.setText(title);
         cancelCreateChat();
       }
@@ -1106,7 +1104,7 @@ public class Main implements OnUpdateListener, TypingCallback {
         service.chatManager.store(result.chats);
         service.userManager.store(result.users);
         service.dialogManager.addMessage(result.message);
-        dialogListModel.updateContents();
+        service.dialogManager.updateContents();
         
         selectDialog(result.chats[0]);
         cancelCreateChat();
@@ -1393,7 +1391,7 @@ public class Main implements OnUpdateListener, TypingCallback {
     final TMessage newmsg = new Message(random_id, service.me.id, peer, true, true, (int) (System.currentTimeMillis() / 1000), message, new MessageMediaEmpty());
     newmsg.sending = true;
     service.messageManager.store(newmsg);
-    dialogListModel.addMessage(newmsg);
+    service.dialogManager.addMessage(newmsg);
     messageListModel.addMessage(newmsg);
     restoreDialogSelection();
     dialogList.repaint();
@@ -1533,7 +1531,7 @@ public class Main implements OnUpdateListener, TypingCallback {
 
   public void authorized(TUser user) {
     service.logged((UserSelf) user);
-    dialogListModel.reloadDialogs();
+    service.dialogManager.reloadDialogs();
     contactListModel.reload();
   }
 
@@ -1541,7 +1539,7 @@ public class Main implements OnUpdateListener, TypingCallback {
   public void onNewMessage(TMessage message, boolean fresh) {
     // TODO Auto-generated method stub
     restoreDialogSelection();
-    dialogListModel.updateContents();
+    service.dialogManager.updateContents();
     if (currentPeer != null &&
         ((message.to_id instanceof PeerChat && currentPeer instanceof InputPeerChat && message.to_id.chat_id == currentPeer.chat_id) ||
          (message.to_id instanceof PeerUser && !(currentPeer instanceof InputPeerChat) && (message.to_id.user_id == currentPeer.user_id || message.from_id == currentPeer.user_id)))) {
@@ -1655,10 +1653,10 @@ public class Main implements OnUpdateListener, TypingCallback {
   public void restoreDialogSelection() {
     if (currentPeer == null) return;
     if (dialogsBtn.isSelected()) {
-      if (dialogListModel.isEmpty()) return;
+      if (service.dialogManager.isEmpty()) return;
       
-      for (int i = 0; i < service.dialogManager.loaded.size(); i++) {
-        tl.Dialog d = service.dialogManager.loaded.get(i);
+      for (int i = 0; i < service.dialogManager.filtered.size(); i++) {
+        tl.Dialog d = service.dialogManager.filtered.get(i);
         if ((d.peer instanceof PeerChat && currentPeer instanceof InputPeerChat && d.peer.chat_id == currentPeer.chat_id) ||
             (!(d.peer instanceof PeerChat) && !(currentPeer instanceof InputPeerChat) && d.peer.user_id == currentPeer.user_id)) {
           dialogList.setSelectedIndex(i);

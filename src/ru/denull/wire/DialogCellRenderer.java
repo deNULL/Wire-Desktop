@@ -8,7 +8,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import ru.denull.mtproto.DataService;
 import ru.denull.wire.Utils;
-import ru.denull.wire.model.DialogListModel;
+import ru.denull.wire.model.DialogManager;
 import ru.denull.wire.model.MessageListModel;
 import ru.denull.wire.model.FileManager.FileLoadingCallback;
 import tl.*;
@@ -35,7 +35,7 @@ public class DialogCellRenderer implements ListCellRenderer {
       label.setBorder(new EmptyBorder(30, 4, 30, 4));    
       return label;
     }
-    final DialogListModel model = (DialogListModel) list.getModel();
+    final DialogManager model = (DialogManager) list.getModel();
     
     JPanel panel = new JPanel(new GridBagLayout());
     panel.setOpaque(true);

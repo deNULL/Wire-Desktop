@@ -12,7 +12,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import ru.denull.mtproto.DataService;
 import ru.denull.wire.Utils;
 import ru.denull.wire.model.ContactListModel;
-import ru.denull.wire.model.DialogListModel;
+import ru.denull.wire.model.DialogManager;
 import ru.denull.wire.model.FileManager.FileLoadingCallback;
 import tl.*;
 import tl.Dialog;
