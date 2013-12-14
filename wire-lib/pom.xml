@@ -1,0 +1,25 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ru.denull</groupId>
+        <artifactId>wire</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+
+    <groupId>ru.denull.wire</groupId>
+    <artifactId>wire-lib</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>wire-lib</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.50</version>
+        </dependency>
+    </dependencies>
+
+</project>

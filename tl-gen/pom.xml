@@ -1,0 +1,49 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ru.denull</groupId>
+        <artifactId>wire</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+
+    <groupId>ru.denull.wire</groupId>
+    <artifactId>tl-gen</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>tl-gen</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+            <scope>test</scope>
+        </dependency>
+
+
+
+
+    </dependencies>
+
+</project>
