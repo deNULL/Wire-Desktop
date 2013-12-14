@@ -1,6 +1,7 @@
 package ru.denull.wire.model;
 
 import ru.denull.mtproto.DataService;
+import ru.denull.wire.stub.tl.TUser;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

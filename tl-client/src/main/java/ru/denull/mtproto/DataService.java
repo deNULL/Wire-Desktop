@@ -4,7 +4,8 @@ import net.sf.ehcache.CacheManager;
 import ru.denull.mtproto.Auth.AuthCallback;
 import ru.denull.wire.lib.Log;
 import ru.denull.wire.model.*;
-import ru.denull.wire.stub.tl.TL;
+import ru.denull.wire.model.Config;
+import ru.denull.wire.stub.tl.*;
 import ru.denull.wire.stub.tl.auth.Authorization;
 import ru.denull.wire.stub.tl.auth.ExportAuthorization;
 import ru.denull.wire.stub.tl.auth.ExportedAuthorization;
@@ -40,7 +41,7 @@ public class DataService {
     public Preferences pref;                          // global config (there's also local configs per each server)
     public String defaultServer;
 
-    public Config dcConfig;
+    public ru.denull.wire.stub.tl.Config dcConfig;
 
     // TODO: maybe make own subclass of ThreadPoolExecutor
     public ThreadPoolExecutor threadPool;             // for managing all threads
@@ -608,8 +609,8 @@ public class DataService {
                 }
             }
         } else if (mainServer != null) {
-            mainServer.call(new GetConfig(), new Server.RPCCallback<Config>() {
-                public void done(Config result) {
+            mainServer.call(new GetConfig(), new Server.RPCCallback<ru.denull.wire.stub.tl.Config>() {
+                public void done(ru.denull.wire.stub.tl.Config result) {
                     dcConfig = result;
                     connect(dc_id, main, forceReconnect, callback);
                 }

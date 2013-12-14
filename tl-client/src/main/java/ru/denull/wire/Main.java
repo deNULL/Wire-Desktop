@@ -10,9 +10,8 @@ import ru.denull.wire.model.FileManager.FileUploadingProgressiveCallback;
 import ru.denull.wire.model.MessageListModel;
 import ru.denull.wire.model.Notifier;
 import ru.denull.wire.model.TypingManager.TypingCallback;
+import ru.denull.wire.stub.tl.*;
 import ru.denull.wire.stub.tl.TChat;
-import ru.denull.wire.stub.tl.TLObject;
-import ru.denull.wire.stub.tl.TMessage;
 import ru.denull.wire.stub.tl.contacts.ImportedContacts;
 import ru.denull.wire.stub.tl.contacts.TForeignLink;
 import ru.denull.wire.stub.tl.contacts.TMyLink;
@@ -20,6 +19,7 @@ import ru.denull.wire.stub.tl.messages.*;
 import ru.denull.wire.stub.tl.messages.ChatFull;
 import ru.denull.wire.stub.tl.messages.EditChatTitle;
 import ru.denull.wire.stub.tl.messages.GetFullChat;
+import ru.denull.wire.stub.tl.messages.TMessage;
 import sun.misc.IOUtils;
 
 import javax.imageio.ImageIO;
@@ -27,6 +27,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.*;
 import java.awt.*;
+import java.awt.Dialog;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
@@ -1498,7 +1499,7 @@ public class Main implements OnUpdateListener, TypingCallback {
     }
 
     @Override
-    public void onNewMessage(TMessage message, boolean fresh) {
+    public void onNewMessage(ru.denull.wire.stub.tl.TMessage message, boolean fresh) {
         // TODO Auto-generated method stub
         restoreDialogSelection();
         service.dialogManager.updateContents();
@@ -1661,7 +1662,7 @@ public class Main implements OnUpdateListener, TypingCallback {
         }
 
         int peer_id = Utils.getPeerID(peer, service.me);
-        final TMessage futureMessage = new ru.denull.wire.stub.tl.Message(
+        final ru.denull.wire.stub.tl.TMessage futureMessage = new ru.denull.wire.stub.tl.Message(
                 random_id,
                 service.me.id,
                 peer_id > 0 ? new PeerUser(peer_id) : new PeerChat(-peer_id),

@@ -2,8 +2,7 @@ package ru.denull.mtproto;
 
 import ru.denull.wire.lib.Base64;
 import ru.denull.wire.lib.Log;
-import ru.denull.wire.stub.tl.TL;
-import ru.denull.wire.stub.tl.TLObject;
+import ru.denull.wire.stub.tl.*;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -141,6 +140,7 @@ public class Auth {
 
                 public void done(TLObject result) {
                     Log.i(TAG, "Successfully destroyed old session");
+
                 }
 
                 public void error(int code, String message) {

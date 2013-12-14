@@ -4,7 +4,7 @@ import ru.denull.mtproto.DataService;
 import ru.denull.wire.ImagePanel;
 import ru.denull.wire.Utils;
 import ru.denull.wire.model.FileManager.FileLoadingCallback;
-import ru.denull.wire.stub.tl.TL;
+import ru.denull.wire.stub.tl.*;
 
 import java.awt.*;
 import java.util.HashMap;

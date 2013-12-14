@@ -2,6 +2,7 @@ package ru.denull.wire.model;
 
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.Server.RPCCallback;
+import ru.denull.wire.stub.tl.*;
 import ru.denull.wire.stub.tl.contacts.*;
 import ru.denull.wire.stub.tl.messages.*;
 

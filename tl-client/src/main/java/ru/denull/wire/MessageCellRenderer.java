@@ -5,6 +5,7 @@ import ru.denull.mtproto.Server;
 import ru.denull.wire.model.FileManager;
 import ru.denull.wire.model.FileManager.FileLoadingCallback;
 import ru.denull.wire.model.MessageListModel;
+import ru.denull.wire.stub.tl.*;
 import ru.denull.wire.stub.tl.contacts.ImportedContacts;
 import ru.denull.wire.stub.tl.storage.TFileType;
 

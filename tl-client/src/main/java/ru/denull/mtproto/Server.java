@@ -6,8 +6,7 @@ import ru.denull.mtproto.DataService.ReadTaskCallback;
 import ru.denull.mtproto.DataService.WriteTaskCallback;
 import ru.denull.wire.lib.Log;
 import ru.denull.wire.model.Config;
-import ru.denull.wire.stub.tl.TLFunction;
-import ru.denull.wire.stub.tl.TLObject;
+import ru.denull.wire.stub.tl.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

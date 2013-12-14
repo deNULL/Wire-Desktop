@@ -1,6 +1,7 @@
 package ru.denull.wire;
 
 import ru.denull.mtproto.DataService;
+import ru.denull.wire.stub.tl.*;
 import ru.denull.wire.stub.tl.messages.ChatFull;
 
 import javax.imageio.ImageIO;

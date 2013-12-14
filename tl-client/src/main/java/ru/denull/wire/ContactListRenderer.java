@@ -3,6 +3,7 @@ package ru.denull.wire;
 import ru.denull.mtproto.DataService;
 import ru.denull.wire.model.ContactListModel;
 import ru.denull.wire.model.FileManager.FileLoadingCallback;
+import ru.denull.wire.stub.tl.TUser;
 import ru.denull.wire.stub.tl.storage.TFileType;
 
 import javax.swing.*;

@@ -1,7 +1,7 @@
 package ru.denull.wire.model;
 
 import ru.denull.mtproto.DataService;
-import ru.denull.wire.stub.tl.TL;
+import ru.denull.wire.stub.tl.*;
 import ru.denull.wire.stub.tl.messages.MessageEmpty;
 
 import java.util.ArrayList;

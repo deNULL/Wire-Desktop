@@ -3,11 +3,13 @@ package ru.denull.wire;
 import ru.denull.mtproto.DataService;
 import ru.denull.wire.model.DialogManager;
 import ru.denull.wire.model.FileManager.FileLoadingCallback;
+import ru.denull.wire.stub.tl.*;
 import ru.denull.wire.stub.tl.storage.TFileType;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.Dialog;
 
 public class DialogCellRenderer implements ListCellRenderer {
     private static final long serialVersionUID = 5645361179616977L;
@@ -37,7 +39,7 @@ public class DialogCellRenderer implements ListCellRenderer {
         //panel.setBackground(Color.decode("0xf9f9f9"));
         panel.setBackground(Color.WHITE);
         GridBagConstraints constraints;
-        final Dialog dialog = (Dialog) item;
+        final ru.denull.wire.stub.tl.Dialog dialog = (ru.denull.wire.stub.tl.Dialog) item;
         TMessage message = service.messageManager.get(dialog.top_message);
 
         //panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -108,7 +110,7 @@ public class DialogCellRenderer implements ListCellRenderer {
                 public void complete(TFileType type, Object data) {
                     //cache.remove(message.id);
                     Object o = model.getSize() > index ? model.getElementAt(index) : null;
-                    if (o != null && o instanceof Dialog && ((Dialog) o).peer.chat_id == dialog.peer.chat_id) {
+                    if (o != null && o instanceof Dialog && ((ru.denull.wire.stub.tl.Dialog) o).peer.chat_id == dialog.peer.chat_id) {
                         model.updateContents(index);
                     } else {
                         model.updateContents();
@@ -180,7 +182,7 @@ public class DialogCellRenderer implements ListCellRenderer {
                 public void complete(TFileType type, Object data) {
                     //cache.remove(message.id);
                     Object o = model.getSize() > index ? model.getElementAt(index) : null;
-                    if (o != null && o instanceof Dialog && ((Dialog) o).peer.user_id == dialog.peer.user_id) {
+                    if (o != null && o instanceof Dialog && ((ru.denull.wire.stub.tl.Dialog) o).peer.user_id == dialog.peer.user_id) {
                         model.updateContents(index);
                     } else {
                         model.updateContents();
