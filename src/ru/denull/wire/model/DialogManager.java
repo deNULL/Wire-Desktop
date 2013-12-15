@@ -351,6 +351,9 @@ public class DialogManager extends AbstractListModel {
   }
 
   public void updateEncryptedChat(TEncryptedChat chat) {
+    updateEncryptedChat(chat, null);
+  }
+  public void updateEncryptedChat(TEncryptedChat chat, byte[] key) {
     int user_id = (chat.admin_id == service.me.id) ? chat.participant_id : chat.admin_id;
     EncryptedDialog d = chats.get(chat.id);
     if (d == null) {
@@ -359,6 +362,9 @@ public class DialogManager extends AbstractListModel {
     }
     
     d.chat = chat;
+    if (key != null) {
+      d.key = key;
+    } else
     if (chat instanceof EncryptedChat && chat.admin_id == service.me.id) {
       BigInteger g_b = new BigInteger(1, chat.g_a_or_b);
       BigInteger a = new BigInteger(1, d.a_or_b);

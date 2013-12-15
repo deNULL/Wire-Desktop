@@ -536,7 +536,10 @@ public class DataService {
           }
             
           if (decrypted != null && decrypted instanceof DecryptedMessage) {
-            //stub = new Message(messageManager.nextMessageID, (dialog.chat.admin_id == me.id) ? dialog.chat.participant_id : dialog.chat.admin_id, new PeerUser(me.id), false, true, message.date, decrypted.message, new MessageMediaEmpty());
+            TMessage stub = new Message(messageManager.nextMessageID, (dialog.chat.admin_id == me.id) ? dialog.chat.participant_id : dialog.chat.admin_id, new PeerUser(me.id), false, true, message.date, decrypted.message, new MessageMediaEmpty());
+            messageManager.store(stub);
+            dialog.top_message = stub.id;
+            
             dialogManager.addEncryptedMessage(message.chat_id, (dialog.chat.admin_id == me.id) ? dialog.chat.participant_id : dialog.chat.admin_id, message, decrypted);
             typingManager.userTyping((dialog.chat.admin_id == me.id) ? dialog.chat.participant_id : dialog.chat.admin_id, false);
             

@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -72,6 +73,10 @@ import javax.swing.JButton;
 
 
 
+
+
+
+import javax.swing.JOptionPane;
 
 //import com.apple.eawt.Application;
 import ru.denull.mtproto.DataService;
@@ -1986,8 +1991,54 @@ public class Main implements OnUpdateListener, TypingCallback {
   }
 
   @Override
-  public void onEncryption(TEncryptedChat chat, int date, boolean fresh) {
+  public void onEncryption(final TEncryptedChat chat, int date, boolean fresh) {
     if (chat instanceof EncryptedChatRequested) { // Auto accept request (TODO: show dialog?)
+      service.mainServer.call(new tl.messages.GetDhConfig(0, 256), new RPCCallback<DhConfig>() {
+        public void done(final DhConfig config) {
+          final byte[] random = new byte[256];
+          (new Random()).nextBytes(random); // TODO: add more entropy
+          for (int i = 0; i < random.length; i++) {
+            random[i] ^= config.random[i];
+          }
+          
+          BigInteger g_a = new BigInteger(1, chat.g_a);
+          BigInteger g = BigInteger.valueOf(config.g);
+          BigInteger b = new BigInteger(1, random);
+          BigInteger dh_prime = new BigInteger(1, config.p);
+
+          byte[] g_b = g.modPow(b, dh_prime).toByteArray();
+          byte[] g_ab = g_a.modPow(b, dh_prime).toByteArray();
+          final byte[] key = new byte[256];
+          for (int i = 0; i < chat.nonce.length; i++) {
+            key[i] = (byte) (g_ab[i + (g_ab.length - chat.nonce.length)] ^ chat.nonce[i]);
+          }
+          
+          ByteBuffer tmp;
+          try {
+            tmp = ByteBuffer.wrap(SHA1(key));
+            tmp.order(ByteOrder.LITTLE_ENDIAN);
+            chat.key_fingerprint = tmp.getLong(12);
+          } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+          }
+          
+          service.mainServer.call(new tl.messages.AcceptEncryption(new InputEncryptedChat(chat.id, chat.access_hash), g_b, chat.key_fingerprint), new RPCCallback<TEncryptedChat>() {
+            public void done(TEncryptedChat chat) {
+              service.dialogManager.updateEncryptedChat(chat, key);
+              //selectDialog(service.userManager.get(chat.admin_id), chat, key);
+            }
+            public void error(int code, String message) {
+              if (message.equals("PARTICIPANT_VERSION_OUTDATED")) {
+                JOptionPane.showMessageDialog(frame, "Не удается создать секретный чат: собеседник использует устаревшую версию приложения.");
+              }
+              System.out.println("Failed to create encrypted chat: " + code + ", " + message);
+            }
+          });
+        }
+        public void error(int code, String message) {
+          System.out.println("Failed to get DH config: " + code + ", " + message);
+        }
+      });
       //service.mainServer.call(new tl.messages.AcceptEncryption(peer, g_b, key_fingerprint));
     }
   }
