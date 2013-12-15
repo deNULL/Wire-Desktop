@@ -1,6 +1,13 @@
 package ru.denull.wire.model;
 
 import java.awt.Rectangle;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.ByteOrder;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -13,9 +20,8 @@ import ru.denull.mtproto.Server;
 import ru.denull.mtproto.Server.RPCCallback;
 import ru.denull.wire.MessageCellRenderer;
 import ru.denull.wire.Utils;
-import tl.TInputPeer;
-import tl.TLObject;
-import tl.TMessage;
+import ru.denull.wire.model.DialogManager.EncryptedDialog;
+import tl.*;
 import tl.messages.GetHistory;
 import tl.messages.Messages;
 import tl.messages.MessagesSlice;
@@ -33,6 +39,8 @@ public class MessageListModel extends AbstractListModel {
   private DataService service;
   private JList list;
   private TInputPeer peer;
+  private EncryptedDialog encrypted = null;
+  private int encryptedPos = -1;
   
   LinkedList<Object> items = new LinkedList<Object>();
   public boolean loading = false;
@@ -46,11 +54,15 @@ public class MessageListModel extends AbstractListModel {
   
   boolean scrollToLast = true;
   boolean updatingScroll = false;
-  
+
   public MessageListModel(DataService service, JList list, TInputPeer peer) {
+    this(service, list, peer, null);
+  }
+  public MessageListModel(DataService service, JList list, TInputPeer peer, EncryptedDialog encrypted) {
     this.service = service;
     this.peer = peer;
     this.list = list;
+    this.encrypted = encrypted;
     
     //peer_id = Utils.getPeerID(peer, service.me);
     load();
@@ -58,10 +70,16 @@ public class MessageListModel extends AbstractListModel {
   }
 
   public Object getElementAt(int index) {
+    if (encrypted != null && !(encrypted.chat instanceof EncryptedChat)) {
+      return Utils.getEncryptedChatStatus(encrypted.chat);
+    }
     return (peer == null) ? "Выберите диалог" : ((index < items.size()) ? items.get(index) : ((loading || loadingFromCache || initializing) ? "Загрузка..." : "Нет сообщений"));
   }
 
   public int getSize() {
+    if (encrypted != null && !(encrypted.chat instanceof EncryptedChat)) {
+      return 1;
+    }
     return Math.max(1, items.size());
   }
 
@@ -147,6 +165,40 @@ public class MessageListModel extends AbstractListModel {
   private void load() {
     // TODO: check first two conditions
     if (service.mainServer == null || !service.mainServer.transport.isConnected() || loading || peer == null) return;
+    
+    if (encrypted != null) {
+      try {
+        if (new File(Utils.getHomeDir("encrypted_chat" + encrypted.chat.id + ".dat")).exists() && encryptedPos != 0) {
+          FileInputStream f = new FileInputStream(Utils.getHomeDir("encrypted_chat" + encrypted.chat.id + ".dat"));
+          FileChannel ch = f.getChannel();
+          MappedByteBuffer mb = ch.map(MapMode.READ_ONLY, 0L, encryptedPos < 0 ? ch.size() : encryptedPos);
+          mb.order(ByteOrder.LITTLE_ENDIAN);
+          
+          encryptedPos = mb.capacity();
+          ArrayList<TMessage> messages = new ArrayList<TMessage>();
+          for (int i = 0; i < 100; i++) {
+            if (encryptedPos < 8) break;
+            
+            mb.position(encryptedPos - 8);
+            encryptedPos = (int) mb.getLong();
+            
+            mb.position(encryptedPos);
+            int user_id = mb.getInt();
+            TEncryptedMessage encrypted = (TEncryptedMessage) TL.read(mb);
+            TDecryptedMessage decrypted = (TDecryptedMessage) TL.read(mb);
+            
+            TMessage stub = new Message((int) (Math.random() * 10000000), 0, new PeerUser(user_id), user_id == service.me.id, true, encrypted.date, decrypted.message, new MessageMediaEmpty());
+            messages.add(stub);
+          }
+          add(messages.toArray(new TMessage[messages.size()]));
+          cachedData = false;
+          f.close();
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      return;
+    }
     
     // prevent from loading two times at once
     loading = true;
@@ -338,6 +390,11 @@ public class MessageListModel extends AbstractListModel {
         }
       });
     }
+  }
+  public void addMessage(TEncryptedMessage encrypted, TDecryptedMessage decrypted) {
+    TMessage stub = new Message((int) (Math.random() * 10000000), 0, new PeerUser(service.me.id), false, true, encrypted.date, decrypted.message, new MessageMediaEmpty());
+    //service.messageManager.nextMessageID++;
+    addMessage(stub);
   }
 
   public void updateContents() {

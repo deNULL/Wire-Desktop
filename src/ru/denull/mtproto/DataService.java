@@ -1,17 +1,21 @@
 package ru.denull.mtproto;
 
+import static ru.denull.mtproto.CryptoUtils.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ClosedChannelException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+
+import org.bouncycastle.crypto.DataLengthException;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 
 import net.sf.ehcache.CacheManager;
 import ru.denull.mtproto.Auth.AuthCallback;
@@ -19,6 +23,7 @@ import ru.denull.mtproto.Auth.AuthState;
 import ru.denull.wire.Main;
 import ru.denull.wire.Utils;
 import ru.denull.wire.model.*;
+import ru.denull.wire.model.DialogManager.EncryptedDialog;
 import tl.*;
 import tl.Config;
 import tl.Message;
@@ -376,6 +381,10 @@ public class DataService {
     public void onContactLink(int user_id, TMyLink my_link, TForeignLink foreign_link, boolean fresh);
     public void onActivation(int user_id, boolean fresh);
     public void onNewAuthorization(long auth_key_id, int date, String device, String location, boolean fresh);
+    public void onNewEncryptedMessage(TEncryptedMessage encrypted, TDecryptedMessage message, boolean fresh);
+    public void onEncryptedChatTyping(int chat_id, boolean fresh);
+    public void onEncryption(TEncryptedChat chat, int date, boolean fresh);
+    public void onEncryptedMessagesRead(int chat_id, int max_date, int date, boolean fresh);
   }
   public void processUpdate(TUpdate update, boolean fresh) {
     //Log.i(TAG, "New " + (fresh ? "(fresh) " : "") + "update: " + update);
@@ -474,6 +483,72 @@ public class DataService {
 
       if (updateListener != null)
         updateListener.onNewAuthorization(((UpdateNewAuthorization) update).auth_key_id, ((UpdateNewAuthorization) update).date, ((UpdateNewAuthorization) update).device, ((UpdateNewAuthorization) update).location, fresh);
+    } else if (update instanceof UpdateNewEncryptedMessage) {
+      processNewEncryptedMessage(((UpdateNewEncryptedMessage) update).message, fresh);
+      
+    } else if (update instanceof UpdateEncryptedChatTyping) {
+      typingManager.userEncryptedTyping(update.chat_id);
+      
+      if (updateListener != null)
+        updateListener.onEncryptedChatTyping(update.chat_id, fresh);
+    } else if (update instanceof UpdateEncryption) {
+      dialogManager.updateEncryptedChat(update.chat);
+      
+      if (updateListener != null)
+        updateListener.onEncryption(update.chat, update.date, fresh);
+    } else if (update instanceof UpdateEncryptedMessagesRead) {
+      
+      if (updateListener != null)
+        updateListener.onEncryptedMessagesRead(update.chat_id, update.max_date, update.date, fresh);
+    }
+  }
+  
+  public void processNewEncryptedMessage(TEncryptedMessage message, boolean fresh) {
+    EncryptedDialog dialog = dialogManager.chats.get(message.chat_id);
+    if (dialog != null) {
+      if (dialog.chat instanceof EncryptedChat) {
+        try {
+          byte[] msg_key = Arrays.copyOfRange(message.bytes, 8, 24);
+          
+          int x = 0;
+          byte[] sha1_a = SHA1(concat(msg_key, substr(dialog.key, x, 32)));
+          byte[] sha1_b = SHA1(concat(substr(dialog.key, 32 + x, 16), msg_key, substr(dialog.key, 48 + x, 16)));
+          byte[] sha1_c = SHA1(concat(substr(dialog.key, 64 + x, 32), msg_key));
+          byte[] sha1_d = SHA1(concat(msg_key, substr(dialog.key, 96 + x, 32)));
+          
+          byte[] aes_key = concat(substr(sha1_a, 0, 8), substr(sha1_b, 8, 12), substr(sha1_c, 4, 12));
+          byte[] aes_iv = concat(substr(sha1_a, 8, 12), substr(sha1_b, 0, 8), substr(sha1_c, 16, 4), substr(sha1_d, 0, 8));
+          
+          ByteBuffer buffer = ByteBuffer.wrap(AESDecrypt(message.bytes, 24, message.bytes.length - 24, aes_key, aes_iv));
+          buffer.order(ByteOrder.LITTLE_ENDIAN);
+          
+          int size = buffer.getInt();
+          TLObject payload = TL.read(buffer);
+          TDecryptedMessage decrypted = null;
+          
+          if (payload instanceof TDecryptedMessage) {
+            decrypted = (TDecryptedMessage) payload;
+          } else
+          if ((payload instanceof DecryptedMessageLayer) && ((DecryptedMessageLayer) payload).layer <= ru.denull.wire.model.Config.max_supported_layer) {
+            decrypted = (TDecryptedMessage) ((DecryptedMessageLayer) payload).message;
+          } else {
+            // TODO: show error
+          }
+            
+          if (decrypted != null && decrypted instanceof DecryptedMessage) {
+            //stub = new Message(messageManager.nextMessageID, (dialog.chat.admin_id == me.id) ? dialog.chat.participant_id : dialog.chat.admin_id, new PeerUser(me.id), false, true, message.date, decrypted.message, new MessageMediaEmpty());
+            dialogManager.addEncryptedMessage(message.chat_id, (dialog.chat.admin_id == me.id) ? dialog.chat.participant_id : dialog.chat.admin_id, message, decrypted);
+            typingManager.userTyping((dialog.chat.admin_id == me.id) ? dialog.chat.participant_id : dialog.chat.admin_id, false);
+            
+            messageManager.nextMessageID++; // TODO: replace this
+            
+            if (updateListener != null)
+              updateListener.onNewEncryptedMessage(message, decrypted, fresh);
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
     }
   }
   

@@ -10,6 +10,7 @@ import ru.denull.mtproto.DataService;
 import ru.denull.wire.Utils;
 import ru.denull.wire.model.DialogManager;
 import ru.denull.wire.model.MessageListModel;
+import ru.denull.wire.model.DialogManager.EncryptedDialog;
 import ru.denull.wire.model.FileManager.FileLoadingCallback;
 import tl.*;
 import tl.Dialog;
@@ -139,7 +140,7 @@ public class DialogCellRenderer implements ListCellRenderer {
       titleLabel.setForeground(selected ? Color.WHITE : Color.BLACK);
       //titleLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
       constraints = Utils.GBConstraints(2, 0, 1, 1);
-      constraints.insets = new Insets(5, 7, 2, 0);
+      constraints.insets = new Insets(6, 7, 2, 0);
       constraints.weightx = 1;
       constraints.anchor = GridBagConstraints.LINE_START;
       panel.add(titleLabel, constraints);
@@ -188,17 +189,25 @@ public class DialogCellRenderer implements ListCellRenderer {
         }
       });
       
+      boolean encrypted = item instanceof EncryptedDialog;
+      
       JLabel titleLabel = new JLabel((user instanceof UserEmpty) ? "" : (user.first_name + " " + user.last_name).trim());
       titleLabel.setFont(new Font(Utils.fontName, Font.PLAIN, 14));
-      titleLabel.setForeground(selected ? Color.WHITE : Color.BLACK);
+      titleLabel.setForeground(selected ? Color.WHITE : (encrypted ? Color.decode("0x00a80e") : Color.BLACK));
       //titleLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
+      if (encrypted) {
+        titleLabel.setIcon(new ImageIcon(Utils.getImage(selected ? "ic_lock_white.png" : "ic_lock_green.png")));
+      }
       constraints = Utils.GBConstraints(2, 0, 1, 1);
-      constraints.insets = new Insets(4, 7, 2, 0);
+      constraints.insets = new Insets(6, 7, 2, 0);
       constraints.weightx = 1;
       constraints.anchor = GridBagConstraints.LINE_START;
       panel.add(titleLabel, constraints);
 
       String typing = service.typingManager.getStatus(user_id, false);
+      if (encrypted && !(((EncryptedDialog) item).chat instanceof EncryptedChat)) {
+        typing = Utils.getEncryptedChatStatus(((EncryptedDialog) item).chat);
+      }
       EmojiLabel messageLabel = new EmojiLabel(typing == null ? getMessagePreview(message) : typing);
       messageLabel.setForeground(selected ? Color.WHITE : ((typing == null && !(message.media instanceof MessageMediaEmpty)) ? Color.decode("0x006fc8") : Color.DARK_GRAY));
       //messageLabel.setBorder(BorderFactory.createLineBorder(Color.RED));

@@ -1,5 +1,7 @@
 package ru.denull.wire;
 
+import static ru.denull.mtproto.CryptoUtils.*;
+
 import java.awt.*;
 import java.awt.Cursor;
 import java.awt.Dialog;
@@ -19,6 +21,9 @@ import java.awt.dnd.*;
 import java.awt.event.*;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -53,6 +58,21 @@ import javax.swing.JButton;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //import com.apple.eawt.Application;
 import ru.denull.mtproto.DataService;
 import ru.denull.mtproto.DataService.OnUpdateListener;
@@ -60,6 +80,8 @@ import ru.denull.mtproto.Server;
 import ru.denull.mtproto.Auth.AuthCallback;
 import ru.denull.mtproto.Server.RPCCallback;
 import ru.denull.wire.model.*;
+import ru.denull.wire.model.Config;
+import ru.denull.wire.model.DialogManager.EncryptedDialog;
 import ru.denull.wire.model.FileManager.FileUploadingProgressiveCallback;
 import ru.denull.wire.model.TypingManager.TypingCallback;
 import sun.misc.IOUtils;
@@ -78,6 +100,7 @@ public class Main implements OnUpdateListener, TypingCallback {
   private JList dialogList, messageList;
   private JTextField searchField;
   private TInputPeer currentPeer;
+  private int currentEncryptedChat = -1;
   private ChatFull currentChat;
   
   public static DataService service;
@@ -242,7 +265,7 @@ public class Main implements OnUpdateListener, TypingCallback {
     fd.setFilenameFilter(new FilenameFilter() {
       public boolean accept(File dir, String name) {
         name = name.toLowerCase();
-        return name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png") || name.endsWith(".gif") || name.endsWith(".mov") || name.endsWith(".mp4") || name.endsWith(".webp") || name.endsWith(".mp3");
+        return name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png") || name.endsWith(".gif") || name.endsWith(".avi") || name.endsWith(".mov") || name.endsWith(".mp4") || name.endsWith(".webp") || name.endsWith(".mp3");
       }
     });
     importDialog.setFilenameFilter(new FilenameFilter() {
@@ -438,14 +461,14 @@ public class Main implements OnUpdateListener, TypingCallback {
           if (dialogsBtn.isSelected()) {
             if (service.dialogManager.isEmpty()) return;
             
-            tl.Dialog dialog = service.dialogManager.filtered.get(dialogList.getSelectedIndex());
+            tl.Dialog dialog = (tl.Dialog) service.dialogManager.getElementAt(dialogList.getSelectedIndex());
             selectDialog(dialog);
           } else
           if (contactsBtn.isSelected()) {
             if (contactListModel.isEmpty()) return;
             
             TUser user = service.userManager.get((Integer) contactListModel.getElementAt(dialogList.getSelectedIndex()));
-            selectDialog(user);
+            selectDialog(user, null, null);
           }
         }
       }
@@ -605,7 +628,9 @@ public class Main implements OnUpdateListener, TypingCallback {
               });
             }
           } else {
-            //
+            if (JOptionPane.showOptionDialog(frame, "Создать секретный чат с этим пользователем?", "Подтвердите действие", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new String[] { "Отмена", "OK" }, "OK") == 1) {
+              createEncryptedChat(currentPeer.user_id);
+            }
           }
         }
       }
@@ -820,7 +845,7 @@ public class Main implements OnUpdateListener, TypingCallback {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
           String message = messageField.getText();
           if (currentPeer != null && message.length() > 0 && !messageField.getForeground().equals(Color.LIGHT_GRAY)) {
-            sendMessage(message, currentPeer);
+            sendMessage(message, currentPeer, currentEncryptedChat);
             messageField.setText("");
           }
         }
@@ -886,6 +911,42 @@ public class Main implements OnUpdateListener, TypingCallback {
     }));
   }
   
+  protected void createEncryptedChat(final int user_id) {
+    final TUser user = service.userManager.get(user_id);
+    service.mainServer.call(new tl.messages.GetDhConfig(0, 256), new RPCCallback<DhConfig>() {
+      public void done(final DhConfig config) {
+        final byte[] random = new byte[256];
+        (new Random()).nextBytes(random); // TODO: add more entropy
+        for (int i = 0; i < random.length; i++) {
+          random[i] ^= config.random[i];
+        }
+        
+        BigInteger g = BigInteger.valueOf(config.g);
+        BigInteger a = new BigInteger(1, random);
+        BigInteger dh_prime = new BigInteger(1, config.p);
+        
+        byte[] g_a = g.modPow(a, dh_prime).toByteArray();
+        
+        int random_id = (int) (Math.random() * 10000000);
+        service.mainServer.call(new tl.messages.RequestEncryption(Utils.getInputUser(user), random_id, g_a), new RPCCallback<TEncryptedChat>() {
+          public void done(TEncryptedChat chat) {
+            service.dialogManager.addEncryptedChat(user_id, chat, random, config.p);
+            selectDialog(user, chat, new byte[256]);
+          }
+          public void error(int code, String message) {
+            if (message.equals("PARTICIPANT_VERSION_OUTDATED")) {
+              JOptionPane.showMessageDialog(frame, "Не удается создать секретный чат: собеседник использует устаревшую версию приложения.");
+            }
+            System.out.println("Failed to create encrypted chat: " + code + ", " + message);
+          }
+        });
+      }
+      public void error(int code, String message) {
+        System.out.println("Failed to get DH config: " + code + ", " + message);
+      }
+    });
+  }
+
   protected void toggleTitlePanel(boolean visible) {
     titlePanel.setMinimumSize(new Dimension(0, visible ? 100 : 40));
     titlePanel.setPreferredSize(new Dimension(0, visible ? 100 : 40));
@@ -1379,7 +1440,7 @@ public class Main implements OnUpdateListener, TypingCallback {
     });
   }
 
-  public void sendMessage(String message, TInputPeer inputPeer) {    
+  public void sendMessage(String message, TInputPeer inputPeer, int encryptedChat) {    
     int random_id = -(new Random()).nextInt(0x10000000);
     int peer_id = Utils.getPeerID(inputPeer, service.me);
     TPeer peer;
@@ -1388,14 +1449,30 @@ public class Main implements OnUpdateListener, TypingCallback {
     } else {
       peer = new PeerChat(-peer_id);
     }
+    
     final TMessage newmsg = new Message(random_id, service.me.id, peer, true, true, (int) (System.currentTimeMillis() / 1000), message, new MessageMediaEmpty());
     newmsg.sending = true;
     service.messageManager.store(newmsg);
-    service.dialogManager.addMessage(newmsg);
     messageListModel.addMessage(newmsg);
     restoreDialogSelection();
     dialogList.repaint();
     messageList.repaint();
+    
+    TDecryptedMessage decrypted = null;
+    if (encryptedChat > -1) {
+      byte[] random_bytes;
+      if (message.length() > 16) {
+        random_bytes = new byte[0];
+      } else {
+        random_bytes = new byte[16];
+        (new Random()).nextBytes(random_bytes);
+      }
+      decrypted = new DecryptedMessage(random_id, random_bytes, message, new DecryptedMessageMediaEmpty());
+      sendEncryptedMessage(peer_id, encryptedChat, random_id, decrypted, newmsg);
+      return;
+    } else {
+      service.dialogManager.addMessage(newmsg);
+    }
     
     service.mainServer.call(new SendMessage(currentPeer, message, random_id), new RPCCallback<SentMessage>() {
       public void done(SentMessage result) {
@@ -1412,22 +1489,84 @@ public class Main implements OnUpdateListener, TypingCallback {
       }
     });
   }
-  
-  public void selectDialog(TChat chat) {
-    selectDialog(new InputPeerChat(chat.id));
+  public void sendEncryptedMessage(int user_id, final int encryptedChat, final int random_id, final TDecryptedMessage decrypted, final TMessage stub) {
+    EncryptedDialog dialog = service.dialogManager.chats.get(encryptedChat);
+    if (dialog != null) {
+      if (dialog.chat instanceof EncryptedChat) {
+        try {
+          //DecryptedMessageLayer layer = new DecryptedMessageLayer(8, decrypted);
+          TDecryptedMessage layer = decrypted;
+          int size = 4 + layer.length(true);
+          while (size % 16 != 0) size++;
+          
+          ByteBuffer inner = ByteBuffer.allocate(size);
+          inner.order(ByteOrder.LITTLE_ENDIAN);
+          inner.putInt(layer.length(true));
+          layer.writeTo(inner, true);
+          while (inner.position() < size) inner.put((byte) 0);
+          inner.rewind();
+          
+          byte[] msg_key = substr(SHA1(inner, 0, inner.capacity()), 4, 16);
+          
+          int x = 0;
+          byte[] sha1_a = SHA1(concat(msg_key, substr(dialog.key, x, 32)));
+          byte[] sha1_b = SHA1(concat(substr(dialog.key, 32 + x, 16), msg_key, substr(dialog.key, 48 + x, 16)));
+          byte[] sha1_c = SHA1(concat(substr(dialog.key, 64 + x, 32), msg_key));
+          byte[] sha1_d = SHA1(concat(msg_key, substr(dialog.key, 96 + x, 32)));
+          
+          byte[] aes_key = concat(substr(sha1_a, 0, 8), substr(sha1_b, 8, 12), substr(sha1_c, 4, 12));
+          byte[] aes_iv = concat(substr(sha1_a, 8, 12), substr(sha1_b, 0, 8), substr(sha1_c, 16, 4), substr(sha1_d, 0, 8));
+          
+          ByteBuffer buffer = ByteBuffer.allocate(size + 24);
+          buffer.order(ByteOrder.LITTLE_ENDIAN);
+          buffer.putLong(dialog.chat.key_fingerprint);
+          buffer.put(msg_key);
+          buffer.put(AESEncrypt(inner, 0, size, aes_key, aes_iv));
+          buffer.rewind();
+          
+          final byte[] bytes = new byte[buffer.capacity()];
+          buffer.get(bytes);
+          
+          //TEncryptedMessage encrypted = new EncryptedMessage(random_id, dialog.chat.id, (int) ((new Date()).getTime() / 1000), bytes, new EncryptedFileEmpty());
+          //service.dialogManager.addEncryptedMessage(encryptedChat, service.me.id, encrypted, decrypted);
+          
+          service.mainServer.call(new SendEncrypted(new InputEncryptedChat(encryptedChat, dialog.chat.access_hash), random_id, bytes), new RPCCallback<TSentEncryptedMessage>() {
+            public void done(TSentEncryptedMessage result) {
+              TEncryptedMessage encrypted = new EncryptedMessage(random_id, encryptedChat, result.date, bytes, new EncryptedFileEmpty());
+              service.dialogManager.addEncryptedMessage(encryptedChat, service.me.id, encrypted, decrypted);
+              stub.date = result.date;
+              stub.sending = false;
+              restoreDialogSelection();
+              dialogList.repaint();
+              messageListModel.updateContentsID(random_id);
+            } 
+            public void error(int code, String message) {
+              stub.failed = true;
+              System.out.println("Error while sending encrypted message: " + code + " (" + message + ")");
+            }
+          });
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    } 
   }
   
-  public void selectDialog(TUser user) {
+  public void selectDialog(TChat chat) {
+    selectDialog(new InputPeerChat(chat.id), null, null);
+  }
+  
+  public void selectDialog(TUser user, TEncryptedChat chat, byte[] key) {
     TInputPeer peer = null;
     if (user instanceof UserForeign || user instanceof UserRequest) {
       peer = new InputPeerForeign(user.id, user.access_hash);
     } else {
       peer = new InputPeerContact(user.id);
     }
-    selectDialog(peer);
+    selectDialog(peer, chat, key);
   }
   
-  public void selectDialog(final TInputPeer peer) {
+  public void selectDialog(final TInputPeer peer, TEncryptedChat echat, byte[] key) {
     if (currentPeer != null &&
         ((peer instanceof InputPeerChat && currentPeer instanceof InputPeerChat && peer.chat_id == currentPeer.chat_id) ||
          (!(peer instanceof InputPeerChat) && !(currentPeer instanceof InputPeerChat) && peer.user_id == currentPeer.user_id))) {
@@ -1435,7 +1574,8 @@ public class Main implements OnUpdateListener, TypingCallback {
     }
     
     currentPeer = peer;
-    messageListModel = new MessageListModel(service, messageList, peer);
+    currentEncryptedChat = (echat == null) ? -1 : echat.id;
+    messageListModel = new MessageListModel(service, messageList, peer, echat == null ? null : service.dialogManager.chats.get(echat.id));
     
     messageList.setModel(messageListModel);
     messageList.setCellRenderer(new MessageCellRenderer(service, peer));
@@ -1480,10 +1620,10 @@ public class Main implements OnUpdateListener, TypingCallback {
       
       titleInfoBtn.setText("информация...");
       titleInfoBtn.setVisible(true);
-      titleActionBtn.setText("поделиться контактом");
+      titleActionBtn.setText("создать секретный чат");
       titleActionBtn.setVisible(true);
 
-      sendPanel.setVisible(true);
+      sendPanel.setVisible((echat == null) || (echat instanceof EncryptedChat));
     }
     currentChat = null;
     updateStatus();
@@ -1522,10 +1662,13 @@ public class Main implements OnUpdateListener, TypingCallback {
   }
   
   public void selectDialog(tl.Dialog dialog) {
+    if (dialog instanceof EncryptedDialog) {
+      selectDialog(service.userManager.get(((PeerUser) dialog.peer).user_id), ((EncryptedDialog) dialog).chat, ((EncryptedDialog) dialog).key);
+    } else
     if (dialog.peer instanceof PeerUser) {
-      selectDialog(service.userManager.get(((PeerUser) dialog.peer).user_id));
+      selectDialog(service.userManager.get(((PeerUser) dialog.peer).user_id), null, null);
     } else {
-      selectDialog(new InputPeerChat(((PeerChat) dialog.peer).chat_id));
+      selectDialog(new InputPeerChat(((PeerChat) dialog.peer).chat_id), null, null);
     }
   }
 
@@ -1655,13 +1798,16 @@ public class Main implements OnUpdateListener, TypingCallback {
     if (dialogsBtn.isSelected()) {
       if (service.dialogManager.isEmpty()) return;
       
-      for (int i = 0; i < service.dialogManager.filtered.size(); i++) {
-        tl.Dialog d = service.dialogManager.filtered.get(i);
-        if ((d.peer instanceof PeerChat && currentPeer instanceof InputPeerChat && d.peer.chat_id == currentPeer.chat_id) ||
-            (!(d.peer instanceof PeerChat) && !(currentPeer instanceof InputPeerChat) && d.peer.user_id == currentPeer.user_id)) {
-          dialogList.setSelectedIndex(i);
-          break;
-        }      
+      for (int i = 0; i < service.dialogManager.getSize(); i++) {
+        tl.Dialog d = (tl.Dialog) service.dialogManager.getElementAt(i);
+        if ((currentEncryptedChat == -1 && !(d instanceof EncryptedDialog)) ||
+            (currentEncryptedChat > -1 && d instanceof EncryptedDialog && currentEncryptedChat == ((EncryptedDialog) d).chat.id)) {
+          if ((d.peer instanceof PeerChat && currentPeer instanceof InputPeerChat && d.peer.chat_id == currentPeer.chat_id) ||
+              (!(d.peer instanceof PeerChat) && !(currentPeer instanceof InputPeerChat) && d.peer.user_id == currentPeer.user_id)) {
+            dialogList.setSelectedIndex(i);
+            break;
+          }
+        }
       }
     } else {
       if (contactListModel.isEmpty()) return;
@@ -1671,7 +1817,7 @@ public class Main implements OnUpdateListener, TypingCallback {
         if (!(currentPeer instanceof InputPeerChat) && user_id == currentPeer.user_id) {
           dialogList.setSelectedIndex(i);
           return;
-        }      
+        }
       }
       //dialogList.setSelectedIndex(-1);
     }
@@ -1815,5 +1961,38 @@ public class Main implements OnUpdateListener, TypingCallback {
       public void error(int code, String message) {
       }
     });
+  }
+
+  public void onNewEncryptedMessage(TEncryptedMessage encrypted, TDecryptedMessage message, boolean fresh) {
+    // TODO Auto-generated method stub
+    restoreDialogSelection();
+    service.dialogManager.updateContents();
+    if (currentEncryptedChat == encrypted.chat_id) {
+      messageListModel.addMessage(encrypted, message);
+      //messageList
+      
+      //service.dialogManager.resetEncryptedUnread(currentPeer);
+      /*service.mainServer.call(new ReadHistory(currentPeer, message.id, 0), new Server.RPCCallback<TLObject>() {
+        public void done(TLObject result) {
+        }
+        public void error(int code, String message) {
+        }
+      });*/
+    }
+  }
+
+  @Override
+  public void onEncryptedChatTyping(int chat_id, boolean fresh) {
+  }
+
+  @Override
+  public void onEncryption(TEncryptedChat chat, int date, boolean fresh) {
+    if (chat instanceof EncryptedChatRequested) { // Auto accept request (TODO: show dialog?)
+      //service.mainServer.call(new tl.messages.AcceptEncryption(peer, g_b, key_fingerprint));
+    }
+  }
+
+  @Override
+  public void onEncryptedMessagesRead(int chat_id, int max_date, int date, boolean fresh) {
   }
 }

@@ -69,6 +69,9 @@ public class TypingManager {
     });
   }
   
+  public void userEncryptedTyping(int chat_id) {
+    userTyping(-chat_id, true);
+  }
   public void userTyping(int user_id) {
     userTyping(user_id, true);
   }

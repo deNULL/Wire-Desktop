@@ -3,14 +3,14 @@ package tl;
 import java.nio.ByteBuffer;
 
 public class UpdateNewEncryptedMessage extends tl.TUpdate {
-  public tl.TMessage message;
+  public tl.TEncryptedMessage message;
   
   public UpdateNewEncryptedMessage(ByteBuffer buffer) throws Exception {
-    message = (tl.TMessage) TL.read(buffer);
+    message = (tl.TEncryptedMessage) TL.read(buffer);
     qts = buffer.getInt();
   }
   
-  public UpdateNewEncryptedMessage(tl.TMessage message, int qts) {
+  public UpdateNewEncryptedMessage(tl.TEncryptedMessage message, int qts) {
     this.message = message;
     this.qts = qts;
   }

@@ -30,6 +30,8 @@ public class MessageManager {
 	
 	public static final MessageEmpty empty = new MessageEmpty(0);
 	
+	public int nextMessageID = 0;
+	
 	public MessageManager(DataService service, SQLiteDatabase db) {
 		this.service = service;
 		this.db = db;
@@ -38,6 +40,7 @@ public class MessageManager {
 	public void store(final TMessage[] data) {
 	  for (TMessage message : data) {
 	    loaded.put(message.id, message);
+	    nextMessageID = Math.max(nextMessageID, message.id + 1);
     }
 	  
 	  // postpone saving to db
@@ -76,6 +79,7 @@ public class MessageManager {
 	  }
 		
 		loaded.put(message.id, message);
+		nextMessageID = Math.max(nextMessageID, message.id + 1);
 	}
 	
 	public TMessage get(int id) {

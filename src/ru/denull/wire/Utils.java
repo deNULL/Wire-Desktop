@@ -918,4 +918,45 @@ public class Utils {
       }
     }
   }
+  
+  public static String homeDir = null;
+  public static String getHomeDir() {
+    if (homeDir != null) {
+      return homeDir;
+    }
+    
+    homeDir = System.getProperty("user.home") + "\\Local Settings\\ApplicationData"; // Windows
+    
+    if (!new File(homeDir).exists()) {
+      homeDir = System.getProperty("user.home") + "/Library/Application Support"; // MacOS
+      
+      if (!new File(homeDir).exists()) {
+        homeDir = System.getProperty("user.home") + "/.config"; // Linux/Other
+      }
+    }
+    
+    homeDir += System.getProperty("file.separator") + "Wire";
+    new File(homeDir).mkdirs();
+    
+    return homeDir;
+  }
+  public static String getHomeDir(String name) {
+    return getHomeDir() + System.getProperty("file.separator") + name;
+  }
+
+  public static String getEncryptedChatStatus(TEncryptedChat chat) {
+    if (chat instanceof EncryptedChatEmpty) {
+      return "Ошибка: несуществующий секретный чат";
+    } else
+    if (chat instanceof EncryptedChatWaiting) {
+      return "Дождитесь, когда собеседник войдет в сеть";
+    } else
+    if (chat instanceof EncryptedChatRequested) {
+      return "Подключение к секретному чату...";
+    } else
+    if (chat instanceof EncryptedChatDiscarded) {
+      return "Секретный чат удален";
+    }
+    return null;
+  }
 }
